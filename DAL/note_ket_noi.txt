@@ -1,0 +1,18 @@
+﻿Mọi người nhớ thay đổi cái kết nối phù hợp với máy của mọi người
+
+Data Source=...;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=False;Trusted_Connection = true;
+
+sử dụng lệnh sau trong developer powershell:
+
+-- Trỏ đến thư mục DAL
+cd .\DAL\
+
+-- Tạo migration mới
+dotnet ef migrations add First -o Migrations
+
+--- Cập nhật vào database
+dotnet ef database update
+
+*** Nếu không dùng lệnh được thì kiểm tra xem:
+- Đúng powershell hay không?
+- Đã cài microsoft.entityframeworkcore.tools trên máy chưa -> phải tải về máy chứ tải trên Nuget sẽ không đc
