@@ -8,7 +8,7 @@ namespace DAL.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public double TongTien { get; set; }
+        public string TongTien { get; set; }
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public int TrangThai { get; set; }
 
