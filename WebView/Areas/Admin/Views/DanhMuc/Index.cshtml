@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<DAL.Entities.SanPham>
 <div class="col-sm-3">
-@Html.Partial("_SidebarPartial")
+    @Html.Partial("_SidebarPartial")
 </div>
 <style>
+    <style >
 
     .product-image-wrapper {
         margin-bottom: 20px; /* Khoảng cách dưới mỗi sản phẩm */
@@ -41,8 +42,7 @@
     }
 
 </style>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+</style>
 <div class="col-sm-9 padding-right">
     <div class="features_items">
         <!--features_items-->
@@ -53,7 +53,7 @@
                 <div class="product-image-wrapper">
                     <div class="single-products">
                         <div class="productinfo text-center">
-                            <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.Id">
+                            <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id">
                                 <div class="product-image-container">
                                     <img src="~/images/@item.HinhAnh" alt="@item.Ten" />
                                 </div>
@@ -81,12 +81,8 @@
                             </div>
                         </div>
                     </div>
-
-
-
                 </div>
             </div>
-
         }
 
     </div><!--features_items-->
@@ -95,72 +91,14 @@
     <script>
         $(document).ready(function () {
             $('.add-to-cart').click(function () {
-                var productId = $(this).data("product_id");
-                var soLuong = 1; // Hoặc lấy giá trị từ input số lượng nếu có
-
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddToCart", "GioHangs")",
-                    data: { chiTietSanPhamId: productId, soLuong: soLuong },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire({
-                                title: 'Thành công!',
-                                text: response.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Thất bại!',
-                                text: 'Không thể thêm sản phẩm vào giỏ hàng',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            title: 'Lỗi!',
-                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
-    @* Yêu thích *@
-    <script>
-        $(document).ready(function () {
-            $('.add-btn-wishlist').click(function () {
                 var Id = $(this).data("product_id");
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("AddWishList", "Home")",
+                    url: "@Url.Action("Add", "Cart")",
                     data: { Id: Id },
                     success: function (result) {
                         if (result) {
-                            Swal.fire("Thêm vào yêu thích thành công");
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-    @* So sánh *@
-    <script>
-        $(document).ready(function () {
-            $('.add-btn-compare').click(function () {
-                var Id = $(this).data("product_id");
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddCompare", "Home")",
-                    data: { Id: Id },
-                    success: function (result) {
-                        if (result) {
-                            Swal.fire("Thêm vào so sánh thành công");
+                            Swal.fire("Thêm vào giỏ hàng thành công");
                         }
                     }
                 });

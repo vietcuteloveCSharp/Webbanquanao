@@ -1,0 +1,14 @@
+﻿@model IEnumerable<DAL.Entities.DanhMuc>
+
+@foreach (var item in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a asp-action="Index" asp-controller="DanhMuc" asp-route-id="@item.Id">
+                    @item.TenDanhMuc
+                </a>
+            </h4>
+        </div>
+    </div>
+}
