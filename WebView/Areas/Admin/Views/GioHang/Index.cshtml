@@ -25,7 +25,7 @@ else
                     <td>@item.ChiTietSanPham.SanPham.Ten</td>
                     <td>@item.SoLuong</td>
                     <td>@item.ChiTietSanPham.SanPham.Gia</td>
-                    <td>@(item.SoLuong * item.ChiTietSanPham.SanPham.Gia)</td>
+                    @* <td>@(item.SoLuong * item.ChiTietSanPham.SanPham.Gia)</td> *@
                     <td>
                         <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a>
                         <form asp-action="UpdateQuantity" method="post" class="d-inline">

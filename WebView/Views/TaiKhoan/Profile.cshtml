@@ -1,47 +1,25 @@
 ﻿@model DAL.Entities.KhachHang
 
-@{
-    ViewData["Title"] = "Thông tin người dùng";
-}
-
 <h2>Thông tin cá nhân</h2>
 
-<div class="profile-info">
-    <div class="form-group">
-        <label>Tài khoản:</label>
-        <span>@Model.TaiKhoan</span>
-    </div>
+<div>
+    <p><strong>Họ và tên:</strong> @Model.Ten</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Số điện thoại:</strong> @Model.Sdt</p>
+    <p><strong>Ngày sinh:</strong> @Model.NgaySinh?.ToString("dd/MM/yyyy")</p>
+</div>
 
-    <div class="form-group">
-        <label>Email:</label>
-        <span>@Model.Email</span>
-    </div>
+<a asp-action="EditProfile" class="btn btn-primary">Chỉnh sửa thông tin</a>
 
-    <div class="form-group">
-        <label>Ngày sinh:</label>
-        <span>@Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật"</span>
-    </div>
+<hr />
 
-    <div class="form-group">
-        <label>Tên nhân viên:</label>
-        <span>@Model.TenNhanVien</span>
-    </div>
-
-    <div class="form-group">
-        <label>Số điện thoại:</label>
-        <span>@Model.Sdt</span>
-    </div>
-
-    <div class="form-group">
-        <label>Trạng thái:</label>
-        <span>@(Model.TrangThai ? "Hoạt động" : "Tạm khóa")</span>
-    </div>
-
-    <h3>Thông tin đơn hàng</h3>
+<h3>Lịch sử hóa đơn</h3>
+@if (Model.HoaDons != null && Model.HoaDons.Any())
+{
     <table class="table">
         <thead>
             <tr>
-                <th>Mã đơn hàng</th>
+                <th>Mã hóa đơn</th>
                 <th>Ngày tạo</th>
                 <th>Tổng tiền</th>
                 <th>Trạng thái</th>
@@ -52,32 +30,15 @@
             {
                 <tr>
                     <td>@hoaDon.Id</td>
-                    <td>@hoaDon.NgayTao</td>
-                    <td>@hoaDon.TongTien.ToString("N0") đ</td>
+                    <td>@hoaDon.NgayTao.ToString("dd/MM/yyyy")</td>
+                    <td>@hoaDon.TongTien</td>
                     <td>@hoaDon.TrangThai</td>
                 </tr>
             }
         </tbody>
     </table>
-
-    <div>
-        <a asp-action="EditProfile" class="btn btn-primary">Chỉnh sửa thông tin</a>
-        <a asp-action="Logout" class="btn btn-secondary">Đăng xuất</a>
-    </div>
-</div>
-
-<style>
-    .profile-info {
-        margin-top: 20px;
-    }
-
-        .profile-info .form-group {
-            margin-bottom: 15px;
-        }
-
-    .table {
-        margin-top: 20px;
-        width: 100%;
-        text-align: left;
-    }
-</style>
+}
+else
+{
+    <p>Bạn chưa có hóa đơn nào.</p>
+}

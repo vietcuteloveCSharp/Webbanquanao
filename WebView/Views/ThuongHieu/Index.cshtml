@@ -53,11 +53,11 @@
                 <div class="product-image-wrapper">
                     <div class="single-products">
                         <div class="productinfo text-center">
-                            <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id">
+                            <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.Id">
                                 <div class="product-image-container">
-                                    <img src="~/images/@item.HinhAnh" alt="@item.Ten" />
+                                    <img src="@item.HinhAnh" alt="@item.Ten" />
                                 </div>
-                                <h2>@item.Gia.ToString("#,##0 VNĐ")</h2>
+                                @* <h2>@item.Gia.ToString("#,##0 VNĐ")</h2> *@
                                 <p>@item.Ten</p>
                                 <p>Danh mục: @item.DanhMuc.TenDanhMuc</p>
                                 <p>Thương hiệu: @item.ThuongHieu.Ten</p>
@@ -70,15 +70,7 @@
                             {
                                 <button class="btn btn-default "><i class="fa fa-shopping-cart"></i>Hết hàng</button>
                             }
-                            <div class="choose">
-                                @if (User.Identity?.IsAuthenticated ?? false)
-                                {
-                                    <ul class="nav nav-pills nav-justified">
-                                        <li><button class="btn btn-danger add-btn-wishlist" data-product_id="@item.Id"><i class="fa-solid fa-heart"></i> Yêu thích</button></li>
-                                        <li><button class="btn btn-info add-btn-compare" data-product_id="@item.Id"> <i class="fas fa-exchange-alt"></i> So sánh</button></li>
-                                    </ul>
-                                }
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -91,15 +83,37 @@
     <script>
         $(document).ready(function () {
             $('.add-to-cart').click(function () {
-                var Id = $(this).data("product_id");
+                var productId = $(this).data("product_id");
+                var soLuong = 1; // Hoặc lấy giá trị từ input số lượng nếu có
+
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("Add", "Cart")",
-                    data: { Id: Id },
-                    success: function (result) {
-                        if (result) {
-                            Swal.fire("Thêm vào giỏ hàng thành công");
+                    url: "@Url.Action("AddToCart", "GioHang")",
+                    data: { chiTietSanPhamId: productId, soLuong: soLuong },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Thất bại!',
+                                text: 'Không thể thêm sản phẩm vào giỏ hàng',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
                         }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             });

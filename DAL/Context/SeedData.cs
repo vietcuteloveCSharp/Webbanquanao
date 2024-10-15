@@ -42,7 +42,7 @@ namespace DAL.Context
                 {
                     Ten = "Áo Nike thể thao",
                     MoTa = "Áo thể thao cho nam",
-                    Gia = 500000,
+                    Gia = "50000",
                     SoLuong = 50,
                     NgayTao = DateTime.Now,
                     NgayCapNhat = DateTime.Now,
@@ -56,7 +56,7 @@ namespace DAL.Context
                 {
                     Ten = "Quần Adidas Jogger",
                     MoTa = "Quần jogger thể thao",
-                    Gia = 600000,
+                    Gia = "50000",
                     SoLuong = 30,
                     NgayTao = DateTime.Now,
                     NgayCapNhat = DateTime.Now,

@@ -11,38 +11,37 @@ namespace WebView.Controllers
         {
             _context = dbcontext;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-
-            return View();
+            var sanPhams = await _context.SanPhams.ToListAsync();
+            return View(sanPhams);
         }
+        // Action để lấy thông tin chi tiết sản phẩm
         public async Task<IActionResult> Details(int id)
         {
-            // Truy vấn sản phẩm và bao gồm các thuộc tính liên quan như ChiTietSanPham, MauSac và KichThuoc
-            var sanPham = await _context.SanPhams
-                .Include(sp => sp.ChiTietSanPhams)
-                    .ThenInclude(ctsp => ctsp.MauSac) // Bao gồm thông tin Màu Sắc
-                .Include(sp => sp.ChiTietSanPhams)
-                    .ThenInclude(ctsp => ctsp.KichThuoc) // Bao gồm thông tin Kích Thước
-                .FirstOrDefaultAsync(sp => sp.Id == id);
+            // Lấy thông tin chi tiết sản phẩm bao gồm sản phẩm, màu sắc và kích thước
+            var chiTietSanPham = await _context.ChiTietSanPhams
+                .Include(ctsp => ctsp.SanPham)  // Load thông tin sản phẩm
+                .ThenInclude(sp => sp.DanhMuc)  // Load thông tin danh mục sản phẩm
+                .Include(ctsp => ctsp.MauSac)   // Load thông tin màu sắc
+                .Include(ctsp => ctsp.KichThuoc) // Load thông tin kích thước
+                .FirstOrDefaultAsync(ctsp => ctsp.Id == id);
 
-            if (sanPham == null)
+            if (chiTietSanPham == null)
             {
                 return NotFound();
             }
 
-            // Lấy các sản phẩm liên quan
-            var relatedProducts = await _context.SanPhams
-                .Where(p => p.Id_DanhMuc == sanPham.Id_DanhMuc && p.Id != id)
-                .Take(9)
+            // Lấy sản phẩm liên quan theo danh mục
+            ViewBag.RelatedProducts = await _context.SanPhams
+                .Where(p => p.Id_DanhMuc == chiTietSanPham.SanPham.Id_DanhMuc && p.Id != chiTietSanPham.SanPham.Id)
+                .Take(6) // Giới hạn số lượng sản phẩm liên quan
                 .ToListAsync();
 
-            // Gán danh sách sản phẩm liên quan vào ViewBag
-            ViewBag.RelatedProducts = relatedProducts;
-
-            // Trả về view với chi tiết sản phẩm
-            return View(sanPham.ChiTietSanPhams);
+            return View(chiTietSanPham);
         }
+
+
 
 
 

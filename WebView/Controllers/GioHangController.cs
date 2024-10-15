@@ -14,6 +14,8 @@ namespace WebView.Controllers
         {
             _context = context;
         }
+
+        // Hiển thị giỏ hàng
         public async Task<IActionResult> Index()
         {
             var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
@@ -25,6 +27,7 @@ namespace WebView.Controllers
 
             var gioHangItems = await _context.GioHangs
                 .Include(g => g.ChiTietSanPham)
+                .ThenInclude(sp => sp.SanPham) // Include thông tin sản phẩm gốc
                 .Where(g => g.Id_KhachHang == khachHangId && g.TrangThai)
                 .ToListAsync();
 
@@ -99,8 +102,6 @@ namespace WebView.Controllers
             }
         }
 
-
-
         // Xóa sản phẩm khỏi giỏ hàng
         public async Task<IActionResult> RemoveFromCart(int id)
         {
@@ -125,6 +126,99 @@ namespace WebView.Controllers
             }
             return RedirectToAction("Index");
         }
-    }
+        public IActionResult ProceedToCheckout()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
 
+            if (khachHangId == null)
+            {
+                return RedirectToAction("Login", "TaiKhoan");
+            }
+
+            var gioHangItems = _context.GioHangs
+                .Include(g => g.ChiTietSanPham)
+                .ThenInclude(sp => sp.SanPham)
+                .Where(g => g.Id_KhachHang == khachHangId && g.TrangThai)
+                .ToList();
+
+            if (!gioHangItems.Any())
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // Trả về trang điền thông tin liên hệ và phương thức thanh toán
+            return View("Checkout", gioHangItems);
+        }
+        [HttpPost]
+        [HttpPost]
+        public IActionResult CompleteOrder(string FullName, string Address, string Phone, string PaymentMethod)
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+
+            if (khachHangId == null)
+            {
+                return RedirectToAction("Login", "TaiKhoan");
+            }
+
+            var gioHangItems = _context.GioHangs
+                .Include(g => g.ChiTietSanPham)
+                .ThenInclude(sp => sp.SanPham)
+                .Where(g => g.Id_KhachHang == khachHangId && g.TrangThai)
+                .ToList();
+
+            if (!gioHangItems.Any())
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // Tính tổng tiền
+            decimal tongTien = gioHangItems.Sum(item => item.SoLuong * decimal.Parse(item.ChiTietSanPham.SanPham.Gia));
+
+            // Tạo đối tượng hóa đơn mới và lưu vào cơ sở dữ liệu
+            var hoaDon = new HoaDon
+            {
+                Id_KhachHang = khachHangId.Value,
+                TongTien = tongTien.ToString("#,##0 VNĐ"),
+                NgayTao = DateTime.Now,
+                TrangThai = 1, // Đơn hàng mới đặt, trạng thái là 1 (Chờ xử lý)
+                Id_NhanVien = 1,
+            };
+
+            _context.HoaDons.Add(hoaDon);
+            _context.SaveChanges();
+
+            // Sau khi lưu hóa đơn, lưu chi tiết hóa đơn
+            foreach (var item in gioHangItems)
+            {
+                var chiTietHoaDon = new ChiTietHoaDon
+                {
+                    Id_HoaDon = hoaDon.Id,
+                    Id_ChiTietSanPham = item.Id_ChiTietSanPham,
+                    SoLuong = item.SoLuong,
+                    Gia = item.ChiTietSanPham.SanPham.Gia
+                };
+
+                _context.ChiTietHoaDons.Add(chiTietHoaDon);
+            }
+
+            _context.SaveChanges();
+
+            // Xóa giỏ hàng sau khi đặt hàng thành công
+            foreach (var item in gioHangItems)
+            {
+                _context.GioHangs.Remove(item);
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("XacNhanThanhToan");
+        }
+
+        public IActionResult XacNhanThanhToan()
+        {
+            return View();
+        }
+
+
+    }
 }

@@ -8,7 +8,7 @@
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Sản phẩm</th>
@@ -23,19 +23,60 @@ else
             {
                 <tr>
                     <td>@item.ChiTietSanPham.SanPham.Ten</td>
-                    <td>@item.SoLuong</td>
-                    <td>@item.ChiTietSanPham.SanPham.Gia</td>
-                    <td>@(item.SoLuong * item.ChiTietSanPham.SanPham.Gia)</td>
                     <td>
-                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a>
                         <form asp-action="UpdateQuantity" method="post" class="d-inline">
                             <input type="hidden" name="id" value="@item.Id" />
-                            <input type="number" name="soLuong" value="@item.SoLuong" min="1" />
-                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                            <input type="number" name="soLuong" value="@item.SoLuong" min="1" class="form-control d-inline" style="width: 70px;" />
+                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
                         </form>
+                    </td>
+
+                    @* Xử lý chuyển đổi Gia từ string sang decimal *@
+                    @{
+                        decimal giaSanPham;
+                        if (decimal.TryParse(item.ChiTietSanPham.SanPham.Gia, out giaSanPham))
+                        {
+                            <td>@giaSanPham.ToString("#,##0 VNĐ")</td>
+                            <td>@(item.SoLuong * giaSanPham).ToString("#,##0 VNĐ")</td>
+                        }
+                        else
+                        {
+                            <td>Giá không hợp lệ</td>
+                            <td>-</td>
+                        }
+                    }
+
+                    <td>
+                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Xóa</a>
                     </td>
                 </tr>
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right"><b>Tổng cộng:</b></td>
+                <td colspan="2">
+                    @{
+                        decimal tongCong = 0;
+                        decimal giaSanPhamTong;
+                        foreach (var item in Model)
+                        {
+                            if (decimal.TryParse(item.ChiTietSanPham.SanPham.Gia, out giaSanPhamTong))
+                            {
+                                tongCong += item.SoLuong * giaSanPhamTong;
+                            }
+                        }
+                    }
+                    <b>@tongCong.ToString("#,##0 VNĐ")</b>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-right">
+                    <form asp-action="ProceedToCheckout" method="get">
+                        <button type="submit" class="btn btn-success">Mua hàng</button>
+                    </form>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 }
