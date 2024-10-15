@@ -10,9 +10,9 @@ namespace DAL.Entities
         public int Id { get; set; }
 
         public int LoaiKhuyenMai { get; set; } // 0 - theo % || 1 - theo Giá
-        public double GiaTriGiam { get; set; } = 0; // % giảm
-        public double MenhGia { get; set; } = 0; // số tiền giảm
-        public double GiaTriToiDa { get; set; } = 0; // số tiền tối đa có thể giảm
+        public string GiaTriGiam { get; set; } // % giảm
+        public string MenhGia { get; set; } // số tiền giảm
+        public string GiaTriToiDa { get; set; }  // số tiền tối đa có thể giảm
 
         [ForeignKey("KhuyenMai")]
         public int? Id_KhuyenMai { get; set; } = null;

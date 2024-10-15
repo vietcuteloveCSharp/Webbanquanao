@@ -12,8 +12,9 @@ namespace DAL.Entities
         public string MatKhau { get; set; } = null!;
         [DataType(DataType.Date)]
         public DateTime? NgaySinh { get; set; } = null;
-        public string TenNhanVien { get; set; } = string.Empty;
+        public string Ten { get; set; } = string.Empty;
         public string Sdt { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool TrangThai { get; set; } = true;
 
