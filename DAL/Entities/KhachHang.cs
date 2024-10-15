@@ -17,7 +17,7 @@ namespace DAL.Entities
         public string Email { get; set; } = string.Empty;
         public bool TrangThai { get; set; } = true;
 
-        public virtual ICollection<GioHang> GioHangs { get; set; }
-        public virtual ICollection<HoaDon> HoaDons { get; set; }
+        public virtual ICollection<GioHang>? GioHangs { get; set; } = new List<GioHang>();
+        public virtual ICollection<HoaDon>? HoaDons { get; set; } = new List<HoaDon>();
     }
 }

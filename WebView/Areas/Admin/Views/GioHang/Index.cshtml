@@ -1,0 +1,41 @@
+﻿@model IEnumerable<DAL.Entities.GioHang>
+
+<h2>Giỏ hàng của bạn</h2>
+
+@if (!Model.Any())
+{
+    <p>Giỏ hàng của bạn đang trống.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Thành tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ChiTietSanPham.SanPham.Ten</td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.ChiTietSanPham.SanPham.Gia</td>
+                    <td>@(item.SoLuong * item.ChiTietSanPham.SanPham.Gia)</td>
+                    <td>
+                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a>
+                        <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="number" name="soLuong" value="@item.SoLuong" min="1" />
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
