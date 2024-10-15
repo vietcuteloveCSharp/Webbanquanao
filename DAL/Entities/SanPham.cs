@@ -10,7 +10,7 @@ namespace DAL.Entities
         public int Id { get; set; }
         public string Ten { get; set; } = string.Empty;
         public string MoTa { get; set; } = string.Empty;
-        public double Gia { get; set; } = 0;
+        public string Gia { get; set; }
         public int SoLuong { get; set; } = 1;
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public DateTime NgayCapNhat { get; set; }
