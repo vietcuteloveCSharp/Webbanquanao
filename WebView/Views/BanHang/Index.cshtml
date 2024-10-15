@@ -26,7 +26,7 @@
                         <tr>
                             <th scope="row">@product.Id</th>
                             <td class="product-name">@product.Ten</td>
-                            <td>@product.Gia.ToString("N0") VND</td>
+                            @* <td>@product.Gia.ToString("N0") VND</td> *@
                             <td><img src="~/images/@product.HinhAnh" alt="@product.Ten" width="50" /></td>
                             <td>
                                 <button class="btn btn-primary" onclick="addToCart('@product.Id', '@product.Ten', @product.Gia)">Thêm vào giỏ</button>

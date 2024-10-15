@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DAL.Entities.ChiTietSanPham>
+﻿@model DAL.Entities.ChiTietSanPham
 @{
     ViewData["Title"] = "Chi tiết sản phẩm";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -33,7 +33,8 @@
             object-fit: contain;
         }
 
-        .productinfo h2, .productinfo p {
+        .productinfo h2,
+        .productinfo p {
             margin: 5px 0;
             white-space: nowrap;
             overflow: hidden;
@@ -49,40 +50,37 @@
     <div class="col-sm-9 padding-right">
 
         <div class="product-details">
-            @foreach (var chiTiet in Model)
-            {
-                <div class="col-sm-5">
-                    <div class="view-product">
-                        <img src="~/images/@chiTiet.SanPham.HinhAnh" alt="@chiTiet.SanPham.Ten" width="100px" height="200px" />
-                    </div>
+            <div class="col-sm-5">
+                <div class="view-product">
+                    <img src="@Model.SanPham.HinhAnh" alt="@Model.SanPham.Ten" width="100px" height="200px" />
                 </div>
+            </div>
 
-                <div class="col-sm-7">
-                    <div class="product-information">
-                        <h2>@chiTiet.SanPham.Ten</h2>
-                        <span>
-                            <span>@chiTiet.SanPham.Gia.ToString("#,##0 VNĐ")</span>
-                            <label>Số lượng: </label>
-                            <input type="number" id="quantityInput" value="1" min="1" step="1" oninput="validateQuantity(this)" />
-                            @if (chiTiet.SoLuong > 0)
-                            {
-                                <button class="btn btn-default add-to-cart" data-product_id="@chiTiet.SanPham.Id">
-                                    <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-default">
-                                    <i class="fa fa-shopping-cart"></i> Hết hàng
-                                </button>
-                            }
-                        </span>
-                        <p><b>Tình trạng:</b> @(chiTiet.SoLuong > 0 ? "Còn hàng" : "Hết hàng")</p>
-                        <p><b>Màu sắc:</b> @chiTiet.MauSac?.Ten</p> <!-- Hiển thị tên màu sắc -->
-                        <p><b>Kích thước:</b> @chiTiet.KichThuoc?.Ten</p> <!-- Hiển thị tên kích thước -->
-                    </div>
+            <div class="col-sm-7">
+                <div class="product-information">
+                    <h2>@Model.SanPham.Ten</h2>
+                    <span>
+                        <span>@Model.SanPham.Gia VNĐ</span>
+                        <label>Số lượng: </label>
+                        <input type="number" id="quantityInput" value="1" min="1" step="1" oninput="validateQuantity(this)" />
+                        @if (Model.SoLuong > 0)
+                        {
+                            <button class="btn btn-default add-to-cart" data-product_id="@Model.SanPham.Id">
+                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-default">
+                                <i class="fa fa-shopping-cart"></i> Hết hàng
+                            </button>
+                        }
+                    </span>
+                    <p><b>Tình trạng:</b> @(Model.SoLuong > 0 ? "Còn hàng" : "Hết hàng")</p>
+                    <p><b>Màu sắc:</b> @Model.MauSac?.Ten</p> <!-- Hiển thị tên màu sắc -->
+                    <p><b>Kích thước:</b> @Model.KichThuoc?.Ten</p> <!-- Hiển thị tên kích thước -->
                 </div>
-            }
+            </div>
         </div>
 
 
@@ -96,7 +94,7 @@
 
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="details">
-                    @Html.Raw(Model.FirstOrDefault()?.SanPham.MoTa)
+                    @Html.Raw(Model.SanPham.MoTa)
                 </div>
 
                 <div class="tab-pane fade" id="reviews">
@@ -104,9 +102,9 @@
                         <p><b>Viết đánh giá của bạn</b></p>
 
                         <form autocomplete="off" asp-action="CommentProduct" asp-controller="Product" method="POST">
-                            <input asp-for="@Model.FirstOrDefault().SanPham.Id" name="ProductId" type="hidden" />
-                            <input asp-for="@Model.FirstOrDefault().SanPham.Ten" type="text" placeholder="Tên của bạn" />
-                            <textarea asp-for="@Model.FirstOrDefault().SanPham.MoTa" name="Comment"></textarea>
+                            <input asp-for="SanPham.Id" name="ProductId" type="hidden" />
+                            <input asp-for="SanPham.Ten" type="text" placeholder="Tên của bạn" />
+                            <textarea asp-for="SanPham.MoTa" name="Comment"></textarea>
                             <button type="submit" class="btn btn-default pull-right">Gửi</button>
                         </form>
                     </div>
@@ -116,74 +114,100 @@
 
         <div class="recommended_items">
             <h2 class="title text-center">Sản phẩm liên quan</h2>
-            <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner">
-                    @for (int i = 0; i < ViewBag.RelatedProducts.Count; i += 3)
-                    {
-                        <div class="item @(i == 0 ? "active" : "")">
-                            <div class="row">
-                                @for (int j = i; j < i + 3 && j < ViewBag.RelatedProducts.Count; j++)
-                                {
-                                    var relatedProduct = ViewBag.RelatedProducts[j];
-                                    <div class="col-sm-4">
-                                        <div class="product-image-wrapper">
-                                            <div class="single-products">
-                                                <div class="productinfo text-center">
-                                                    <a asp-action="Details" asp-controller="Product" asp-route-Id="@relatedProduct.Id">
-                                                        <img src="~/media/products/@relatedProduct.HinhAnh" alt="@relatedProduct.Ten" class="img-fluid" style="width:100%; height:200px; object-fit:cover;" />
-                                                        <h2>@relatedProduct.Gia.ToString("#,##0 VNĐ")</h2>
-                                                        <p>@relatedProduct.Ten</p>
-                                                        <p>Danh mục: @relatedProduct.DanhMuc.TenDanhMuc</p>
-                                                        <p>Thương hiệu: @relatedProduct.ThuongHieu.Ten</p>
-                                                    </a>
+            @if (ViewBag.RelatedProducts != null && ViewBag.RelatedProducts.Count > 0)
+            {
+                <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < ViewBag.RelatedProducts.Count; i += 3)
+                        {
+                            <div class="item @(i == 0 ? "active" : "")">
+                                <div class="row">
+                                    @for (int j = i; j < i + 3 && j < ViewBag.RelatedProducts.Count; j++)
+                                    {
+                                        var relatedProduct = ViewBag.RelatedProducts[j];
+                                        <div class="col-sm-4">
+                                            <div class="product-image-wrapper">
+                                                <div class="single-products">
+                                                    <div class="productinfo text-center">
+                                                        <a asp-action="Details" asp-controller="SanPham" asp-route-Id="@relatedProduct.Id">
+                                                            <img src="@relatedProduct.HinhAnh" alt="@relatedProduct.Ten" class="img-fluid" style="width:100%; height:200px; object-fit:cover;" />
+                                                            @{
+                                                                decimal giaSanPham;
+                                                                if (decimal.TryParse(relatedProduct.Gia, out giaSanPham))
+                                                                {
+                                                                    <h2>@giaSanPham.ToString("#,##0") VNĐ</h2>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <h2>Giá không hợp lệ</h2>
+                                                                }
+                                                            }
+
+                                                            <p>@relatedProduct.Ten</p>
+                                                            <p>Danh mục: @relatedProduct.DanhMuc.TenDanhMuc</p>
+                                                            <p>Thương hiệu: @relatedProduct.ThuongHieu.Ten</p>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
+                    <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 </div>
-                <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
-                    <i class="fa fa-angle-left"></i>
-                </a>
-                <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
-                    <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
+            }
+            else
+            {
+                <p>Không có sản phẩm liên quan.</p>
+            }
+
         </div>
     </div><!--/category-tab-->
 </div>
 
 @section Scripts {
     <script>
-        function validateQuantity(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-            if (parseInt(input.value) < 1) {
-                input.value = 1;
-            }
-        }
-
         $(document).ready(function () {
             $('.add-to-cart').click(function () {
                 var productId = $(this).data("product_id");
-                var quantity = $('#quantityInput').val();
-
-                if (quantity < 1) {
-                    Swal.fire("Số lượng phải lớn hơn 0");
-                    return;
-                }
+                var soLuong = 1; // Hoặc lấy giá trị từ input số lượng nếu có
 
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("Add", "Cart")",
-                    data: { Id: productId, Quantity: quantity },
-                    success: function (result) {
-                        Swal.fire("Thêm vào giỏ hàng thành công");
+                    url: "@Url.Action("AddToCart", "GioHang")",
+                    data: { chiTietSanPhamId: productId, soLuong: soLuong },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Thất bại!',
+                                text: 'Không thể thêm sản phẩm vào giỏ hàng',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
                     },
                     error: function () {
-                        Swal.fire("Có lỗi xảy ra, vui lòng thử lại sau.");
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             });

@@ -94,7 +94,7 @@ namespace WebView.Controllers
             {
                 // Set default values for other fields
                 model.NgaySinh = null; // Optional
-                model.TenNhanVien = string.Empty; // Optional
+                model.Ten = string.Empty; // Optional
                 model.Sdt = string.Empty; // Optional
                 model.TrangThai = true; // Default active status
 
@@ -118,26 +118,31 @@ namespace WebView.Controllers
             return RedirectToAction("Login", "TaiKhoan"); // Chuyển hướng đến trang đăng nhập
         }
         // Method to show user profile
-            public async Task<IActionResult> Profile()
+        // Method to show user profile
+        public async Task<IActionResult> Profile()
+        {
+            var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+
+            if (khachHangId == null)
             {
-                var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
-
-                if (khachHangId == null)
-                {
-                    return RedirectToAction("Login");
-                }
-
-                var khachHang = await _context.KhachHangs
-                    .Include(kh => kh.HoaDons)
-                    .FirstOrDefaultAsync(kh => kh.Id == khachHangId);
-
-                if (khachHang == null)
-                {
-                    return NotFound();
-                }
-
-                return View(khachHang); // Đảm bảo View trả về có tên 'Profile'
+                return RedirectToAction("Login");
             }
+
+            // Lấy thông tin khách hàng cùng với giỏ hàng và hóa đơn
+            var khachHang = await _context.KhachHangs
+                .Include(kh => kh.HoaDons) // Bao gồm thông tin hóa đơn
+                .Include(kh => kh.GioHangs) // Bao gồm thông tin giỏ hàng
+                .ThenInclude(g => g.ChiTietSanPham) // Bao gồm chi tiết sản phẩm trong giỏ hàng
+                .FirstOrDefaultAsync(kh => kh.Id == khachHangId);
+
+            if (khachHang == null)
+            {
+                return NotFound();
+            }
+
+            return View(khachHang); // Trả về View 'Profile' với thông tin khách hàng
+        }
+
 
 
         // Method to edit profile
@@ -168,21 +173,30 @@ namespace WebView.Controllers
             {
                 try
                 {
-                    // Tìm khách hàng trong database
-                    var khachHang = await _context.KhachHangs.FindAsync(model.Id);
+                    // Lấy Id khách hàng từ session
+                    var khachHangId = HttpContext.Session.GetInt32("KhachHangId");
+
+                    if (khachHangId == null)
+                    {
+                        return RedirectToAction("Login");
+                    }
+
+                    // Tìm khách hàng trong cơ sở dữ liệu
+                    var khachHang = await _context.KhachHangs
+                        .FirstOrDefaultAsync(kh => kh.Id == khachHangId);
 
                     if (khachHang == null)
                     {
                         return NotFound();
                     }
 
-                    // Cập nhật các thông tin mới
+                    // Cập nhật các thông tin từ model được gửi lên
                     khachHang.Email = model.Email;
                     khachHang.NgaySinh = model.NgaySinh;
-                    khachHang.TenNhanVien = model.TenNhanVien;
+                    khachHang.Ten = model.Ten;
                     khachHang.Sdt = model.Sdt;
 
-                    // Lưu thay đổi vào database
+                    // Lưu thay đổi vào cơ sở dữ liệu
                     _context.KhachHangs.Update(khachHang);
                     await _context.SaveChangesAsync();
 
@@ -190,6 +204,7 @@ namespace WebView.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // Kiểm tra xem khách hàng còn tồn tại hay không
                     if (!_context.KhachHangs.Any(kh => kh.Id == model.Id))
                     {
                         return NotFound();
@@ -201,9 +216,9 @@ namespace WebView.Controllers
                 }
             }
 
-            return View(model); // Quay lại trang chỉnh sửa nếu thông tin không hợp lệ
+            // Trả về lại trang chỉnh sửa nếu model không hợp lệ
+            return View(model);
         }
-
 
     }
 }

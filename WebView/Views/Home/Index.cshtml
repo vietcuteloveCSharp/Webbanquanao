@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<DAL.Entities.SanPham>
 <div class="col-sm-3">
-@Html.Partial("_SidebarPartial")
+    @Html.Partial("_SidebarPartial")
 </div>
 <style>
 
@@ -55,9 +55,20 @@
                         <div class="productinfo text-center">
                             <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.Id">
                                 <div class="product-image-container">
-                                    <img src="~/images/@item.HinhAnh" alt="@item.Ten" />
+                                    <img src="@item.HinhAnh" alt="@item.Ten" />
                                 </div>
-                                <h2>@item.Gia.ToString("#,##0 VNĐ")</h2>
+                                @{
+                                    decimal giaSanPham;
+                                    if (decimal.TryParse(item.Gia, out giaSanPham))
+                                    {
+                                        <h2>@giaSanPham.ToString("#,##0") VND</h2>
+                                    }
+                                    else
+                                    {
+                                        <h2>Giá không hợp lệ</h2>
+                                    }
+                                }
+
                                 <p>@item.Ten</p>
                                 <p>Danh mục: @item.DanhMuc.TenDanhMuc</p>
                                 <p>Thương hiệu: @item.ThuongHieu.Ten</p>
@@ -70,15 +81,7 @@
                             {
                                 <button class="btn btn-default "><i class="fa fa-shopping-cart"></i>Hết hàng</button>
                             }
-                            <div class="choose">
-                                @if (User.Identity?.IsAuthenticated ?? false)
-                                {
-                                    <ul class="nav nav-pills nav-justified">
-                                        <li><button class="btn btn-danger add-btn-wishlist" data-product_id="@item.Id"><i class="fa-solid fa-heart"></i> Yêu thích</button></li>
-                                        <li><button class="btn btn-info add-btn-compare" data-product_id="@item.Id"> <i class="fas fa-exchange-alt"></i> So sánh</button></li>
-                                    </ul>
-                                }
-                            </div>
+                           
                         </div>
                     </div>
 
@@ -100,7 +103,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("AddToCart", "GioHangs")",
+                    url: "@Url.Action("AddToCart", "GioHang")",
                     data: { chiTietSanPhamId: productId, soLuong: soLuong },
                     success: function (response) {
                         if (response.success) {

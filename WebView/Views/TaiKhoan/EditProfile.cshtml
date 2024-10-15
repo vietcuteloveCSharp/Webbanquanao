@@ -1,43 +1,37 @@
 ﻿@model DAL.Entities.KhachHang
 
-@{
-    ViewData["Title"] = "Chỉnh sửa thông tin cá nhân";
-}
-
 <h2>Chỉnh sửa thông tin cá nhân</h2>
 
 <form asp-action="EditProfile" method="post">
     <div class="form-group">
-        <label for="TaiKhoan">Tài khoản</label>
-        <input type="text" class="form-control" id="TaiKhoan" name="TaiKhoan" value="@Model.TaiKhoan" readonly />
+        <label for="Ten">Tên</label>
+        <input asp-for="Ten" class="form-control" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label for="Email">Email</label>
-        <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
-    </div>
-
-    <div class="form-group">
-        <label for="NgaySinh">Ngày sinh</label>
-        <input type="date" class="form-control" id="NgaySinh" name="NgaySinh" value="@Model.NgaySinh?.ToString("yyyy-MM-dd")" />
-    </div>
-
-    <div class="form-group">
-        <label for="TenNhanVien">Tên nhân viên</label>
-        <input type="text" class="form-control" id="TenNhanVien" name="TenNhanVien" value="@Model.TenNhanVien" />
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label for="Sdt">Số điện thoại</label>
-        <input type="text" class="form-control" id="Sdt" name="Sdt" value="@Model.Sdt" />
+        <input asp-for="Sdt" class="form-control" />
+        <span asp-validation-for="Sdt" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-    <a asp-action="Profile" class="btn btn-secondary">Hủy</a>
-</form>
+    <div class="form-group">
+        <label for="NgaySinh">Ngày sinh</label>
+        <input asp-for="NgaySinh" type="date" class="form-control" />
+        <span asp-validation-for="NgaySinh" class="text-danger"></span>
+    </div>
 
-<style>
-    .form-group {
-        margin-bottom: 15px;
-    }
-</style>
+    <div class="form-group">
+        <label for="Avatar">Ảnh đại diện</label>
+        <input asp-for="Avatar" class="form-control" placeholder="URL hình ảnh" />
+        <span asp-validation-for="Avatar" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+</form>
