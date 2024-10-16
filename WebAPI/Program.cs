@@ -14,18 +14,6 @@ namespace WebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // add 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowBlazorWasm",
-                    builder => builder
-                    .WithOrigins("https://localhost:7043", "http://localhost:5264")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-            });
-
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -36,7 +24,7 @@ namespace WebAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();
+
             app.UseAuthorization();
 
 

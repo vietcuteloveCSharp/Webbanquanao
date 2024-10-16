@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebView.Extensions;
+using System;
 
 namespace WebView
 {
@@ -9,13 +10,7 @@ namespace WebView
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // add httpclient
-            builder.Services.AddHttpClient<GetHttpClient>("SystemApiClient", clients =>
-            {
-                clients.BaseAddress = new Uri("https://localhost:7169");
-            });
-            // DI class GetHttpClient
-            builder.Services.AddScoped<GetHttpClient>();
+
             //connectDB
             builder.Services.AddDbContext<DAL.Context.WebBanQuanAoDbContext>(option =>
             {
