@@ -12,7 +12,12 @@ namespace WebAPI.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-
+        private static readonly IEnumerable<WeatherForecast> _forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        }).ToList();
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
@@ -21,13 +26,13 @@ namespace WebAPI.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return _forecasts;
+        }
+
+        [HttpGet("GetWeatherForecastByTemp")]
+        public WeatherForecast? GetByTempecher(int temp)
+        {
+            return _forecasts.FirstOrDefault(x => x.TemperatureC == temp || x.TemperatureF == temp);
         }
     }
 }

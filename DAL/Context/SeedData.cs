@@ -1,10 +1,4 @@
 ﻿using DAL.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Context
 {
@@ -13,7 +7,7 @@ namespace DAL.Context
         public static void SeedingData(WebBanQuanAoDbContext _context)
         {
             // Thực hiện migration nếu cần thiết
-            _context.Database.Migrate();
+            //_context.Database.Migrate();
 
             // Kiểm tra nếu chưa có dữ liệu trong bảng
             if (!_context.SanPhams.Any())
