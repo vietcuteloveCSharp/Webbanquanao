@@ -11,7 +11,7 @@ namespace WebView.Controllers
     {
         private readonly WebBanQuanAoDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        // B1: Khởi tạo 1 class GetHttpClient
+
         // Lớp này có thể gọi là dạng middleware
         private readonly GetHttpClient _httpClient;
         // B2: Khai báo trong constructor 1 biến có cùng kiểu Class GetHttpClient
@@ -41,7 +41,6 @@ namespace WebView.Controllers
             // sử dụng debug để xem kết quả 
             return RedirectToAction("Index");
         }
-
         public IActionResult Index()
         {
             var sanpham = _context.SanPhams.Include("DanhMuc").Include("ThuongHieu").ToList();

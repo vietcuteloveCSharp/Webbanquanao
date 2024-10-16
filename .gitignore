@@ -364,6 +364,3 @@ FodyWeavers.xsd
 /DAL/Migrations
 /ConsoleApp1
 /DAL/Context/SeedData.cs
-/DAL/Context/WebBanQuanAoDbContext.cs
-/WebAPI/Properties/launchSettings.json
-/WebView/Properties/launchSettings.json
