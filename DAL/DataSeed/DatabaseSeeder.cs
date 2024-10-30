@@ -215,7 +215,7 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.Ten, f => f.Commerce.ProductName())
                 .RuleFor(x => x.MoTa, f => f.Lorem.Word())
-                .RuleFor(x => x.Gia, f => f.Commerce.Price(50000, 10000000))
+               .RuleFor(x => x.Gia, f => Convert.ToDecimal(f.Commerce.Price(50000, 10000000)))
                 .RuleFor(x => x.SoLuong, f => f.Random.Number(100, 100000))
                 .RuleFor(x => x.NgayTao, f => f.Date.PastOffset(30).DateTime)
                 .RuleFor(x => x.NgayCapNhat, f => f.Date.PastOffset(5).DateTime)
@@ -224,12 +224,11 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id_ThuongHieu, f => f.PickRandom<ThuongHieu>(thuongHieus).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom<DanhMuc>(danhMucs).Id);
 
-
             var sanPhams = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(sanPhamFaker, i))
                 .ToList();
 
-            return sanPhams;
+            return (IReadOnlyCollection<SanPham>)sanPhams.AsReadOnly();
         }
 
         //Seed table ChiTietSanPham

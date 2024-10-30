@@ -172,7 +172,7 @@ namespace WebView.Controllers
             }
 
             // Tính tổng tiền
-            decimal tongTien = gioHangItems.Sum(item => item.SoLuong * decimal.Parse(item.ChiTietSanPham.SanPham.Gia));
+            decimal tongTien = gioHangItems.Sum(item => item.SoLuong * item.ChiTietSanPham.SanPham.Gia);
 
             // Tạo đối tượng hóa đơn mới và lưu vào cơ sở dữ liệu
             var hoaDon = new HoaDon
@@ -195,7 +195,7 @@ namespace WebView.Controllers
                     Id_HoaDon = hoaDon.Id,
                     Id_ChiTietSanPham = item.Id_ChiTietSanPham,
                     SoLuong = item.SoLuong,
-                    Gia = item.ChiTietSanPham.SanPham.Gia
+                    Gia = item.ChiTietSanPham.SanPham.Gia.ToString("0.##") // hoặc ToString("#,##0.##") để định dạng số
                 };
 
                 _context.ChiTietHoaDons.Add(chiTietHoaDon);
