@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /DAL/Migrations
 /ConsoleApp1
+/DAL/Context/SeedData.cs
