@@ -1,3 +1,6 @@
+﻿
+using DAL.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI
 {
@@ -17,6 +20,10 @@ namespace WebAPI
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+              // Đăng ký DbContext
+            builder.Services.AddDbContext<WebBanQuanAoDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
