@@ -1,6 +1,8 @@
-﻿using DAL.Admin_Repositories.Implement;
+﻿using AutoMapper;
+using DAL.Admin_Repositories.Implement;
 using DAL.Admin_Repositories.Interface;
 using DAL.Entities;
+using DTO.TuyenNT;
 using Service.IServices_Admin;
 using System;
 using System.Collections.Generic;
@@ -12,60 +14,80 @@ namespace Service.Services_Admin
 {
     public class ThuongHieuService : IThuongHieuService
     {
-        private readonly ThuongHieuRepository _repository;
+        private readonly IThuongHieuRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ThuongHieuService(ThuongHieuRepository repository)
+        public ThuongHieuService(IThuongHieuRepository repository,IMapper  mapper)
         {
-            _repository = repository;
+           this._repository = repository;
+            this._mapper = mapper;
         }
-
-        public string Add(ThuongHieu obj)
+        public async Task<ThuongHieuDTO> Add(ThuongHieuDTO obj)
         {
-            if (_repository.Add(obj) == true)
+            var list = await _repository.GetAll();
+            if (list.Any(c => c.Ten == obj.Ten))
             {
-                return "Thêm thành công";
+                throw new InvalidOperationException("Tên thương hiệu đã tồn tại");
 
             }
-            else
-            {
-                return "Thêm thất bại";
-            }
+            var newDto = _mapper.Map<ThuongHieu>(obj);
+            await _repository.Add(newDto);
+            return _mapper.Map<ThuongHieuDTO>(newDto);
         }
 
-        public string Delete(int id)
+        public async Task<List<ThuongHieuDTO>> GetAll()
         {
-            if (_repository.Delete(id) == true)
+            var list = await _repository.GetAll();
+            if (!list.Any())
             {
-                return "Xóa thành công";
-
+                return new List<ThuongHieuDTO>();
             }
-            else
-            {
-                return "Xóa thất bại";
-            }
+            return _mapper.Map<List<ThuongHieuDTO>>(list);
         }
-
-        public List<ThuongHieu> GetAll(ThuongHieu obj)
+        public async Task<ThuongHieuDTO> GetById(int id)
         {
-            return _repository.GetAll();
-        }
-
-        public ThuongHieu GetById(int id)
-        {
-            return _repository.GetById(id);
-        }
-
-        public string Update(ThuongHieu obj)
-        {
-            if (_repository.Add(obj) == true)
+            var th = await _repository.GetById(id);
+            if (th == null)
             {
-                return "Sửa thành công";
+                throw new KeyNotFoundException("không tìm thấy thương hiệu với id:" + id);
+            }
+            return _mapper.Map<ThuongHieuDTO>(th);
+        }
+
+        public async Task<ThuongHieuDTO> Update(int id, ThuongHieuDTO obj)
+        {
+            // Tìm chức vụ theo ID
+            var existing = await _repository.GetById(id);
+            // Nếu không tìm thấy, báo lỗi
+            if (existing == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy thương hiệu với ID {id}.");
+            }
+            var listChucVu = await _repository.GetAll();
+            if (listChucVu.Any(c => c.Ten == obj.Ten))
+            {
+                throw new InvalidOperationException("Tên thương hiệu đã được sử dụng");
 
             }
-            else
-            {
-                return "Sửa thất bại";
-            }
+            // Sử dụng AutoMapper để cập nhật các thuộc tính (obj là DTO và existingChucvu là entity map tương đương gán các giá trị của DTO cho entity tức là cập nhật)
+            _mapper.Map(obj, existing);
+            // Map lại đối tượng sau khi cập nhật sang DTO và trả về
+            return _mapper.Map<ThuongHieuDTO>(existing);
+
         }
+        public async Task<ThuongHieuDTO> Delete(int id)
+        {
+            // Tìm chức vụ theo ID
+            var thdlt = await _repository.GetById(id);
+            // Nếu không tìm thấy, báo lỗi
+            if (thdlt == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy thương hiệu với ID {id}.");
+            }
+            await _repository.Delete(id);
+            return _mapper.Map<ThuongHieuDTO>(thdlt);
+
+        }
+
     }
 }

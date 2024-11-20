@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace DAL.Admin_Repositories.Implement
 
         public ThuongHieuRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public bool Add(ThuongHieu obj)
+        public async Task<bool> Add(ThuongHieu obj)
         {
             if (obj == null)
             {
@@ -26,15 +27,15 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.ThuongHieus.Add(obj);
-                _context.SaveChanges();
+                await _context.ThuongHieus.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var udobj = GetById(id);
+            var udobj = await GetById(id);
             if (udobj == null)
             {
                 return false;
@@ -42,24 +43,24 @@ namespace DAL.Admin_Repositories.Implement
             else
             {
                 udobj.TrangThai = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public List<ThuongHieu> GetAll()
+        public async Task<List<ThuongHieu>> GetAll()
         {
-            return _context.ThuongHieus.ToList();
+            return await _context.ThuongHieus.ToListAsync();
         }
 
-        public ThuongHieu GetById(int id)
+        public async Task<ThuongHieu> GetById(int id)
         {
-            return _context.ThuongHieus.Find(id);
+            return await _context.ThuongHieus.FindAsync(id);
         }
 
-        public bool Update(ThuongHieu obj)
+        public async Task<bool> Update(int id,ThuongHieu obj)
         {
-            var udobj = GetById(obj.Id);
+            var udobj = await GetById(obj.Id);
             if (udobj == null) 
             {
                 return false;
@@ -69,7 +70,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.Ten = obj.Ten;
                 udobj.MoTa = obj.MoTa;
                 udobj.TrangThai = obj.TrangThai;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

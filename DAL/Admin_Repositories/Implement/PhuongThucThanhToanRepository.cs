@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace DAL.Admin_Repositories.Implement
 
         public PhuongThucThanhToanRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public bool Add(PhuongThucThanhToan obj)
+        public async Task<bool> Add(PhuongThucThanhToan obj)
         {
             if (obj == null)
             {
@@ -26,42 +27,41 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.PhuongThucThanhToans.Add(obj);
-                _context.SaveChanges();
+               await _context.PhuongThucThanhToans.AddAsync(obj);
+               await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
 
-            var udobj = GetById(id);
+            var udobj = await GetById(id);
             if (udobj == null)
             {
                 return false;
             }
             else
             {
-
                 udobj.TrangThai = false;///Xoa phuwowng thuc thanh toan
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public List<PhuongThucThanhToan> GetAll()
+        public async Task<List<PhuongThucThanhToan>> GetAll()
         {
-            return _context.PhuongThucThanhToans.ToList();
+            return await _context.PhuongThucThanhToans.ToListAsync();
         }
 
-        public PhuongThucThanhToan GetById(int id)
+        public async Task<PhuongThucThanhToan> GetById(int id)
         {
-           return _context.PhuongThucThanhToans.Find(id);
+           return await _context.PhuongThucThanhToans.FindAsync(id);
         }
 
-        public bool Update(PhuongThucThanhToan obj)
+        public async Task<bool> Update(PhuongThucThanhToan obj)
         {
-            var udobj=GetById(obj.Id);
+            var udobj=await GetById(obj.Id);
             if (udobj==null)
             {
                 return false;
@@ -72,7 +72,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.Mota = obj.Mota;
                 udobj.NgayTao = obj.NgayTao;
                 udobj.TrangThai = obj.TrangThai;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
