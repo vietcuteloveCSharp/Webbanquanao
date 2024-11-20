@@ -1,4 +1,5 @@
 ﻿using DAL.Entities;
+using DTO.TuyenNT;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Service.IServices_Admin
 {
     public interface IPhuongThucThanhToanService
     {
-        List<PhuongThucThanhToan> GetAll();
-        PhuongThucThanhToan GetById(int id);
-        string Add(PhuongThucThanhToan obj);
-        string Update(PhuongThucThanhToan obj);
-        string Delete(int id);
+        Task<List<PhuongThucThanhToanDTO>> GetAll();
+        Task<PhuongThucThanhToanDTO> GetById(int id);
+        Task<PhuongThucThanhToanDTO> Add(PhuongThucThanhToanDTO obj);
+        Task<PhuongThucThanhToanDTO> Update(int id,PhuongThucThanhToanDTO obj);
+        Task<PhuongThucThanhToanDTO> Delete(int id);
     }
 }
