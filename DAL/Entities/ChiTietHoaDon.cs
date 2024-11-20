@@ -12,7 +12,6 @@ namespace DAL.Entities
         public string Gia { get; set; }
         public bool TrangThai { get; set; } = true;
 
-
         [ForeignKey("HoaDon")]
         public int Id_HoaDon { get; set; }
         [ForeignKey("ChiTietSanPham")]

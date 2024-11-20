@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTO", "DTO\DTO.csproj", "{3EE85A0B-0F51-4861-92E2-3D1DB148A565}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{DD2CC363-9E7D-4716-BB43-9E4D954E7D4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperMap", "HelperMap\HelperMap.csproj", "{B6EA721C-AA05-4430-A129-18600C99AB6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{3EE85A0B-0F51-4861-92E2-3D1DB148A565}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EE85A0B-0F51-4861-92E2-3D1DB148A565}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EE85A0B-0F51-4861-92E2-3D1DB148A565}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD2CC363-9E7D-4716-BB43-9E4D954E7D4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD2CC363-9E7D-4716-BB43-9E4D954E7D4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD2CC363-9E7D-4716-BB43-9E4D954E7D4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD2CC363-9E7D-4716-BB43-9E4D954E7D4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6EA721C-AA05-4430-A129-18600C99AB6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6EA721C-AA05-4430-A129-18600C99AB6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6EA721C-AA05-4430-A129-18600C99AB6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6EA721C-AA05-4430-A129-18600C99AB6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
