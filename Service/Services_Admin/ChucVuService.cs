@@ -20,9 +20,10 @@ namespace Service.Services_Admin
         private readonly IChucVuRepository _repository;
         private IMapper _mapper;
     
-        public ChucVuService(IChucVuRepository repository)
+        public ChucVuService(IChucVuRepository repository,IMapper _mapper)
         {
             this._repository = repository;
+            this._mapper = _mapper;
         }
 
         public async Task<ChucVuDTO> Add(ChucVuDTO obj)
@@ -45,7 +46,14 @@ namespace Service.Services_Admin
             {
                 return new List<ChucVuDTO>();
             }
-            return _mapper.Map<List<ChucVuDTO>>(listChucVu);
+
+            // Check before mapping
+            //foreach (var item in listChucVu)
+            //{
+            //    Console.WriteLine($"ChucVu: {item.Id}, {item.Ten}");
+            //}
+            var listChucvuDto= _mapper.Map<List<ChucVuDTO>>(listChucVu);
+            return listChucvuDto;
         }
         public async Task<ChucVuDTO> GetById(int id)
         {

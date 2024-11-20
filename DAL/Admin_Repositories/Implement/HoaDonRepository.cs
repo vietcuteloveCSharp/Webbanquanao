@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace DAL.Admin_Repositories.Implement
             _context = context;
         }
 
-        public bool Add(HoaDon obj)
+        public async Task<bool> Add(HoaDon obj)
         {
             if (obj== null )
             {
@@ -26,15 +27,15 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.HoaDons.Add(obj);
-                _context.SaveChanges();
+                await _context.HoaDons.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var udobj = GetById(id);
+            var udobj= await _context.HoaDons.FindAsync(id);
             if (udobj == null)
             {
                 return false;
@@ -43,24 +44,24 @@ namespace DAL.Admin_Repositories.Implement
             {
 
                 udobj.TrangThai = 0;///0 là hóa đơn bị hủy, 1 là chưa xác nhận , 2 là đã xác nhận
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public List<HoaDon> GetAll()
+        public async Task<List<HoaDon>> GetAll()
         {
-            return _context.HoaDons.ToList();
+            return await _context.HoaDons.ToListAsync();
         }
 
-        public HoaDon GetById(int id)
+        public async Task<HoaDon> GetById(int id)
         {
-           return _context.HoaDons.Find(id);
+            return await _context.HoaDons.FindAsync(id);
         }
 
-        public bool Update(HoaDon obj)
+        public async Task<bool> Update(int id, HoaDon obj)
         {
-           var udobj= GetById(obj.Id);
+           var udobj= await _context.HoaDons.FindAsync(id);
             if (udobj==null)
             {
                 return false;
@@ -72,7 +73,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.TrangThai= obj.TrangThai;
                 udobj.Id_NhanVien= obj.Id_NhanVien;
                 udobj.Id_KhachHang  = obj.Id_KhachHang;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

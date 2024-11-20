@@ -1,5 +1,9 @@
-﻿using DAL.Admin_Repositories.Implement;
+﻿using AutoMapper;
+using DAL.Admin_Repositories.Implement;
+using DAL.Admin_Repositories.Interface;
 using DAL.Entities;
+using DTO.TuyenNT;
+using Microsoft.VisualBasic;
 using Service.IServices_Admin;
 using System;
 using System.Collections.Generic;
@@ -11,60 +15,63 @@ namespace Service.Services_Admin
 {
     public class HoaDonServices : IHoaDonService
     {
-        private readonly HoaDonRepository _repository;
+        private readonly IHoaDonRepository _repository;
+        private readonly IMapper _mapper;
 
-        public HoaDonServices(HoaDonRepository repository)
+        public HoaDonServices(IHoaDonRepository repository,IMapper mapper)
         {
-            _repository = repository;
+            this._repository = repository;
+            this._mapper = mapper;
         }
 
-        public string Add(HoaDon obj)
+        public async Task<HoaDonDTO> Add( HoaDonDTO obj)
         {
-            if (_repository.Add(obj) == true)
-            {
-                return "Thêm thành công";
-
-            }
-            else
-            {
-                return "Thêm thất bại";
-            }
+            var hoaDon = _mapper.Map<HoaDon>(obj);
+            await _repository.Add(hoaDon);
+            return _mapper.Map<HoaDonDTO>(hoaDon); 
         }
 
-        public string Delete(int id)
+        public async Task<HoaDonDTO> Delete(int id)
         {
-            if (_repository.Delete(id) == true)
+            var hoaDon = _repository.GetById(id);
+            if (hoaDon == null)
             {
-                return "Xóa thành công";
-
+                throw new KeyNotFoundException($"Không tìm thấy hóa đơn có id là:: {id}");
             }
-            else
-            {
-                return "Xóa thất bại";
-            }
+            await _repository.Delete(id);
+            return _mapper.Map<HoaDonDTO>(hoaDon);
         }
 
-        public List<HoaDon> GetAll()
+        public async Task<List<HoaDonDTO>> GetAll()
         {
-            return _repository.GetAll();
+            var listHoaDon = await _repository.GetAll();
+            if (!listHoaDon.Any())
+            {
+                return new List<HoaDonDTO>();
+            }
+            var listHoaDonDto = _mapper.Map<List<HoaDonDTO>>(listHoaDon);   
+            return listHoaDonDto;
         }
 
-        public HoaDon GetById(int id)
+        public async Task<HoaDonDTO> GetById(int id)
         {
-            return _repository.GetById(id);
+            var hoaDon = _repository.GetById(id);
+            if (hoaDon== null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy hóa đơn có id là: {id}");
+            }
+            return _mapper.Map<HoaDonDTO>(hoaDon) ;
         }
 
-        public string Update(HoaDon obj)
+        public async Task<HoaDonDTO> Update(int id, HoaDonDTO obj)
         {
-            if (_repository.Update(obj) == true)
+            var hoaDon = _repository.GetById(id);
+            if (hoaDon == null)
             {
-                return "Sửa thành công";
-
+                throw new KeyNotFoundException($"Không tìm thấy hóa đơn có id là:: {id}");
             }
-            else
-            {
-                return "Sửa thất bại";
-            }
+            await _repository.Update(id,_mapper.Map<HoaDon>(obj));
+            return _mapper.Map<HoaDonDTO>(hoaDon);
         }
     }
 }

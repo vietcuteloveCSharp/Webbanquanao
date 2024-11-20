@@ -9,11 +9,11 @@ namespace DAL.Admin_Repositories.Interface
 {
     public interface ISanPhamRepository
     {
-        List<SanPham> GetAll();
-        SanPham GetById(int id);
-        bool Add(SanPham obj);
-        bool Update(SanPham obj);
-        bool Delete(int id);
+        Task<List<SanPham>> GetAll();
+        Task<SanPham> GetById(int id);
+        Task<bool> Add(SanPham obj);
+        Task<bool> Update(int id,SanPham obj);
+        Task<bool> Delete(int id);
 
     }
 }

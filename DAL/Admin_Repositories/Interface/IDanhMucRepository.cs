@@ -9,10 +9,10 @@ namespace DAL.Admin_Repositories.Interface
 {
     public interface IDanhMucRepository
     {
-        List<DanhMuc> GetAll();
-        DanhMuc GetById(int id);
-        bool Add(DanhMuc obj);
-        bool Update(DanhMuc obj);
-        bool Delete(int id);
+        Task<List<DanhMuc>> GetAll();
+        Task<DanhMuc> GetById(int id);
+        Task<bool> Add(DanhMuc obj);
+        Task<bool> Update(int id,DanhMuc obj);
+        Task<bool> Delete(int id);
     }
 }

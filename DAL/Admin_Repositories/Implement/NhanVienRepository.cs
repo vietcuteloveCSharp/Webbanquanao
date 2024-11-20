@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Admin_Repositories.Implement
 {
@@ -20,7 +21,7 @@ namespace DAL.Admin_Repositories.Implement
             _context = context;
         }
 
-        public bool Add(NhanVien obj)
+        public async Task<bool> Add(NhanVien obj)
         {
             if (obj== null)
             {
@@ -28,15 +29,15 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.NhanViens.Add(obj);
-                _context.SaveChanges();
+                await _context.NhanViens.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var udobj = GetById(id);
+            var udobj = await _context.NhanViens.FindAsync(id);
             if (udobj == null)
             {
                 return false;
@@ -44,25 +45,24 @@ namespace DAL.Admin_Repositories.Implement
             else
             {
                 udobj.TrangThai = false;/// Xoa nhan vien
-               
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public List<NhanVien> GetAll()
+        public async Task<List<NhanVien>>GetAll()
         {
-           return _context.NhanViens.ToList();
+           return await _context.NhanViens.ToListAsync();
         }
 
-        public NhanVien GetById(int id)
+        public async Task<NhanVien> GetById(int id)
         {
-            return _context.NhanViens.Find(id);
+            return await _context.NhanViens.FindAsync(id);
         }
 
-        public bool Update(NhanVien obj)
+        public async Task<bool> Update(int id,NhanVien obj)
         {
-            var udobj = GetById(obj.Id);
+            var udobj = await _context.NhanViens.FindAsync(id);
             if (udobj== null)
             {
                 return false;
@@ -81,7 +81,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.NgayTao   = obj.NgayTao;
                 udobj.NgayCapNhat = obj.NgayCapNhat;
                 udobj.Id_ChucVu = obj.Id_ChucVu;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

@@ -60,6 +60,9 @@ namespace HelperMap.Mapping
                  .ForMember(dto => dto.MaGiaoDich, entity => entity.MapFrom(src => src.MaGiaoDich))
                  .ForMember(dto => dto.Id_HoaDon, entity => entity.MapFrom(src => src.Id_HoaDon))
                  .ForMember(dto => dto.Id_PhuongThucThanhToan, entity => entity.MapFrom(src => src.Id_PhuongThucThanhToan));
+            CreateMap<ChucVu, ChucVuDTO>()
+                .ForMember(dto => dto.Ten, entity => entity.MapFrom(src => src.Ten))
+                .ForMember(dto => dto.Mota, entity => entity.MapFrom(src => src.Mota));
 
         }
     }

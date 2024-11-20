@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,10 +17,10 @@ namespace DAL.Admin_Repositories.Implement
 
         public ThanhToanHoaDonRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public bool Add(ThanhToanHoaDon obj)
+        public async Task<bool> Add(ThanhToanHoaDon obj)
         {
             if (obj == null)
             {
@@ -27,26 +28,26 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.ThanhToanHoaDons.Add(obj);
-                _context.SaveChanges();
+                await _context.ThanhToanHoaDons.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
         
-        public List<ThanhToanHoaDon> GetAll()
+        public async Task<List<ThanhToanHoaDon>> GetAll()
         {
-           return _context.ThanhToanHoaDons.ToList();
+           return await _context.ThanhToanHoaDons.ToListAsync();
         }
 
-        public ThanhToanHoaDon GetById(int id)
+        public async Task<ThanhToanHoaDon> GetById(int id)
         {
-            return _context.ThanhToanHoaDons.Find(id);
+            return  await _context.ThanhToanHoaDons.FindAsync(id);
         }
 
-        public bool Update(ThanhToanHoaDon obj)
+        public async Task<bool> Update(int id ,ThanhToanHoaDon obj)
         {
-            var udobj= GetById(obj.Id);
+            var udobj= await GetById(id);
             if (udobj== null)
             {
                 return false;
@@ -59,7 +60,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.MaGiaoDich  = obj.MaGiaoDich;
                 udobj.Id_HoaDon = obj.Id_HoaDon;
                 udobj.Id_PhuongThucThanhToan = obj.Id_PhuongThucThanhToan;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

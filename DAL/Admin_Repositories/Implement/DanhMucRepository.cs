@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace DAL.Admin_Repositories.Implement
 
         public DanhMucRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public bool Add(DanhMuc obj)
+        public async Task<bool> Add(DanhMuc obj)
         {
             if (obj == null)
             {
@@ -26,42 +27,41 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.DanhMucs.Add(obj);
-                _context .SaveChanges();
+                await _context.DanhMucs.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
 
-            var udobj = GetById(id);
+            var udobj = await _context.DanhMucs.FindAsync(id);
             if (udobj == null)
             {
                 return false;
             }
             else
             {
-               
                 udobj.TrangThai =false;/////False là trạng thái xóa của danh mục
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
-
-        public List<DanhMuc> GetAll()
+        public async Task<List<DanhMuc>> GetAll()
         {
-            return _context.DanhMucs.ToList();
+
+            return  await _context.DanhMucs.ToListAsync();
         }
 
-        public DanhMuc GetById(int id)
+        public async Task<DanhMuc>GetById(int id)
         {
-            return _context.DanhMucs.Find(id);
+            return await _context.DanhMucs.FindAsync(id);
         }
 
-        public bool Update(DanhMuc obj)
+        public async Task<bool> Update(int id, DanhMuc obj)
         {
-            var udobj = GetById(obj.Id);
+            var udobj = await _context.DanhMucs.FindAsync(id);
             if (udobj == null)
             {
              return false ;
@@ -72,7 +72,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.TenDanhMuc = obj.TenDanhMuc;
                 udobj.NgayTao = obj.NgayTao;
                 udobj.TrangThai = obj.TrangThai;
-                _context .SaveChanges();
+                await _context .SaveChangesAsync();
                 return true;
             }
         }

@@ -1,6 +1,11 @@
 ﻿
+using DAL.Admin_Repositories.Implement;
+using DAL.Admin_Repositories.Interface;
 using DAL.Context;
+using HelperMap.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Service.IServices_Admin;
+using Service.Services_Admin;
 
 namespace WebAPI
 {
@@ -13,8 +18,20 @@ namespace WebAPI
             // Add services to the container.
             //đăng ký DB
             builder.Services.AddDbContext<WebBanQuanAoDbContext>(
-                option=>option.UseSqlServer(builder.Configuration.GetConnectionString(""))
+                option=>option.UseSqlServer(builder.Configuration.GetConnectionString("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=Final_project;Integrated Security=True;Trust Server Certificate=True"))
                 );
+            //Đăng ký automapping
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddAutoMapper(typeof(MapppingDTO_Entity), typeof(MappingEntity_DTO));
+            //Đăng ký Depndency Injection cho Repository
+            builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
+
+            builder.Services.AddScoped<IDanhMucRepository, DanhMucRepository>();
+
+            //Đăng ký Depndency Injection cho Service
+            builder.Services.AddScoped<IChucVuService, ChucVuService>();
+            builder.Services.AddScoped<IDanhMucService, DanhMucService>();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowBlazorWasm",

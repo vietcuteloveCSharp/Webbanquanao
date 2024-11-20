@@ -1,5 +1,9 @@
-﻿using DAL.Admin_Repositories.Implement;
+﻿using AutoMapper;
+using DAL.Admin_Repositories.Implement;
+using DAL.Admin_Repositories.Interface;
 using DAL.Entities;
+using DTO.TuyenNT;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Service.IServices_Admin;
 using System;
 using System.Collections.Generic;
@@ -11,47 +15,52 @@ namespace Service.Services_Admin
 {
     public class ThanhToanHoaDonService : IThanhToanHoaDonService
     {
-        private readonly ThanhToanHoaDonRepository _repository;
+        private readonly IThanhToanHoaDonRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ThanhToanHoaDonService(ThanhToanHoaDonRepository repository)
+        public ThanhToanHoaDonService(IThanhToanHoaDonRepository repository,IMapper mapper)
         {
-            _repository = repository;
+            this._repository = repository;
+            this._mapper = mapper;
         }
 
-        public string Add(ThanhToanHoaDon obj)
+        public async Task<ThanhToanHoaDonDTO> Add(ThanhToanHoaDonDTO obj)
         {
-            if (_repository.Add(obj) == true)
-            {
-                return "Thêm thành công";
-
-            }
-            else
-            {
-                return "Thêm thất bại";
-            }
+            var tthd = _mapper.Map<ThanhToanHoaDon>(obj);
+            await _repository.Add(tthd);
+            return _mapper.Map<ThanhToanHoaDonDTO>(tthd);
         }
 
-        public List<ThanhToanHoaDon> GetAll()
+        public async Task<List<ThanhToanHoaDonDTO>> GetAll()
         {
-            return _repository.GetAll();
+           var list = await _repository.GetAll();
+            if (!list.Any()) 
+            { 
+                return new List<ThanhToanHoaDonDTO>();
+            }
+            var listDto = _mapper.Map<List<ThanhToanHoaDonDTO>>(list);
+            return listDto;
         }
 
-        public ThanhToanHoaDon GetById(int id)
+        public async Task<ThanhToanHoaDonDTO> GetById(int id)
         {
-            return _repository.GetById(id);
+            var tthd = await _repository.GetById(id);
+            if (tthd==null)
+            {
+                throw new KeyNotFoundException("Không tìm thấy thanh toán hóa đơn có id là :" + id);
+            }
+            return _mapper.Map<ThanhToanHoaDonDTO>(tthd) ;
         }
 
-        public string Update(ThanhToanHoaDon obj)
+        public async Task<ThanhToanHoaDonDTO> Update(int id, ThanhToanHoaDonDTO obj)
         {
-            if (_repository.Update(obj) == true)
+            var tthd = await _repository.GetById(id);
+            if (tthd == null)
             {
-                return "Sửa thành công";
-
+                throw new KeyNotFoundException("Không tìm thấy thanh toán hóa đơn có id là :" + id);
             }
-            else
-            {
-                return "Sửa thất bại";
-            }
+            await _repository.Update(id, _mapper.Map<ThanhToanHoaDon>(obj));
+            return _mapper.Map<ThanhToanHoaDonDTO>(tthd);
         }
     }
 }

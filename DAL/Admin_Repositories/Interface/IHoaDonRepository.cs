@@ -9,10 +9,10 @@ namespace DAL.Admin_Repositories.Interface
 {
     public interface IHoaDonRepository
     {
-        List<HoaDon> GetAll();
-        HoaDon GetById(int id);
-        bool Add(HoaDon obj);    
-        bool Update(HoaDon obj);
-        bool Delete(int id);
+        Task<List<HoaDon>> GetAll();
+        Task<HoaDon> GetById(int id);
+        Task<bool> Add(HoaDon obj);    
+        Task<bool> Update(int id,HoaDon obj);
+        Task<bool> Delete(int id);
     }
 }

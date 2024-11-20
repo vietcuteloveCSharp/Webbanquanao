@@ -9,10 +9,10 @@ namespace DAL.Admin_Repositories.Interface
 {
     public interface INhanVienRepository
     {
-        List<NhanVien> GetAll();
-        NhanVien GetById(int id);   
-        bool Add(NhanVien obj);    
-        bool Update( NhanVien obj);
-        bool Delete(int id);
+        Task<List<NhanVien>> GetAll();
+        Task<NhanVien> GetById(int id);   
+        Task<bool> Add(NhanVien obj);    
+        Task<bool> Update(int id, NhanVien obj);
+        Task<bool> Delete(int id);
     }
 }

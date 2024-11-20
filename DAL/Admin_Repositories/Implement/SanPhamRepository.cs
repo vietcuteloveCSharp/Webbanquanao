@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,9 +16,9 @@ namespace DAL.Admin_Repositories.Implement
         private readonly WebBanQuanAoDbContext _context;
         public SanPhamRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
-        public bool Add(SanPham obj)
+        public async Task<bool> Add(SanPham obj)
         {
            if (obj == null)
             {
@@ -25,16 +26,16 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.SanPhams.Add(obj);
-                _context.SaveChanges();
+                await _context.SanPhams.AddAsync(obj);
+                await _context.SaveChangesAsync();
                 return true;
             }
 
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var udobj = GetById(id);
+            var udobj = await GetById(id);
             if (udobj == null)
             {
                 return false;
@@ -45,24 +46,24 @@ namespace DAL.Admin_Repositories.Implement
                
                 udobj.TrangThai = false;/// trangj thái Xóa của sản phẩm 
                
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
-        public List<SanPham> GetAll()
+        public async Task<List<SanPham>> GetAll()
         {
-           return _context.SanPhams.ToList();
+           return await _context.SanPhams.ToListAsync();
         }
 
-        public SanPham GetById(int id)
+        public async Task<SanPham> GetById(int id)
         {
-            return _context.SanPhams.Find(id);
+            return await _context.SanPhams.FindAsync(id);
         }
 
-        public bool Update(SanPham obj)
+        public async Task<bool> Update(int id,SanPham obj)
         {
-            var udobj = GetById(obj.Id);
+            var udobj = await GetById(id);
             if (udobj == null)
             {
                 return false;
@@ -80,7 +81,7 @@ namespace DAL.Admin_Repositories.Implement
                 udobj.HinhAnh = obj.HinhAnh;
                 udobj.ThuongHieu = obj.ThuongHieu;
                 udobj.DanhMuc = obj.DanhMuc;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

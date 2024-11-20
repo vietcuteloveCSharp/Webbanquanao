@@ -11,10 +11,10 @@ namespace Service.IServices_Admin
 {
     public interface IDanhMucService
     {
-        string Add(DanhMucDTO obj);
-        string Delete(int id);
-        string Update(DanhMucDTO obj);
-        List<DanhMucDTO> GetAll();
-        DanhMucDTO GetById(int id);
+        Task<DanhMucDTO> Add(DanhMucDTO obj);
+        Task<DanhMucDTO> Delete(int id);
+        Task<DanhMucDTO> Update(int id,DanhMucDTO obj);
+        Task<List<DanhMucDTO>> GetAll();
+        Task<DanhMucDTO> GetById(int id);
     }
 }
