@@ -12,9 +12,7 @@ namespace WebAPI.Controllers.Admin_controller
         {
             _service = service;
         }
-        public async Task<List<DanhMuc>> GetAll()
-        {
-            return await _service.GetAll();
-        }
+        
+           
     }
 }

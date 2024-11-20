@@ -10,11 +10,10 @@ namespace Service.IServices_Admin
 {
     public interface IChucVuService
     {
-        List<ChucVuDTO> GetAll();
-        ChucVuDTO GetById(int id);
-
-        string Add(ChucVuDTO obj);
-        string Update(ChucVuDTO obj);
+        Task<List<ChucVuDTO>> GetAll();
+        Task<ChucVuDTO> GetById(int id);
+        Task<ChucVuDTO> Add(ChucVuDTO obj);
+        Task<ChucVuDTO> Update(int id,ChucVuDTO obj);
        
     }
 }

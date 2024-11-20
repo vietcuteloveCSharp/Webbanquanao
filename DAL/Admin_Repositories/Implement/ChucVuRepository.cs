@@ -1,6 +1,7 @@
 ﻿using DAL.Admin_Repositories.Interface;
 using DAL.Context;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace DAL.Admin_Repositories.Implement
 
         public ChucVuRepository(WebBanQuanAoDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public bool Add(ChucVu obj)
+        public async Task<bool> Add(ChucVu obj)
         {
             if (obj == null)
             {
@@ -26,31 +27,31 @@ namespace DAL.Admin_Repositories.Implement
             }
             else
             {
-                _context.ChucVus.Add(obj);
-                _context.SaveChanges(); 
+                await _context.ChucVus.AddAsync(obj);
+                await _context.SaveChangesAsync(); 
                 return true;
             } 
             
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<ChucVu> GetAll()
+        public async Task<List<ChucVu>> GetAll()
         {
-            return _context.ChucVus.ToList();   
+            return await _context.ChucVus.ToListAsync();   
         }
 
-        public ChucVu GetById(int id)
+        public async Task<ChucVu> GetById(int id)
         {
-            return _context.ChucVus.Find(id);
+            return await _context.ChucVus.FindAsync(id);
         }
 
-        public bool Update(ChucVu obj)
+        public async Task<bool> Update(ChucVu obj)
         {
-            var udobj = GetById(obj.Id);
+            var udobj = await _context.ChucVus.FindAsync(obj.Id);
             if (udobj == null)
             {
                 return false;
@@ -59,7 +60,7 @@ namespace DAL.Admin_Repositories.Implement
             {
                 udobj.Ten= obj.Ten;
                 udobj.Mota= obj.Mota;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
         }

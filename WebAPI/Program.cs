@@ -1,3 +1,6 @@
+﻿
+using DAL.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI
 {
@@ -8,6 +11,10 @@ namespace WebAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            //đăng ký DB
+            builder.Services.AddDbContext<WebBanQuanAoDbContext>(
+                option=>option.UseSqlServer(builder.Configuration.GetConnectionString(""))
+                );
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowBlazorWasm",
