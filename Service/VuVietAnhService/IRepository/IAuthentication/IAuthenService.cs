@@ -1,6 +1,6 @@
 ﻿using DAL.Entities;
-using DTO.KhachHangs;
-using DTO.nhanviens;
+using DTO.VuvietanhDTO.KhachHangs;
+using DTO.VuvietanhDTO.NhanViens;
 using System;
 using System.Collections.Generic;
 using System.Linq;

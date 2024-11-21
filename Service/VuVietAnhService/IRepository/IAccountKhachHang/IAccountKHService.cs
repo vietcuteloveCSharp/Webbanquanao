@@ -1,7 +1,7 @@
 ﻿using Reponses.Response;
-using DTO.KhachHangs;
 using Reponses.Resquest;
 using Service.GeneralService.IContactValidation;
+using DTO.VuvietanhDTO.KhachHangs;
 
 namespace Service.VuVietAnhService.IRepository.IAccountKhachHang
 {
