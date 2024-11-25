@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Service.IRepository.IChucvuService;
+using Service.VuVietAnhService.IRepository.IChucvu;
 using Service.VuVietAnhService.IRepository.IAuthentication;
 using System;
 using System.Collections.Generic;

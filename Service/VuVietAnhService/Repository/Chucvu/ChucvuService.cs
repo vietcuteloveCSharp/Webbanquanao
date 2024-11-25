@@ -2,7 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using DAL.Context;
 using DAL.Entities;
-using DTO.Cuahangs;
+using DTO.VuvietanhDTO.Cuahangs;
 using DTO.VuvietanhDTO.Chucvus;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IChucvu;
@@ -31,10 +31,10 @@ namespace Service.VuVietAnhService.Repository.Chucvu
         }
         //thêm chức vụ
         public async Task<ChucvuDTO> AddChucVu(ChucvuDTO chucvuDTO)
-        {
+        {   //check tên tồn tại
             if (await _context.ChucVus.AnyAsync(c => c.Ten == chucvuDTO.Ten))
             {
-                throw new InvalidOperationException("Tên chức vụ đã tồn tại.");
+                throw new InvalidOperationException($"Tên chức vụ {chucvuDTO.Ten} đã tồn tại.");
 
             }
             var newChucVu = _mapper.Map<ChucVu>(chucvuDTO);
@@ -44,6 +44,7 @@ namespace Service.VuVietAnhService.Repository.Chucvu
             return _mapper.Map<ChucvuDTO>(newChucVu);
 
         }
+        //xoá
         public async Task<bool> DeleteChucVu(int id)
         {
             // Tìm cửa hàng theo ID
@@ -61,7 +62,7 @@ namespace Service.VuVietAnhService.Repository.Chucvu
         public async Task<IEnumerable<ChucvuDTO>> GetAllChucVu()
         {
             var AllChucVu = await _context.ChucVus.ToListAsync();
-            if (!AllChucVu.Any()) return new List<ChucvuDTO>();
+            if (!AllChucVu.Any()) return new List<ChucvuDTO>(); //trả về list rỗng nếu không có
             var AllChucVuDTO = _mapper.Map<List<ChucvuDTO>>(AllChucVu);
             return AllChucVuDTO;
         }
@@ -76,7 +77,7 @@ namespace Service.VuVietAnhService.Repository.Chucvu
             var chucVuDTO = _mapper.Map<ChucvuDTO>(chucVu);
             return chucVuDTO;
         }
-
+        //cập nhật chức vụ
         public async Task<ChucvuDTO> UpdateChucVu(int id, ChucvuDTO updateChucvuDTO)
         {
 
@@ -89,13 +90,13 @@ namespace Service.VuVietAnhService.Repository.Chucvu
             }
             if (await _context.ChucVus.AnyAsync(c => c.Ten == updateChucvuDTO.Ten && c.Id != id))
             {
-                throw new InvalidOperationException("Tên chức vụ đã được sử dụng.");
+                throw new InvalidOperationException($"Tên chức vụ{updateChucvuDTO.Ten} đã được sử dụng.");
             }
             // Sử dụng AutoMapper để cập nhật các thuộc tính
-            _mapper.Map(updateChucvuDTO, existingChucvu);
+            existingChucvu = _mapper.Map(updateChucvuDTO, existingChucvu);
 
             // Lưu thay đổi vào database
-            await _context.SaveChangesAsync();
+             await _context.SaveChangesAsync();
 
             // Map lại đối tượng sau khi cập nhật sang DTO và trả về
             return _mapper.Map<ChucvuDTO>(existingChucvu);

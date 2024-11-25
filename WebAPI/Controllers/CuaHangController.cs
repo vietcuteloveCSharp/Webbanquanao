@@ -1,9 +1,9 @@
-﻿using DTO.Chucvus;
+﻿using DTO.VuvietanhDTO.Chucvus;
 using DTO.VuvietanhDTO.Cuahangs;
 using Microsoft.AspNetCore.Mvc;
-using Service.IRepository.IChucvuService;
-using Service.IRepository.ICuahang;
-using Service.Repository.AccountRole;
+using Service.VuVietAnhService.IRepository.IChucvu;
+using Service.VuVietAnhService.IRepository.ICuahang;
+
 
 namespace WebAPI.Controllers
 {   //hoàn thiện CRUD API cửa hàng
@@ -86,7 +86,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var message = await _cuahangService.DeleteCuahangById(id);
+                var message = await _cuahangService.DeleteCuahang(id);
                 return Ok(new { Message = message });
             }
             catch (KeyNotFoundException ex)

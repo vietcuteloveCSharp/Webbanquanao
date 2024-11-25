@@ -4,7 +4,7 @@ using DTO.VuvietanhDTO.NhanViens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Reponses.Resquest;
+using Responses.Resquests;
 using Service.VuVietAnhService.IRepository.IAccount;
 
 namespace WebAPI.Controllers

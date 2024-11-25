@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Reponses.Response;
-using Reponses.Resquest;
-using Service.IRepository.IChucvuService;
+using Responses.Responses;
+using Responses.Resquests;
+using Service.VuVietAnhService.IRepository.IChucvu;
 using Service.VuVietAnhService.IRepository.IAccount;
 using Service.VuVietAnhService.IRepository.IAuthentication;
 

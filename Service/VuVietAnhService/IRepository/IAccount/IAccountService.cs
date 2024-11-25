@@ -1,12 +1,12 @@
-﻿using DTO.NhanViens;
-using Reponses.Response;
-using Reponses.Resquest;
+﻿using DTO.VuvietanhDTO.NhanViens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Service.GeneralService.IContactValidation;
+using Service.VuVietAnhService.GeneralService;
+using Responses.Responses;
+using Responses.Resquests;
 
 
 namespace Service.VuVietAnhService.IRepository.IAccount

@@ -1,10 +1,10 @@
-﻿using DTO.Cuahangs;
+﻿using DTO.VuvietanhDTO.Cuahangs;
 using DTO.VuvietanhDTO.KhachHangs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
-using Reponses.Resquest;
+using Responses.Resquests;
 using Service.VuVietAnhService.IRepository.IAccountKhachHang;
 
 namespace WebAPI.Controllers
