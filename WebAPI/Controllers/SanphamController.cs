@@ -1,31 +1,28 @@
-﻿using DTO.VuvietanhDTO.Chucvus;
-using DTO.VuvietanhDTO.Cuahangs;
+﻿using DTO.VuvietanhDTO.Danhmucs;
+using DTO.VuvietanhDTO.Sanphams;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Service.VuVietAnhService.IRepository.IChucvu;
-using Service.VuVietAnhService.IRepository.ICuahang;
-
+using Service.VuVietAnhService.IRepository.ISanpham;
 
 namespace WebAPI.Controllers
-{   //hoàn thiện CRUD API cửa hàng
-    [ApiController]
+{
     [Route("api/[controller]")]
-    public class CuaHangController : ControllerBase
+    [ApiController]
+    public class SanphamController : ControllerBase
     {
-        private readonly ICuahangService _cuahangService;
-        private readonly IConfiguration _configuration;
-        public CuaHangController(ICuahangService cuahangService, IConfiguration configuration)
+        private readonly ISanphamSerivce _sanphamSerivce;
+        public SanphamController(ISanphamSerivce sanphamSerivce)
         {
-            this._configuration = configuration;
-            this._cuahangService = cuahangService;
+            this._sanphamSerivce = sanphamSerivce;
         }
-        [HttpGet("Get-All-Cuahang")]
-        public async Task<ActionResult<IEnumerable<CuahangDTO>>> GetAllCuahang()
+        [HttpGet("Get-All-SanPham")]
+        public async Task<ActionResult<IEnumerable<DanhMucDTO>>> GetAllSanPham()
         {
             try
             {
-                var result = await _cuahangService.GetAllCuaHang();
-                if(!result.Any())
-                    return NotFound(new { Message = "Không có dữ liệu cửa hàng." });
+                var result = await _sanphamSerivce.GetAllSanPham();
+                if (!result.Any())
+                    return NotFound(new { Message = "Không có dữ liệu sản phẩm" });
                 return Ok(result);
 
             }
@@ -35,20 +32,20 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
             }
         }
-        [HttpPost("Add-Cuahang")]
-        public async Task<IActionResult> AddCuahang([FromBody] CuahangDTO cuahangDTO)
+        [HttpPost("Create-SanPham")]
+        public async Task<IActionResult> CreateSanPham([FromBody] CreatSanPhamDTO creatSanPhamDTO)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Dữ liệu cửa hàng không hợp lệ.");
+                return BadRequest(ModelState);
             }
 
             try
             {
-                var result = await _cuahangService.AddCuahang(cuahangDTO);
-                return CreatedAtAction(nameof(AddCuahang), new { id = result.Ten }, new
+                var result = await _sanphamSerivce.CreateSanPham(creatSanPhamDTO);
+                return CreatedAtAction(nameof(CreateSanPham), new { id = result.Ten }, new
                 {
-                    message = "Thêm cửa hàng thành công!",
+                    message = "Thêm sản phẩm thành công",
                     data = result
                 });
             }
@@ -63,15 +60,15 @@ namespace WebAPI.Controllers
             }
         }
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetCuaHangById(int id)
+        public async Task<IActionResult> GetSanPhamById(int id)
         {
             try
             {
-                var cuaHang = await _cuahangService.GetCuaHangById(id);
-                return Ok(cuaHang);
+                var sanPham= await _sanphamSerivce.GetSanPhamById(id);
+                return Ok(sanPham);
 
             }
-            catch(KeyNotFoundException ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
@@ -82,11 +79,11 @@ namespace WebAPI.Controllers
             }
         }
         [HttpDelete("delete/{id:int}")]
-        public async Task<IActionResult> DeleteCuaHang(int id)
+        public async Task<IActionResult> DeleteSanPham (int id)
         {
             try
             {
-                var message = await _cuahangService.DeleteCuahang(id);
+                var message = await _sanphamSerivce.DeleteSanPham(id);
                 return Ok(new { Message = message });
             }
             catch (KeyNotFoundException ex)
@@ -101,19 +98,19 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPut("update/{id:int}")]
-        public async Task<IActionResult> UpdateCuahang(int id, [FromBody] CuahangDTO updatedCuahangDTO)
+        public async Task<IActionResult> UpdateDanhMuc(int id, [FromBody] UpdateSanPhamDTO updateSanPhamDTO)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Dữ liệu không hợp lệ.");
+                return BadRequest(ModelState);
             }
             try
             {
-                var updatedCuahang = await _cuahangService.UpdateCuahang(id, updatedCuahangDTO);
+                var updatedSanPham = await _sanphamSerivce.UpdateSanPham(id, updateSanPhamDTO);
                 return Ok(new
                 {
-                    message = "Cập nhật cửa hàng thành công!",
-                    updatedCuaHang = updatedCuahang
+                    message = "Cập nhật sản phẩm thành công!",
+                    updateSanPham = updateSanPhamDTO
                 });
 
 
@@ -123,7 +120,7 @@ namespace WebAPI.Controllers
                 // Lỗi logic liên quan đến dữ liệu
                 return NotFound(new { Message = ex.Message });
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { Message = ex.Message });
             }
@@ -133,7 +130,5 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi không mong đợi.", Details = ex.Message });
             }
         }
-
     }
-
 }

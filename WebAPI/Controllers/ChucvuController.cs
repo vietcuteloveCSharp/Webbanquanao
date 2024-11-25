@@ -1,10 +1,9 @@
-﻿using DTO.Cuahangs;
+﻿using DTO.VuvietanhDTO.Cuahangs;
 using DTO.VuvietanhDTO.Chucvus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.IRepository.IChucvuService;
-using Service.Repository.AccountRole;
+using Service.VuVietAnhService.IRepository.IChucvu;
 using System.Numerics;
 
 namespace WebAPI.Controllers
@@ -14,7 +13,7 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class ChucvuController : ControllerBase
     {
-        private readonly ChucvuService chucvuService;
+       
         private readonly IChucvuService _chucvuService;
         private readonly IConfiguration _configuration;
         public ChucvuController(IChucvuService chucvuServic, IConfiguration configuration)

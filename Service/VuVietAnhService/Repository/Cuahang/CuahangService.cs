@@ -2,7 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using DAL.Context;
 using DAL.Entities;
-using DTO.Chucvus;
+using DTO.VuvietanhDTO.Chucvus;
 using DTO.VuvietanhDTO.Cuahangs;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.ICuahang;
@@ -23,7 +23,7 @@ namespace Service.VuVietAnhService.Repository.Cuahang
         {
             if (!await CuahangExists(cuahangDTO.Ten, cuahangDTO.Sdt))
             {
-                throw new InvalidOperationException("Cửa hàng đã tồn tại.");
+                throw new InvalidOperationException($"Cửa hàng{cuahangDTO.Ten} đã tồn tại.");
             }
             var newCuahang = _mapper.Map<CuaHang>(cuahangDTO);
             await _context.CuaHangs.AddAsync(newCuahang);
@@ -50,7 +50,7 @@ namespace Service.VuVietAnhService.Repository.Cuahang
                 await _context.SaveChangesAsync();
                 return true;
             }
-            throw new KeyNotFoundException("Không tìm thấy cửa hàng với ID này.");
+            throw new KeyNotFoundException($"Không tìm thấy cửa hàng với ID:{id}");
 
 
         }
@@ -88,14 +88,14 @@ namespace Service.VuVietAnhService.Repository.Cuahang
             //check sdt xem có ở cửa hàng khác không
             if (await _context.CuaHangs.AnyAsync(c => c.Sdt == updateCuahangDTO.Sdt && c.Id != id))
             {
-                throw new InvalidOperationException("Số điện thoại đã được sử dụng bởi cửa hàng khác.");
+                throw new InvalidOperationException($"Số điện thoại {updateCuahangDTO.Sdt} đã được sử dụng bởi cửa hàng khác.");
             }
             if (await _context.CuaHangs.AnyAsync(c => c.Email == updateCuahangDTO.Email && c.Id != id))
             {
-                throw new InvalidOperationException("Email đã được sử dụng bởi cửa hàng khác.");
+                throw new InvalidOperationException($"Email {updateCuahangDTO.Email} đã được sử dụng bởi cửa hàng khác.");
             }
             // Sử dụng AutoMapper để cập nhật các thuộc tính
-            _mapper.Map(updateCuahangDTO, existingCuahang);
+            existingCuahang = _mapper.Map(updateCuahangDTO, existingCuahang);
 
             // Lưu thay đổi vào database
             await _context.SaveChangesAsync();
