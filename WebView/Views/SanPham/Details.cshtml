@@ -5,41 +5,150 @@
 }
 
 <style>
-    .product-image-wrapper {
+    /* Tổng thể bố cục */
+    .product-details {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 300px;
+        gap: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .single-products {
+    /* Vùng chứa hình ảnh sản phẩm */
+    .view-product img {
+        width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Thông tin sản phẩm */
+    .product-information h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .product-information span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+        .product-information span label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .product-information span input[type="number"] {
+            width: 60px;
+            text-align: center;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+
+    .product-information p {
+        font-size: 14px;
+        color: #555;
+        margin: 8px 0;
+    }
+
+    .product-information .btn {
+        background-color: #ff5722;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .product-information .btn:hover {
+            background-color: #e64a19;
+        }
+
+    /* Tabs */
+    .category-tab .nav-tabs {
+        border-bottom: 2px solid #ddd;
+    }
+
+        .category-tab .nav-tabs li a {
+            color: #555;
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+    .category-tab .tab-content {
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form đánh giá */
+    .tab-content form {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        height: 100%;
+        gap: 10px;
     }
 
-    .productinfo {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-        .productinfo img {
+        .tab-content form input,
+        .tab-content form textarea {
             width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: contain;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
         }
 
-        .productinfo h2,
-        .productinfo p {
-            margin: 5px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .tab-content form button {
+            align-self: flex-end;
+            background-color: #ff5722;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
+            .tab-content form button:hover {
+                background-color: #e64a19;
+            }
+
+    /* Sản phẩm liên quan */
+    .recommended_items h2 {
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .recommended_items .product-image-wrapper {
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+        .recommended_items .product-image-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+    .recommended_items .productinfo h2 {
+        font-size: 16px;
+        color: #ff5722;
+        margin: 10px 0;
+    }
 </style>
 
 <div class="row">
@@ -50,36 +159,31 @@
     <div class="col-sm-9 padding-right">
 
         <div class="product-details">
-            <div class="col-sm-5">
-                <div class="view-product">
+            <div class="col-sm-5 view-product">
                     <img src="@Model.SanPham.HinhAnh" alt="@Model.SanPham.Ten" width="100px" height="200px" />
-                </div>
             </div>
 
-            <div class="col-sm-7">
-                <div class="product-information">
+            <div class="col-sm-7 product-information">
                     <h2>@Model.SanPham.Ten</h2>
                     <span>
-                        <span>@Model.SanPham.Gia VNĐ</span>
+                    <span>@Model.SanPham.Gia.ToString("#,##0 VNĐ")</span>
                         <label>Số lượng: </label>
                         <input type="number" id="quantityInput" value="1" min="1" step="1" oninput="validateQuantity(this)" />
                         @if (Model.SoLuong > 0)
                         {
                             <button class="btn btn-default add-to-cart" data-product_id="@Model.SanPham.Id">
-                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                                <i class="fa fa-shopping-cart"></i> Thêm 
                             </button>
                         }
                         else
                         {
-                            <button class="btn btn-default">
-                                <i class="fa fa-shopping-cart"></i> Hết hàng
-                            </button>
+                        <button class="btn btn-default" disabled><i class="fa fa-shopping-cart"></i> Hết hàng</button>
                         }
                     </span>
                     <p><b>Tình trạng:</b> @(Model.SoLuong > 0 ? "Còn hàng" : "Hết hàng")</p>
                     <p><b>Màu sắc:</b> @Model.MauSac?.Ten</p> <!-- Hiển thị tên màu sắc -->
                     <p><b>Kích thước:</b> @Model.KichThuoc?.Ten</p> <!-- Hiển thị tên kích thước -->
-                </div>
+
             </div>
         </div>
 
@@ -132,13 +236,20 @@
                                                         <a asp-action="Details" asp-controller="SanPham" asp-route-Id="@relatedProduct.Id">
                                                             <img src="@relatedProduct.HinhAnh" alt="@relatedProduct.Ten" class="img-fluid" style="width:100%; height:200px; object-fit:cover;" />
                                                             @{
-                                                                decimal giaSanPham;
-                                                                if (decimal.TryParse(relatedProduct.Gia, out giaSanPham))
+                                                                // Kiểm tra kiểu dữ liệu của Gia
+                                                                if (relatedProduct.Gia is decimal giaSanPham)
                                                                 {
+                                                                    // Nếu Gia là decimal, hiển thị trực tiếp
                                                                     <h2>@giaSanPham.ToString("#,##0") VNĐ</h2>
+                                                                }
+                                                                else if (relatedProduct.Gia is string giaString && decimal.TryParse(giaString, out decimal parsedGiaSanPham))
+                                                                {
+                                                                    // Nếu Gia là string và có thể parse thành decimal
+                                                                    <h2>@parsedGiaSanPham.ToString("#,##0") VNĐ</h2>
                                                                 }
                                                                 else
                                                                 {
+                                                                // Nếu Gia không hợp lệ
                                                                     <h2>Giá không hợp lệ</h2>
                                                                 }
                                                             }
@@ -168,8 +279,8 @@
             {
                 <p>Không có sản phẩm liên quan.</p>
             }
-
         </div>
+
     </div><!--/category-tab-->
 </div>
 
