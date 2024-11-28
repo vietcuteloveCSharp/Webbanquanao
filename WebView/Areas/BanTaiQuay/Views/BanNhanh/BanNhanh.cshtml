@@ -1,0 +1,236 @@
+﻿@{
+    Layout = "_LayoutBanTaiQuay";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row " style="min-height: 80vh;">
+        <div class="col-8 position-relative">
+            <div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Stt</th>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            <th>Xem chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><i class="fa-regular fa-trash-can"></i></td>
+                            <td>22</td>
+                            <td>Áo nam màu đen</td>
+                            <td>2</td>
+                            <td>200.000 đ</td>
+                            <td>400.000 đ</td>
+                            <td> <button class="btn btn-primary"><i class="fa-regular fa-eye"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- input ghi chú -->
+            <div class="d-flex mb-0 bottom-0 position-absolute form" style="min-width: 65vw;">
+                <label for="input-search">
+                    <i class="fa-solid fa-pen"></i>
+                </label>
+                <input type="text" id="input-search" class="form-control form-input" placeholder="Ghi chú">
+            </div>
+        </div>
+        <div class="col-4 bg-white">
+            <!-- người bán hàng + thời gian thực -->
+            <div class="d-flex mb-2 mt-2 justify-content-between">
+                <span>Admin</span>
+                <p id="time"></p>
+            </div>
+            <!-- tìm kiếm khách hàng -->
+            <div class="mb-2">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#timKiemKhachHangModal">
+                    Tìm kiếm khách hàng
+                </button>
+
+            </div>
+            <!-- form tính tiền -->
+            <div class="mb-2 position-relative " style="min-height: 66vh;">
+                <form action="#">
+
+                    <div class="d-flex mb-2 mt-4 justify-content-between">
+                        <span>Tổng tiền hàng</span>
+                        <input type="text" placeholder="0" disabled>
+                    </div>
+                    <div class="d-flex mb-2 justify-content-between">
+                        <span>Giảm giá</span>
+                        <input type="text" placeholder="0">
+                    </div>
+                    <div class="d-flex mb-2 justify-content-between">
+                        <span>Thu khác</span>
+                        <input type="text" placeholder="0">
+                    </div>
+                    <div class="d-flex mb-2 justify-content-between">
+                        <span>Khách cần trả</span>
+                        <input type="text" placeholder="0" disabled>
+                    </div>
+                    <div class="d-flex mb-2 justify-content-between">
+                        <span>Khách thanh toán</span>
+                        <input type="text" placeholder="0">
+                    </div>
+                    <div class="d-flex mb-2 justify-content-around">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="loaiThanhToan" id="loaiTienMat"
+                                   checked>
+                            <label class="form-check-label" for="loaiTienMat">
+                                Tiền mặt
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="loaiThanhToan" id="loaiChuyenKhoan">
+                            <label class="form-check-label" for="loaiChuyenKhoan">
+                                Chuyển khoản
+                            </label>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-0 bottom-0 position-absolute w-100">
+                        <button class="btn btn-primary mx-auto h-auto w-100">Thanh Toán</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- offcanvas -->
+    <div class="offcanvas offcanvas-end" aria-labelledby="offcanvasRightLabel" id="offcanvasRight">
+        <div class="offcanvas-header">
+            <!-- <h1 class="offcanvas-title">Heading</h1> -->
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="d-flex flex-column gap-3">
+                <button class="btn btn-light" type="button">Xem báo cáo cuối ngày</button>
+                <button class="btn btn-light" type="button">Xử lý đặt hàng</button>
+                <button class="btn btn-light" type="button">Quản lý</button>
+                <button class="btn btn-light" type="button">Đăng xuất</button>
+
+            </div>
+        </div>
+    </div>
+    <!--  -->
+    <!-- modal tìm kiếm sản phẩm-->
+    <div>
+        <!-- The Modal -->
+        <div class="modal" id="timKiemSanPhamModal">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <label for="input-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </label>
+                        <input type="text" id="input-search" class="form-control form-input" placeholder="Tìm hàng hóa">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Tồn kho</th>
+                                    <th>Khách đặt</th>
+                                    <th>Thêm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <img src="https://media.canifa.com//catalog/category/Quan_ao_active_tat_ca-boy.jpg"
+                                             alt="" style="width: 50px; height: 50px;">
+                                    </td>
+                                    <td>Áo nam</td>
+                                    <td>200.000 đ</td>
+                                    <td>200</td>
+                                    <td>20</td>
+                                    <td> <button class="btn btn-primary"><i class="fa-solid fa-plus"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal tìm kiếm khách hàng -->
+    <div>
+        <!-- The Modal -->
+        <div class="modal" id="timKiemKhachHangModal">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <label for="input-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </label>
+                        <input type="text" id="input-search" class="form-control form-input"
+                               placeholder="Tìm khách hàng">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tên khách hàng</th>
+                                    <th>Sdt</th>
+                                    <th>Thêm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Nguyễn Hoàng</td>
+                                    <td>029392831</td>
+                                    <td> <button class="btn btn-primary"><i class="fa-solid fa-plus"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var timeDisplay = document.getElementById("time");
+
+
+        function refreshTime() {
+            var dateString = new Date().toLocaleString("vn-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+            var formattedString = dateString.replace(", ", " - ");
+            timeDisplay.innerHTML = formattedString;
+        }
+
+        setInterval(refreshTime, 1000);
+
+    </script>

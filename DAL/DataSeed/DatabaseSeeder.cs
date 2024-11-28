@@ -30,24 +30,24 @@ namespace DAL.DataSeed
         public DatabaseSeeder()
         {
             CuaHangs = GenerateCuaHangs(1);
-            KhuyenMais = GenerateKhuyenMais(100);
-            DanhMucs = GenerateDanhMucs(50);
-            ChiTietKhuyenMais = GenerateChiTietKhuyenMais(500, KhuyenMais, DanhMucs);
-            MauSacs = GenerateMauSacs(100);
+            KhuyenMais = GenerateKhuyenMais(20);
+            DanhMucs = GenerateDanhMucs(20);
+            ChiTietKhuyenMais = GenerateChiTietKhuyenMais(100, KhuyenMais, DanhMucs);
+            MauSacs = GenerateMauSacs(10);
             KichThuocs = GenerateKichThuocs(10);
-            ThuongHieus = GenerateThuongHieus(20);
-            SanPhams = GenerateSanPhams(200, ThuongHieus, DanhMucs);
-            ChiTietSanPhams = GenerateChiTietSanPhams(1000, SanPhams, MauSacs, KichThuocs);
-            KhachHangs = GenerateKhachHangs(500);
-            GioHangs = GenerateGioHangs(1000, KhachHangs, ChiTietSanPhams);
-            PhuongThucThanhToans = GeneratePhuongThucThanhToans(20);
+            ThuongHieus = GenerateThuongHieus(10);
+            SanPhams = GenerateSanPhams(100, ThuongHieus, DanhMucs);
+            ChiTietSanPhams = GenerateChiTietSanPhams(100, SanPhams, MauSacs, KichThuocs);
+            KhachHangs = GenerateKhachHangs(50);
+            GioHangs = GenerateGioHangs(100, KhachHangs, ChiTietSanPhams);
+            PhuongThucThanhToans = GeneratePhuongThucThanhToans(10);
             ChucVus = GenerateChucVus(10);
-            NhanViens = GenerateNhanViens(20, ChucVus);
-            HoaDons = GenerateHoaDons(500, KhachHangs, NhanViens);
-            ThanhToanHoaDons = GenerateThanhToanHoaDons(500, PhuongThucThanhToans, HoaDons);
-            ChiTietHoaDons = GenerateChiTietHoaDons(4000, ChiTietSanPhams, HoaDons);
-            MaGiamGias = GenerateMaGiamGias(500);
-            ChiTietMaGiamGias = GenerateChiTietMaGiamGias(500, MaGiamGias, KhachHangs);
+            NhanViens = GenerateNhanViens(10, ChucVus);
+            HoaDons = GenerateHoaDons(50, KhachHangs, NhanViens);
+            ThanhToanHoaDons = GenerateThanhToanHoaDons(50, PhuongThucThanhToans, HoaDons);
+            ChiTietHoaDons = GenerateChiTietHoaDons(100, ChiTietSanPhams, HoaDons);
+            MaGiamGias = GenerateMaGiamGias(50);
+            ChiTietMaGiamGias = GenerateChiTietMaGiamGias(100, MaGiamGias, KhachHangs);
         }
 
         // Seed table CuHang

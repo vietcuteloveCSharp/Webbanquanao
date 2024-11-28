@@ -8,9 +8,7 @@
     <title>Trang chủ | F-gear</title>
     <link href="~/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
-    <link href="
-https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css
-" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" rel="stylesheet">
     <link href="~/css/prettyPhoto.css" rel="stylesheet">
     <link href="~/css/price-range.css" rel="stylesheet">
     <link href="~/css/animate.css" rel="stylesheet">
@@ -51,7 +49,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css
                                     <li><a asp-controller="TaiKhoan" asp-action="Logout"><i class="fa fa-lock"></i>Xin chào, @Context.Session.GetString("TaiKhoan")! Đăng Xuất</a></li>
                                     <li><a asp-controller="TaiKhoan" asp-action="Profile"><i class="fa fa-user"></i> Thông tin</a></li>
                                     <li><a asp-controller="BanHang" asp-action="Index"><i class="fa fa-shopping-cart"></i> Bán Hàng</a></li>
-                                   
+                                    <li><a asp-area="BanTaiQuay" asp-controller="BanNhanh" asp-action="Index"><i class="fa fa-shopping-cart"></i> Bán Hàng Tại Quầy</a></li>
                                 }
                                 else
                                 {
