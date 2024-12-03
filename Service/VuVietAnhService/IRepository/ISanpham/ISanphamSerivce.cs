@@ -10,7 +10,7 @@ namespace Service.VuVietAnhService.IRepository.ISanpham
 {
     public interface ISanphamSerivce
     {
-        Task<IEnumerable<SanPhamDTO>> GetAllSanPham();
+        Task<IEnumerable<FullSanPhamDTO>> GetAllSanPham();
         Task<SanPhamDTO> GetSanPhamById(int id);
         Task<CreatSanPhamDTO> CreateSanPham(CreatSanPhamDTO creatSanPhamDTO);
         Task<UpdateSanPhamDTO> UpdateSanPham(int id, UpdateSanPhamDTO updateSanPhamDTO);

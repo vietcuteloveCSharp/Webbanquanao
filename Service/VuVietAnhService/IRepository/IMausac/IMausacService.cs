@@ -10,7 +10,7 @@ namespace Service.VuVietAnhService.IRepository.IMausac
 {
     public interface IMausacService
     {
-        Task<IEnumerable<MauSacDTO>> GetAllMausac();
+        Task<IEnumerable<FullMauSacDTO>> GetAllMausac();
         Task<MauSacDTO> GetMauSacById(int id);
         Task<MauSacDTO> AddMauSac(MauSacDTO mauSacDTO);
         Task<MauSacDTO> UpdateMauSac(int id, MauSacDTO mauSacDTO);

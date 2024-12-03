@@ -16,7 +16,7 @@ namespace WebAPI.Controllers
             this._kichthuocService = kichthuocService;
         }
         [HttpGet("Get-All-Kichthuoc")]
-        public async Task<ActionResult<IEnumerable<KichThuocDTO>>> GetAllKichThuoc()
+        public async Task<ActionResult<IEnumerable<FullKichThuocDTO>>> GetAllKichThuoc()
         {
             try
             {
@@ -130,5 +130,7 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi không mong đợi.", Details = ex.Message });
             }
         }
+     
+
     }
 }

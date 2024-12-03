@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
             _mausacService = mausacService;
         }
         [HttpGet("Get-All-MauSac")]
-        public async Task<ActionResult<IEnumerable<MauSacDTO>>> GetAllMauSac()
+        public async Task<ActionResult<IEnumerable<FullMauSacDTO>>> GetAllMauSac()
         {
             try
             {
@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpDelete("delete/{id:int}")]
-        public async Task<IActionResult> DeleteSanPham(int id)
+        public async Task<IActionResult> DeleteMauSac(int id)
         {
             try
             {

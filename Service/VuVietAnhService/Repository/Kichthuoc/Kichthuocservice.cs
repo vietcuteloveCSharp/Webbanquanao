@@ -43,11 +43,11 @@ namespace Service.VuVietAnhService.Repository.Kichthuoc
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<KichThuocDTO>> GetAllKichThuoc()
+        public async Task<IEnumerable<FullKichThuocDTO>> GetAllKichThuoc()
         {
             var AllKichthuoc = await _context.KichThuocs.ToListAsync();
-            if (!AllKichthuoc.Any()) return new List<KichThuocDTO>();
-            var AllKichthuocDTO = _mapper.Map<List<KichThuocDTO>>(AllKichthuoc);
+            if (!AllKichthuoc.Any()) return new List<FullKichThuocDTO>();
+            var AllKichthuocDTO = _mapper.Map<List<FullKichThuocDTO>>(AllKichthuoc);
             return AllKichthuocDTO;
         }
 
@@ -56,7 +56,7 @@ namespace Service.VuVietAnhService.Repository.Kichthuoc
             var existingKichthuoc = await _context.KichThuocs.FirstOrDefaultAsync(c => c.Id == id);
             if (existingKichthuoc == null)
             {
-                throw new KeyNotFoundException($"Không tìm thấy sản phẩm với ID:{id}.");
+                throw new KeyNotFoundException($"Không tìm thấy thương hiệu với ID:{id}.");
             }
             var kichThuocDTO = _mapper.Map<KichThuocDTO>(existingKichthuoc);
             return kichThuocDTO;

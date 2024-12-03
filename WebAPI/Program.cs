@@ -13,6 +13,8 @@ using Service.VuVietAnhService.IRepository.ICuahang;
 using Service.VuVietAnhService.IRepository.IDanhmuc;
 using Service.VuVietAnhService.IRepository.IKichthuoc;
 using Service.VuVietAnhService.IRepository.IMausac;
+using Service.VuVietAnhService.IRepository.ISanpham;
+using Service.VuVietAnhService.IRepository.IThuonghieu;
 using Service.VuVietAnhService.Repository.Account;
 using Service.VuVietAnhService.Repository.AccountKhachhang;
 using Service.VuVietAnhService.Repository.Authentication;
@@ -21,6 +23,8 @@ using Service.VuVietAnhService.Repository.Cuahang;
 using Service.VuVietAnhService.Repository.Danhmuc;
 using Service.VuVietAnhService.Repository.Kichthuoc;
 using Service.VuVietAnhService.Repository.Mausac;
+using Service.VuVietAnhService.Repository.Sanpham;
+using Service.VuVietAnhService.Repository.Thuonghieu;
 using System.Text;
 using WebAPI.CheckEnpoint;
 
@@ -58,7 +62,9 @@ namespace WebAPI
             builder.Services.AddScoped<IMausacService, MausacService>();
             builder.Services.AddScoped<IDanhmucService, DanhmucSerivce>();
             builder.Services.AddScoped<IKichthuocService, Kichthuocservice>();
-            //builder.Services.AddScoped<I, MausacService>();
+            builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
+            builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
+            
             //cấu hình jwt
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"];
