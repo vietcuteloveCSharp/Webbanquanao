@@ -9,7 +9,7 @@ namespace Service.VuVietAnhService.IRepository.ICuahang
 {
     public interface ICuahangService
     {
-        Task<IEnumerable<CuahangDTO>> GetAllCuaHang();
+        Task<IEnumerable<FullCuahangDTO>> GetAllCuaHang();
         Task<CuahangDTO> GetCuaHangById(int id);
         Task<CuahangDTO> AddCuahang(CuahangDTO cuahangDTO);
         Task<CuahangDTO> UpdateCuahang(int id, CuahangDTO updateCuahangDTO);

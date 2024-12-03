@@ -22,8 +22,8 @@ namespace DTO.VuvietanhDTO.Sanphams
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn hoặc bằng 1.")]
         public int SoLuong { get; set; } = 1;
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc.")]
-        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Giá phải là số hợp lệ, tối đa 2 chữ số thập phân.")]
-        public string Gia { get; set; }
+      
+        public decimal Gia { get;set; }
 
         [Required(ErrorMessage = "Ngày tạo là bắt buộc.")]
         [NotInFuture(ErrorMessage = "Ngày tạo không được ở tương lai.")]
@@ -33,7 +33,6 @@ namespace DTO.VuvietanhDTO.Sanphams
         [MaxLength(200, ErrorMessage = "Đường dẫn hình ảnh không được vượt quá 200 ký tự.")]
         [RegularExpression(@"^(?!\s*$).+", ErrorMessage = "Đường dẫn hình ảnh không được chỉ chứa khoảng trắng.")]
         public string HinhAnh { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Thương hiệu là bắt buộc.")]
         [Range(1, int.MaxValue, ErrorMessage = "Thương hiệu không hợp lệ.")]
         public int Id_ThuongHieu { get; set; }
@@ -41,5 +40,7 @@ namespace DTO.VuvietanhDTO.Sanphams
         [Required(ErrorMessage = "Danh mục là bắt buộc.")]
         [Range(1, int.MaxValue, ErrorMessage = "Danh mục không hợp lệ.")]
         public int Id_DanhMuc { get; set; }
+
+
     }
 }

@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
         }
         //lấy list chức vụ
         [HttpGet("Get-All-ChucVu")]
-        public async Task<ActionResult<IEnumerable<ChucvuDTO>>> GetAllChucVu()
+        public async Task<ActionResult<IEnumerable<FullChucVuDTO>>> GetAllChucVu()
         {
             try
             {
@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
                 var result = await _chucvuService.AddChucVu(chucvuDTO);
                 return CreatedAtAction(nameof(AddChucVu), new { id = result.Ten }, new
                 {
-                    message = "Thêm cửa hàng thành công!",
+                    message = "Thêm chức vụ thành công!",
                     data = result
                 });
             }

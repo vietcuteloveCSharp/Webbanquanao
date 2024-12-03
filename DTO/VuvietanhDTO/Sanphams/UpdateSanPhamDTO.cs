@@ -23,7 +23,7 @@ namespace DTO.VuvietanhDTO.Sanphams
         public int SoLuong { get; set; } = 1;
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc.")]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Giá phải là số hợp lệ, tối đa 2 chữ số thập phân.")]
-        public string Gia { get; set; }
+        public decimal Gia { get; set; }
 
         [NotBeforeCreationDate(ErrorMessage = "Ngày cập nhật không được trước ngày tạo")]
         public DateTime? NgayCapNhat { get; set; }
