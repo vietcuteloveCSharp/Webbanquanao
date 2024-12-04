@@ -10,7 +10,7 @@ namespace Service.VuVietAnhService.IRepository.IChucvu
 {
     public interface IChucvuService
     {
-        Task<IEnumerable<ChucvuDTO>> GetAllChucVu();
+        Task<IEnumerable<FullChucVuDTO>> GetAllChucVu();
         Task<ChucvuDTO> GetChucVuById(int id);
         Task<string> GetTenChucVuById(int idChucVu); // lấy được tên chức vụ qua id
         Task<ChucvuDTO> AddChucVu(ChucvuDTO chucvuDTO);

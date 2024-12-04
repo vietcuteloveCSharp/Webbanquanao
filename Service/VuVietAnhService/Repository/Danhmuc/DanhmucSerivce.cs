@@ -42,11 +42,11 @@ namespace Service.VuVietAnhService.Repository.Danhmuc
             throw new NotImplementedException();
         }
         //get all danh mục
-        public async Task<IEnumerable<DanhMucDTO>> GetAllDanhMuc()
+        public async Task<IEnumerable<FullDanhMucDTO>> GetAllDanhMuc()
         {
             var AllDanhmuc = await _context.DanhMucs.ToListAsync();
-            if (!AllDanhmuc.Any()) return new List<DanhMucDTO>();
-            var AllDanhMucDTO = _mapper.Map<List<DanhMucDTO>>(AllDanhmuc);
+            if (!AllDanhmuc.Any()) return new List<FullDanhMucDTO>();
+            var AllDanhMucDTO = _mapper.Map<List<FullDanhMucDTO>>(AllDanhmuc);
             return AllDanhMucDTO;
         }
         //tìm danh mục theo id
@@ -59,6 +59,14 @@ namespace Service.VuVietAnhService.Repository.Danhmuc
             }
             var danhMucDTO = _mapper.Map<DanhMucDTO>(existingDanhMuc);
             return danhMucDTO;
+        }
+
+        public async Task<int> GetIdByTenDanhMuc(string tenDanhMuc)
+        {
+            // Code để lấy Id từ tên danh mục
+            var danhMuc = await _context.DanhMucs.FirstOrDefaultAsync(dm => dm.TenDanhMuc == tenDanhMuc);
+            ArgumentNullException.ThrowIfNull(danhMuc, $"Danh mục'{tenDanhMuc}' không tồn tại.");
+            return danhMuc?.Id ?? 0;
         }
 
         public async Task<UpdateDanhMucDTO> UpdateDanhMuc(int id, UpdateDanhMucDTO updateDanhMucDTO)

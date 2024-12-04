@@ -10,7 +10,7 @@ namespace Service.VuVietAnhService.IRepository.IKichthuoc
 {
     public interface IKichthuocService
     {
-        Task<IEnumerable<KichThuocDTO>> GetAllKichThuoc();
+        Task<IEnumerable<FullKichThuocDTO>> GetAllKichThuoc();
         Task<KichThuocDTO> GetKickThuocId(int id);
         Task<KichThuocDTO> AddKichThuoc(KichThuocDTO kichThuocDTO);
         Task<KichThuocDTO> UpdateKichThuoc(int id, KichThuocDTO kichThuocDTO);

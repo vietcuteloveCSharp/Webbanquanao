@@ -13,6 +13,7 @@ namespace Service.VuVietAnhService.Repository.Cuahang
     {
         private readonly WebBanQuanAoDbContext _context;
         private readonly IMapper _mapper;
+        
         public CuahangService(WebBanQuanAoDbContext context, IMapper mapper)
         {
             _context = context;
@@ -55,12 +56,12 @@ namespace Service.VuVietAnhService.Repository.Cuahang
 
         }
         //get list cửa hàng
-        public async Task<IEnumerable<CuahangDTO>> GetAllCuaHang()
+        public async Task<IEnumerable<FullCuahangDTO>> GetAllCuaHang()
         {
             var AllCuahang = await _context.CuaHangs.ToListAsync();
-            if (!AllCuahang.Any()) return new List<CuahangDTO>();
+            if (!AllCuahang.Any()) return new List<FullCuahangDTO>();
 
-            var AllCuaHangDTO = _mapper.Map<List<CuahangDTO>>(AllCuahang);
+            var AllCuaHangDTO = _mapper.Map<List<FullCuahangDTO>>(AllCuahang);
             return AllCuaHangDTO;
         }
         //tìm cửa hàng theo id
