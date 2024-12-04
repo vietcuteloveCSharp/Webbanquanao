@@ -50,12 +50,23 @@ namespace WebView
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "Areas",
-                pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+               name: "default",
+               pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapAreaControllerRoute(
+             name: "BanTaiQuay",
+            areaName: "BanTaiQuay",
+            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+
+            app.MapAreaControllerRoute(
+             name: "Admin",
+            areaName: "Admin",
+            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "Areas",
+                pattern: "{area:exists}/{controller}/{action}/{id?}");
+
+
 
             //Seedingdata
             var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();

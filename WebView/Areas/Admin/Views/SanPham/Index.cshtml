@@ -46,41 +46,4 @@
     </tbody>
 </table>
 
-<!-- Nút thêm sản phẩm mới -->
-<!-- Scripts để khởi tạo DataTable -->
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Kiểm tra xem bảng đã là DataTable hay chưa
-            if (!$.fn.dataTable.isDataTable('#myTable')) {
-                // Nếu chưa, khởi tạo DataTable
-                $('#myTable').DataTable({
-                    paging: true,
-                    searching: true,
-                    ordering: true
-                });
-            }
-        });
-
-        // Xác nhận trước khi xóa
-        $(document).on('click', '.confirmDeletion', function (e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            Swal.fire({
-                title: 'Bạn có chắc chắn muốn xóa?',
-                text: "Hành động này không thể hoàn tác!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = url;
-                }
-            });
-        });
-        });
-    </script>
-}
+<h1>admin</h1>
