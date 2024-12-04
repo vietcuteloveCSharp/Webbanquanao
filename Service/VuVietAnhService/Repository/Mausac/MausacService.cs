@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DAL.Context;
 using DAL.Entities;
+using DTO.VuvietanhDTO.Kichthuocs;
 using DTO.VuvietanhDTO.Mausacs;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IMausac;
@@ -51,10 +52,12 @@ namespace Service.VuVietAnhService.Repository.Mausac
             return true;
         }
         //get all 
-        public async Task<IEnumerable<MauSacDTO>> GetAllMausac()
+        public async Task<IEnumerable<FullMauSacDTO>> GetAllMausac()
         {
             var mauSacs = await _context.MauSacs.ToListAsync();
-            return _mapper.Map<IEnumerable<MauSacDTO>>(mauSacs);
+            if (!mauSacs.Any()) return new List<FullMauSacDTO>();
+            var AllMauSacDTO = _mapper.Map<List<FullMauSacDTO>>(mauSacs);
+            return AllMauSacDTO;
         }
         //get mausac by id
         public async Task<MauSacDTO> GetMauSacById(int id)

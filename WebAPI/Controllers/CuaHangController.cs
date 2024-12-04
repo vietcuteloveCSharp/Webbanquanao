@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
             this._cuahangService = cuahangService;
         }
         [HttpGet("Get-All-Cuahang")]
-        public async Task<ActionResult<IEnumerable<CuahangDTO>>> GetAllCuahang()
+        public async Task<ActionResult<IEnumerable<FullCuahangDTO>>> GetAllCuahang()
         {
             try
             {

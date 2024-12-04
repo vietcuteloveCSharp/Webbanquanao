@@ -1,28 +1,29 @@
-﻿using DTO.VuvietanhDTO.Danhmucs;
-using DTO.VuvietanhDTO.Sanphams;
+﻿using DTO.VuvietanhDTO.Mausacs;
+using DTO.VuvietanhDTO.Thuonghieus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Service.VuVietAnhService.IRepository.ISanpham;
+using Service.VuVietAnhService.IRepository.IThuonghieu;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SanphamController : ControllerBase
+    public class ThuonghieuController : ControllerBase
     {
-        private readonly ISanphamSerivce _sanphamSerivce;
-        public SanphamController(ISanphamSerivce sanphamSerivce)
+        private readonly ILogger _logger;
+        private readonly IThuonghieuSerivce _thuonghieuSerivce;
+        public ThuonghieuController(IThuonghieuSerivce thuonghieuSerivce)
         {
-            this._sanphamSerivce = sanphamSerivce;
+            this._thuonghieuSerivce= thuonghieuSerivce;
         }
-        [HttpGet("Get-All-SanPham")]
-        public async Task<ActionResult<IEnumerable<FullSanPhamDTO>>> GetAllSanPham()
+        [HttpGet("Get-All-ThuongHieu")]
+        public async Task<ActionResult<IEnumerable<FullThuongHieuDTO>>> GetAllThuongHieu()
         {
             try
             {
-                var result = await _sanphamSerivce.GetAllSanPham();
+                var result = await _thuonghieuSerivce.GetAllThuongHieu();
                 if (!result.Any())
-                    return NotFound(new { Message = "Không có dữ liệu sản phẩm" });
+                    return NotFound(new { Message = "Không có dữ liệu màu sắc" });
                 return Ok(result);
 
             }
@@ -32,8 +33,8 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
             }
         }
-        [HttpPost("Create-SanPham")]
-        public async Task<IActionResult> CreateSanPham([FromBody] CreatSanPhamDTO creatSanPhamDTO)
+        [HttpPost("Add-ThuongHieu")]
+        public async Task<IActionResult> AddThuongHieu([FromBody] CreateThuongHieuDTO createThuongHieuDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -42,10 +43,10 @@ namespace WebAPI.Controllers
 
             try
             {
-                var result = await _sanphamSerivce.CreateSanPham(creatSanPhamDTO);
-                return CreatedAtAction(nameof(CreateSanPham), new { id = result.Ten }, new
+                var result = await _thuonghieuSerivce.AddThuongHieu(createThuongHieuDTO);
+                return CreatedAtAction(nameof(AddThuongHieu), new
                 {
-                    message = "Thêm sản phẩm thành công",
+                    message = "Thêm thương hiệu thành công",
                     data = result
                 });
             }
@@ -60,12 +61,12 @@ namespace WebAPI.Controllers
             }
         }
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetSanPhamById(int id)
+        public async Task<IActionResult> GetThuongHieuById(int id)
         {
             try
             {
-                var sanPham= await _sanphamSerivce.GetSanPhamById(id);
-                return Ok(sanPham);
+                var thuongHieu = await _thuonghieuSerivce.GetThuongHieuById(id);
+                return Ok(thuongHieu);
 
             }
             catch (KeyNotFoundException ex)
@@ -79,11 +80,11 @@ namespace WebAPI.Controllers
             }
         }
         [HttpDelete("delete/{id:int}")]
-        public async Task<IActionResult> DeleteSanPham (int id)
+        public async Task<IActionResult> DeleteThuongHieu(int id)
         {
             try
             {
-                var message = await _sanphamSerivce.DeleteSanPham(id);
+                var message = await _thuonghieuSerivce.DeleteThuongHieu(id);
                 return Ok(new { Message = message });
             }
             catch (KeyNotFoundException ex)
@@ -98,7 +99,7 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPut("update/{id:int}")]
-        public async Task<IActionResult> UpdateDanhMuc(int id, [FromBody] UpdateSanPhamDTO updateSanPhamDTO)
+        public async Task<IActionResult> UpdateThuongHieu(int id, [FromBody] ThuongHieuDTO thuongHieuDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -106,11 +107,11 @@ namespace WebAPI.Controllers
             }
             try
             {
-                var updatedSanPham = await _sanphamSerivce.UpdateSanPham(id, updateSanPhamDTO);
+                var updatedMausac = await _thuonghieuSerivce.UpdateThuongHieu(id, thuongHieuDTO);
                 return Ok(new
                 {
-                    message = "Cập nhật sản phẩm thành công!",
-                    updateSanPham = updateSanPhamDTO
+                    message = "Cập nhật màu sắc thành công!",
+                    updateThuongHieu = thuongHieuDTO
                 });
 
 
@@ -130,5 +131,6 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi không mong đợi.", Details = ex.Message });
             }
         }
+        
     }
 }

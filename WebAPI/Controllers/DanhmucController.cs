@@ -16,8 +16,8 @@ namespace WebAPI.Controllers
         {
             this._danhmucService = danhmucService;
         }
-            [HttpGet("Get-All-Sanpham")]
-            public async Task<ActionResult<IEnumerable<DanhMucDTO>>> GetAllDanhMuc()
+            [HttpGet("Get-All-DanhMuc")]
+            public async Task<ActionResult<IEnumerable<FullDanhMucDTO>>> GetAllDanhMuc()
             {
                 try
                 {

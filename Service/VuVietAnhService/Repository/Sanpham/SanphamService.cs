@@ -37,10 +37,7 @@ namespace Service.VuVietAnhService.Repository.Sanpham
             {
                 throw new InvalidOperationException("Thương hiệu không tồn tại.");
             }
-            if (!decimal.TryParse(creatSanPhamDTO.Gia, out var giaDecimal))
-            {
-                throw new InvalidOperationException("Giá không hợp lệ.");
-            }
+           
             var newSanPham = _mapper.Map<SanPham>(creatSanPhamDTO);
             await _context.SanPhams.AddAsync(newSanPham);
             await _context.SaveChangesAsync();
@@ -64,11 +61,11 @@ namespace Service.VuVietAnhService.Repository.Sanpham
             return true;
         }
 
-        public async Task<IEnumerable<SanPhamDTO>> GetAllSanPham()
+        public async Task<IEnumerable<FullSanPhamDTO>> GetAllSanPham()
         {
             var AllSanpham = await _context.SanPhams.ToListAsync();
-            if (!AllSanpham.Any()) return new List<SanPhamDTO>();
-            var AllSanPhamDTO = _mapper.Map<List<SanPhamDTO>>(AllSanpham);
+            if (!AllSanpham.Any()) return new List<FullSanPhamDTO>();
+            var AllSanPhamDTO = _mapper.Map<List<FullSanPhamDTO>>(AllSanpham);
             return AllSanPhamDTO;
         }
 
@@ -106,7 +103,7 @@ namespace Service.VuVietAnhService.Repository.Sanpham
                 throw new InvalidOperationException("Thương hiệu không tồn tại.");
             }
             // Kiểm tra giá hợp lệ
-            if (!decimal.TryParse(updateSanPhamDTO.Gia, out var giaDecimal))
+            if ( updateSanPhamDTO.Gia <= 0)
             {
                 throw new InvalidOperationException("Giá không hợp lệ.");
             }

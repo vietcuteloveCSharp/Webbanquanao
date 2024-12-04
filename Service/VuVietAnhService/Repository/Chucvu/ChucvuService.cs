@@ -59,11 +59,11 @@ namespace Service.VuVietAnhService.Repository.Chucvu
         }
 
 
-        public async Task<IEnumerable<ChucvuDTO>> GetAllChucVu()
+        public async Task<IEnumerable<FullChucVuDTO>> GetAllChucVu()
         {
             var AllChucVu = await _context.ChucVus.ToListAsync();
-            if (!AllChucVu.Any()) return new List<ChucvuDTO>(); //trả về list rỗng nếu không có
-            var AllChucVuDTO = _mapper.Map<List<ChucvuDTO>>(AllChucVu);
+            if (!AllChucVu.Any()) return new List<FullChucVuDTO>(); //trả về list rỗng nếu không có
+            var AllChucVuDTO = _mapper.Map<List<FullChucVuDTO>>(AllChucVu);
             return AllChucVuDTO;
         }
         // lấy chucvu theo id
