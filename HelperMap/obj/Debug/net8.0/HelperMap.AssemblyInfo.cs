@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HelperMap")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3ab2c5853b41ce79d76107e8e32f368d5f95293")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0e985df6b86763760324569aea0f9a343ea4004c")]
 [assembly: System.Reflection.AssemblyProductAttribute("HelperMap")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HelperMap")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
