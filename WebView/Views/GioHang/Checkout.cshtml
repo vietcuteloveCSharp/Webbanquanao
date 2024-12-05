@@ -1,0 +1,36 @@
+﻿@model IEnumerable<DAL.Entities.GioHang>
+
+<h2>Điền thông tin liên hệ</h2>
+
+<form asp-action="CompleteOrder" method="post">
+    <div class="form-group">
+        <label for="name">Họ và tên</label>
+        <input type="text" class="form-control" id="name" name="FullName" required />
+    </div>
+
+    <div class="form-group">
+        <label for="address">Địa chỉ giao hàng</label>
+        <input type="text" class="form-control" id="address" name="Address" required />
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Số điện thoại</label>
+        <input type="text" class="form-control" id="phone" name="Phone" required />
+    </div>
+
+    <h3>Phương thức thanh toán</h3>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCash" value="CashOnDelivery" checked>
+        <label class="form-check-label" for="paymentCash">
+            Thanh toán khi nhận hàng
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCard" value="CreditCard">
+        <label class="form-check-label" for="paymentCard">
+            Thanh toán qua thẻ tín dụng
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Hoàn tất mua hàng</button>
+</form>

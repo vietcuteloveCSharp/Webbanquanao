@@ -1,0 +1,44 @@
+﻿@model DAL.Entities.KhachHang
+
+<h2>Thông tin cá nhân</h2>
+
+<div>
+    <p><strong>Họ và tên:</strong> @Model.Ten</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Số điện thoại:</strong> @Model.Sdt</p>
+    <p><strong>Ngày sinh:</strong> @Model.NgaySinh?.ToString("dd/MM/yyyy")</p>
+</div>
+
+<a asp-action="EditProfile" class="btn btn-primary">Chỉnh sửa thông tin</a>
+
+<hr />
+
+<h3>Lịch sử hóa đơn</h3>
+@if (Model.HoaDons != null && Model.HoaDons.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã hóa đơn</th>
+                <th>Ngày tạo</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hoaDon in Model.HoaDons)
+            {
+                <tr>
+                    <td>@hoaDon.Id</td>
+                    <td>@hoaDon.NgayTao.ToString("dd/MM/yyyy")</td>
+                    <td>@hoaDon.TongTien</td>
+                    <td>@hoaDon.TrangThai</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Bạn chưa có hóa đơn nào.</p>
+}

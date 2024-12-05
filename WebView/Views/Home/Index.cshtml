@@ -1,0 +1,173 @@
+﻿@model IEnumerable<DAL.Entities.SanPham>
+<div class="col-sm-3">
+    @Html.Partial("_SidebarPartial")
+</div>
+<style>
+
+    .product-image-wrapper {
+        margin-bottom: 20px; /* Khoảng cách dưới mỗi sản phẩm */
+    }
+
+    .product-image-container {
+        width: 100%;
+        height: 150px; /* Đặt chiều cao cố định cho hình ảnh */
+        overflow: hidden; /* Ẩn các phần của hình ảnh ra ngoài vùng chứa */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .product-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Đảm bảo hình ảnh bao phủ toàn bộ phần tử mà không bị biến dạng */
+        }
+
+    .productinfo {
+        text-align: center;
+    }
+
+        .productinfo h2 {
+            font-size: 18px; /* Điều chỉnh kích thước tiêu đề */
+            margin: 10px 0; /* Khoảng cách trên và dưới tiêu đề */
+        }
+
+        .productinfo p {
+            margin: 5px 0; /* Khoảng cách trên và dưới các đoạn văn */
+        }
+
+    .btn.add-to-cart {
+        margin-top: 10px; /* Khoảng cách trên nút "Thêm vào giỏ hàng" */
+    }
+
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<div class="col-sm-9 padding-right">
+    <div class="features_items">
+        <!--features_items-->
+        <h2 class="title text-center">Sản Phẩm</h2>
+        @foreach (var item in Model)
+        {
+            <div class="col-sm-4">
+                <div class="product-image-wrapper">
+                    <div class="single-products">
+                        <div class="productinfo text-center">
+                            <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.Id">
+                                <div class="product-image-container">
+                                    <img src="@item.HinhAnh" alt="@item.Ten" />
+                                </div>
+                                @{
+                                    decimal giaSanPham;
+                                    if (decimal.TryParse(item.Gia, out giaSanPham))
+                                    {
+                                        <h2>@giaSanPham.ToString("#,##0") VND</h2>
+                                    }
+                                    else
+                                    {
+                                        <h2>Giá không hợp lệ</h2>
+                                    }
+                                }
+
+                                <p>@item.Ten</p>
+                                <p>Danh mục: @item.DanhMuc.TenDanhMuc</p>
+                                <p>Thương hiệu: @item.ThuongHieu.Ten</p>
+                            </a>
+                            @if (item.SoLuong > 0)
+                            {
+                                <button class="btn btn-default add-to-cart" data-product_id="@item.Id"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-default "><i class="fa fa-shopping-cart"></i>Hết hàng</button>
+                            }
+                           
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+        }
+
+    </div><!--features_items-->
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function () {
+                var productId = $(this).data("product_id");
+                var soLuong = 1; // Hoặc lấy giá trị từ input số lượng nếu có
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddToCart", "GioHang")",
+                    data: { chiTietSanPhamId: productId, soLuong: soLuong },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Thất bại!',
+                                text: 'Không thể thêm sản phẩm vào giỏ hàng',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    @* Yêu thích *@
+    <script>
+        $(document).ready(function () {
+            $('.add-btn-wishlist').click(function () {
+                var Id = $(this).data("product_id");
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddWishList", "Home")",
+                    data: { Id: Id },
+                    success: function (result) {
+                        if (result) {
+                            Swal.fire("Thêm vào yêu thích thành công");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    @* So sánh *@
+    <script>
+        $(document).ready(function () {
+            $('.add-btn-compare').click(function () {
+                var Id = $(this).data("product_id");
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddCompare", "Home")",
+                    data: { Id: Id },
+                    success: function (result) {
+                        if (result) {
+                            Swal.fire("Thêm vào so sánh thành công");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

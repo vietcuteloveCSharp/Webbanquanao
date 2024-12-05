@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar chỉ hiển thị một lần -->
+            @Html.Partial("_PartialSidebar")
+
+            <!-- Nội dung chính -->
+            <div class="col-md-9" id="main-content" style="padding: 10px;">
+                <h2>Chọn một mục bên trái để xem nội dung!</h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#left-menu .nav-link').on('click', function (e) {
+                e.preventDefault();
+                const url = $(this).data('url');
+                $('#main-content').html('<div id="loading">Đang tải...</div>');
+                $.get(url, function (data) {
+                    $('#main-content').html(data);
+                });
+            });
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
