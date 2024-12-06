@@ -43,7 +43,15 @@ namespace WebView.Controllers
         }
         public IActionResult Index()
         {
-            var sanpham = _context.SanPhams.Include("DanhMuc").Include("ThuongHieu").ToList();
+            var sanpham = _context.SanPhams
+                .Include(sp => sp.ChiTietSanPhams)
+                    .ThenInclude(ct => ct.MauSac)  // Nạp dữ liệu MauSac
+                .Include(sp => sp.ChiTietSanPhams)
+                    .ThenInclude(ct => ct.KichThuoc)  // Nạp dữ liệu KichThuoc
+                .Include(sp => sp.DanhMuc)
+                .Include(sp => sp.ThuongHieu)
+                .ToList();
+
             return View(sanpham);
         }
 

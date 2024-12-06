@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
+using WebView.Services.Vnpay;
 
 namespace WebView
 {
@@ -9,6 +10,7 @@ namespace WebView
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             // add httpclient
             builder.Services.AddHttpClient<GetHttpClient>("SystemApiClient", clients =>
             {
@@ -47,6 +49,7 @@ namespace WebView
             app.UseRouting();
             // Kích hoạt session
             app.UseSession();
+            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
             app.UseAuthorization();
 
             app.MapControllerRoute(
