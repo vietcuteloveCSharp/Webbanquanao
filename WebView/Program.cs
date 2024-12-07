@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
+using WebView.Services;
 
 namespace WebView
 {
@@ -14,6 +15,7 @@ namespace WebView
             {
                 clients.BaseAddress = new Uri("https://localhost:7169");
             });
+            builder.Services.AddHttpClient<ApiService>();
             // DI class GetHttpClient
             builder.Services.AddScoped<GetHttpClient>();
             //connectDB
@@ -42,6 +44,7 @@ namespace WebView
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();

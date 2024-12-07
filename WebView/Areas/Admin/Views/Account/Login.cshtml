@@ -1,0 +1,39 @@
+﻿
+@model Responses.Resquests.LoginResquest
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+    <html>
+    <head>
+        <title>- |Admin Login</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <
+    </head>
+    <body>
+    <h2>Login</h2>
+    <form asp-action="Login" method="post">
+        <div class="form-group">
+            <label asp-for="TaiKhoan">Username:</label>
+            <input asp-for="TaiKhoan" class="form-control" />
+            <span asp-validation-for="TaiKhoan" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MatKhau">Password:</label>
+            <input asp-for="MatKhau" type="password" class="form-control" />
+            <span asp-validation-for="MatKhau" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+    <div>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div class="text-danger">@error.ErrorMessage</div>
+        }
+    </div>
+    </body>
+    </html>

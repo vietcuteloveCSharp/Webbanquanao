@@ -60,7 +60,7 @@ namespace Service.VuVietAnhService.Repository.Account
             try
             {
                 var account = await _context.NhanViens.SingleOrDefaultAsync(a => a.TaiKhoan == loginResquest.TaiKhoan);
-                var role = await _chucvuService.GetChucVuById(account.Id_ChucVu);
+                
                 //check account có tồn tại không
                 if (account == null)
                 {
@@ -68,7 +68,7 @@ namespace Service.VuVietAnhService.Repository.Account
                     response.Message = "Tài khoản không tồn tại.";
                     return response;
                 }
-
+                var role = await _chucvuService.GetChucVuById(account.Id_ChucVu);
                 // Kiểm tra mật khẩu
                 if (account.MatKhau != loginResquest.MatKhau)
                 {
