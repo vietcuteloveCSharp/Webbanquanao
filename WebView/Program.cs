@@ -36,6 +36,7 @@ namespace WebView
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -43,31 +44,22 @@ namespace WebView
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
-            app.UseRouting();
-            // Kích hoạt session
-            app.UseSession();
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
-            app.UseAuthorization();
+                app.UseHttpsRedirection();
+                app.UseStaticFiles();
 
-            app.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapAreaControllerRoute(
-             name: "BanTaiQuay",
-            areaName: "BanTaiQuay",
-            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+                app.UseRouting();
+                // Kích hoạt session
+                app.UseSession();
+                app.UseAuthorization();
 
-            app.MapAreaControllerRoute(
-             name: "Admin",
-            areaName: "Admin",
-            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-
-            app.MapControllerRoute(
+                app.MapControllerRoute(
                 name: "Areas",
-                pattern: "{area:exists}/{controller}/{action}/{id?}");
+                pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 

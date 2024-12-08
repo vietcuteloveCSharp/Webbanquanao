@@ -15,7 +15,7 @@ namespace WebView.NghiaDTO
         public int SoLuong { get; set; } = 1;
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }
-        public bool TrangThai { get; set; } = true;
+        public bool TrangThai { get; set; }
         public string HinhAnh { get; set; } = string.Empty;
         public int Id_ThuongHieu { get; set; }
         public int Id_DanhMuc { get; set; }
