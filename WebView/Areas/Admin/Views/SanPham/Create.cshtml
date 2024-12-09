@@ -42,36 +42,40 @@
     </div>
 
     <div id="chiTietSanPhamContainer">
-        <div class="form-group">
-            <label for="Id_MauSac">Màu Sắc</label>
-            <select class="form-control" id="Id_MauSac" name="chiTietSanPhams[0].Id_MauSac">
-                @foreach (var item in ViewBag.MauSacs as SelectList)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        </div>
+        <div class="chiTietSanPham-item" id="chiTietSanPham-template" style="display: none;">
+            <div class="form-group">
+                <label for="Id_MauSac">Màu Sắc</label>
+                <select class="form-control" name="chiTietSanPhams[INDEX].Id_MauSac">
+                    @foreach (var item in ViewBag.MauSacs as SelectList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="Id_KichThuoc">Kích Thước</label>
-            <select class="form-control" id="Id_KichThuoc" name="chiTietSanPhams[0].Id_KichThuoc">
-                @foreach (var item in ViewBag.KichThuocs as SelectList)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="Id_KichThuoc">Kích Thước</label>
+                <select class="form-control" name="chiTietSanPhams[INDEX].Id_KichThuoc">
+                    @foreach (var item in ViewBag.KichThuocs as SelectList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="SoLuong">Số Lượng</label>
-            <input type="number" class="form-control" id="SoLuong" name="chiTietSanPhams[0].SoLuong" value="0" />
-        </div>
-        <!-- Thêm trường chọn file ảnh -->
-        <div class="form-group">
-            <label for="Image">Hình Ảnh</label>
-            <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
-        </div>
+            <div class="form-group">
+                <label for="SoLuong">Số Lượng</label>
+                <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="0" />
+            </div>
 
+            <button type="button" class="btn btn-danger remove-item">Xóa</button>
+        </div>
+    </div>
+
+    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
+    <div class="form-group">
+        <label for="Image">Hình Ảnh</label>
+        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
     </div>
 
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
@@ -99,6 +103,24 @@
             } else {
                 $("#price-convert").html('');
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            let index = 0;
+
+            $("#addChiTiet").click(function () {
+                const template = $("#chiTietSanPham-template").clone(true)
+                    .removeAttr("id")
+                    .css("display", "block");
+                template.html(template.html().replace(/INDEX/g, index));
+                $("#chiTietSanPhamContainer").append(template);
+                index++;
+            });
+
+            $(document).on("click", ".remove-item", function () {
+                $(this).closest(".chiTietSanPham-item").remove();
+            });
         });
     </script>
 }

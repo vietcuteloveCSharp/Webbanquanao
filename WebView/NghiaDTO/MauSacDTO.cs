@@ -9,6 +9,8 @@ namespace WebView.NghiaDTO
 {
     public class MauSacDTO
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Tên là bắt buộc.")]
         [MaxLength(50, ErrorMessage = "không được vượt quá 50 kí tự")]
         [RegularExpression(@"^\S+$", ErrorMessage = "Tên không được chứa chỉ khoảng trắng.")]

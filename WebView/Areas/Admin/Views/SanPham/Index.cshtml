@@ -3,7 +3,53 @@
 @{
     ViewData["Title"] = "Danh sách Sản Phẩm";
 }
+<style>
+    /* Tạo kiểu dáng cho ô màu sắc */
+    .color-box {
+        border-radius: 50%; /* Làm cho ô màu tròn */
+        border: 1px solid #ddd; /* Thêm viền nhẹ cho ô màu */
+        display: inline-block;
+        width: 25px; /* Kích thước ô màu lớn hơn một chút */
+        height: 25px; /* Kích thước ô màu lớn hơn một chút */
+        margin-right: 5px; /* Khoảng cách giữa các ô màu */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+    }
 
+        /* Thêm hiệu ứng hover cho các ô màu */
+        .color-box:hover {
+            transform: scale(1.2); /* Phóng to khi hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+        }
+
+    /* Tạo kiểu dáng cho các nút hành động */
+    .btn {
+        border-radius: 5px; /* Làm tròn các góc của nút */
+        padding: 8px 12px; /* Thêm padding để nút rộng hơn */
+        font-size: 0.9rem; /* Giảm kích thước font cho các nút */
+        transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền khi hover */
+    }
+
+        .btn:hover {
+            background-color: #007bff; /* Màu nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+        }
+
+    .btn-sm {
+        padding: 6px 10px; /* Giảm kích thước nút nhỏ */
+    }
+
+    /* Thêm kiểu cho badge (kích thước) */
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+
+    }
+</style>
 <h1 class="text-center mb-4">Danh sách Sản phẩm</h1>
 <h1>@ViewData["Title"]</h1>
 
@@ -17,7 +63,7 @@
     <table class="table table-striped table-hover" id="myTable">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">Ảnh</th> <!-- Cột ảnh mới -->
+                <th scope="col">Ảnh</th>
                 <th scope="col">Id</th>
                 <th scope="col">Tên Sản Phẩm</th>
                 <th scope="col">Giá</th>
@@ -48,12 +94,45 @@
                     <td>@item.TenSanPham</td>
                     <td>@item.Gia.ToString("#,##0 VNĐ")</td>
                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
-                    <td>@item.TenMauSac</td>
-                    <td>@item.TenKichThuoc</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.TenMauSac))
+                        {
+                            @foreach (var color in item.TenMauSac.Split(","))
+                            {
+                                // Kiểm tra nếu mã màu là hợp lệ
+                                var hexColor = color.Trim();
+                                if (hexColor.StartsWith("#") && (hexColor.Length == 7 || hexColor.Length == 4))
+                                {
+                                    <span class="color-box" style="background-color:@hexColor; display:inline-block; width:20px; height:20px; margin-right:5px;" title="@hexColor"></span>
+                                }
+                                else
+                                {
+                                    <span>Không hợp lệ</span>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <span>Không có màu</span>
+                        }
+                    </td>
+
+                    <td>
+                        <!-- Hiển thị Kích Thước -->
+                        @if (!string.IsNullOrEmpty(item.TenKichThuoc))
+                        {
+                            <span class="badge badge-info">@item.TenKichThuoc</span>
+                        }
+                        else
+                        {
+                            <span>Không có kích thước</span>
+                        }
+                    </td>
+
                     <td>@item.TenDanhMuc</td>
                     <td>@item.TenThuongHieu</td>
                     <td>@item.SoLuong</td>
-                 
+
                     <td>
                         <a asp-action="Edit" asp-controller="SanPham" asp-route-Id="@item.Id_SanPham" class="btn btn-sm btn-warning">
                             <i class="fa fa-edit"></i> Sửa
@@ -70,3 +149,14 @@
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        // Hàm kiểm tra tên màu hợp lệ
+        function IsValidColor(color) {
+            var s = new Option().style;
+            s.color = color;
+            return s.color == color;
+        }
+    </script>
+}

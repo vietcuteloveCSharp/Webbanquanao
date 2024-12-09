@@ -14,7 +14,13 @@ namespace DAL.Entities
         public int SoLuong { get; set; }
 
         public int SanPhamId { get; set; }
+        public int Id_KichThuoc { get; set; }
+
+        public int Id_MauSac { get; set; }
+
         public DateTime NgayTao { get; set; }
         public SanPham SanPham{ get; set; } // Liên kết với bảng Products (nếu có)
+        public KichThuoc KichThuoc{ get; set; } // Liên kết với bảng Products (nếu có)
+        public MauSac MauSac{ get; set; } // Liên kết với bảng Products (nếu có)
     }
 }

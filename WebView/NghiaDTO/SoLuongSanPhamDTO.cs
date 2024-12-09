@@ -9,6 +9,8 @@ namespace WebView.NghiaDTO
         public int SoLuong { get; set; }
 
         public int SanPhamId { get; set; }
+        public int Id_MauSac { get; set; }
+        public int Id_KichThuoc { get; set; }
         public DateTime NgayTao { get; set; }
     }
 }
