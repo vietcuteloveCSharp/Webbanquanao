@@ -64,8 +64,8 @@ namespace WebView
 
 
             //Seedingdata
-            var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
-            SeedData.SeedingData(context);
+            //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
+            //SeedData.SeedingData(context);
             app.Run();
         }
     }

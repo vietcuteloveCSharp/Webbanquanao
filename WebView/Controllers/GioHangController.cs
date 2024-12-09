@@ -65,10 +65,9 @@ namespace WebView.Controllers
             Console.WriteLine($"Received: Product ID={productId}, Color ID={colorId}, Size ID={sizeId}, Quantity={soLuong}");
 
             var chiTietSanPham = _context.ChiTietSanPhams
-      .Include(ct => ct.MauSac)
-      .Include(ct => ct.KichThuoc)
-      .FirstOrDefault(ct => ct.Id_SanPham == productId && ct.Id_MauSac == colorId && ct.Id_KichThuoc == sizeId);
-
+                .Include(ct => ct.MauSac)
+                .Include(ct => ct.KichThuoc)
+                .FirstOrDefault(ct => ct.Id_SanPham == productId && ct.Id_MauSac == colorId && ct.Id_KichThuoc == sizeId);
 
             if (chiTietSanPham == null)
             {
@@ -81,26 +80,43 @@ namespace WebView.Controllers
 
                 return Json(new { success = false, message = "Sản phẩm không tồn tại hoặc không đủ thông tin." });
             }
+
+            // Tạo đối tượng ChiTietSanPhamDTO
             var ctspa = new ChiTietSanPhamDTO
             {
                 Id = chiTietSanPham.Id,
-                Id_KichThuoc =
-               chiTietSanPham.Id_KichThuoc,
-                Id_MauSac = chiTietSanPham.Id_MauSac
-                ,
+                Id_KichThuoc = chiTietSanPham.Id_KichThuoc,
+                Id_MauSac = chiTietSanPham.Id_MauSac,
                 Id_SanPham = chiTietSanPham.Id_SanPham,
-                NgayTao = chiTietSanPham.NgayTao
-                ,
+                NgayTao = chiTietSanPham.NgayTao,
                 SoLuong = chiTietSanPham.SoLuong,
                 TrangThai = chiTietSanPham.TrangThai
             };
+
+            // Lấy giỏ hàng từ session (nếu có)
             var cart = HttpContext.Session.GetObjectFromJson<List<GioHangDTO>>("GioHang") ?? new List<GioHangDTO>();
-            cart.Add(new GioHangDTO { ChiTietSanPhams = ctspa, SoLuong = soLuong });
+
+            // Kiểm tra nếu sản phẩm đã có trong giỏ hàng
+            var existingItem = cart.FirstOrDefault(x => x.ChiTietSanPhams.Id_SanPham == productId &&
+                                                         x.ChiTietSanPhams.Id_MauSac == colorId &&
+                                                         x.ChiTietSanPhams.Id_KichThuoc == sizeId);
+
+            if (existingItem != null)
+            {
+                // Nếu sản phẩm đã có, cộng thêm số lượng
+                existingItem.SoLuong += soLuong;
+            }
+            else
+            {
+                // Nếu sản phẩm chưa có, thêm sản phẩm mới vào giỏ hàng
+                cart.Add(new GioHangDTO { ChiTietSanPhams = ctspa, SoLuong = soLuong });
+            }
+
+            // Lưu lại giỏ hàng vào session
             HttpContext.Session.SetObjectAsJson("GioHang", cart);
 
             return Json(new { success = true, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
-
 
 
 

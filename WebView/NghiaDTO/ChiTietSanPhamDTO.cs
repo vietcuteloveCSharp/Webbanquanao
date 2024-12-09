@@ -18,7 +18,11 @@ namespace WebView.NghiaDTO{
         public int Id_KichThuoc { get; set; }
         public string TenMauSac { get; set; } = string.Empty;
         public string TenKichThuoc { get; set; } = string.Empty;
-        public string TenSanPham { get; set; } = string.Empty;
+        public string TenSanPham { get; set; } = string.Empty;  
+        public int ID_DanhMuc { get; set; }
+        public int ID_ThuongHieu { get; set; }
+        public string TenDanhMuc { get; set; } = string.Empty;
+        public string TenThuongHieu { get; set; } = string.Empty;
          public string HinhAnh { get; set; } = string.Empty;  // Thêm trường HinhAnh
                                                               // Thêm trường Gia
         public decimal Gia { get; set; }  
