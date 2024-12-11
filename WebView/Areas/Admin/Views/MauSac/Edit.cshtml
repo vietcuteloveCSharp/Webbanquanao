@@ -1,0 +1,26 @@
+﻿@model WebView.NghiaDTO.MauSacDTO
+
+<h2>Chỉnh sửa màu sắc</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="TenMauSac">Tên màu sắc</label>
+        <input type="text" class="form-control" asp-for="Ten" id="TenMauSac" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+
+        <label for="MaMauSac">Mã màu sắc</label>
+        <input type="text" class="form-control" asp-for="MaHex" id="MaMauSac" />
+        <span asp-validation-for="MaHex" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sửa màu sắc</button>
+</form>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,19 @@
+﻿@model WebView.NghiaDTO.KichThuocDTO
+
+<h2>Chỉnh sửa Kích Thước</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label for="TenKichThuoc">Tên Kích Thước</label>
+        <input type="text" class="form-control"asp-for="Ten" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Thêm Kích thước</button>
+</form>
+<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
