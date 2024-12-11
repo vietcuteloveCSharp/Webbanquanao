@@ -25,6 +25,7 @@ namespace DAL.Context
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
+        public virtual DbSet<SoLuongSanPham> ProductQuantities { get; set; }
 
         public WebBanQuanAoDbContext()
         {
@@ -68,7 +69,7 @@ namespace DAL.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=HOANGNN\\SQLEXPRESS;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=False;Trusted_Connection = true;");
+            optionsBuilder.UseSqlServer("Data Source=NGHIAFIN\\MSSQLSERVER1;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=False;Trusted_Connection = true;");
         }
     }
 }

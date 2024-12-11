@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
+using WebView.Services.Vnpay;
 
 namespace WebView
 {
@@ -9,6 +10,7 @@ namespace WebView
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             // add httpclient
             builder.Services.AddHttpClient<GetHttpClient>("SystemApiClient", clients =>
             {
@@ -34,6 +36,7 @@ namespace WebView
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -41,36 +44,28 @@ namespace WebView
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
-            app.UseRouting();
-            // Kích hoạt session
-            app.UseSession();
-            app.UseAuthorization();
+                app.UseHttpsRedirection();
+                app.UseStaticFiles();
 
-            app.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapAreaControllerRoute(
-             name: "BanTaiQuay",
-            areaName: "BanTaiQuay",
-            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+                app.UseRouting();
+                // Kích hoạt session
+                app.UseSession();
+                app.UseAuthorization();
 
-            app.MapAreaControllerRoute(
-             name: "Admin",
-            areaName: "Admin",
-            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-
-            app.MapControllerRoute(
+                app.MapControllerRoute(
                 name: "Areas",
-                pattern: "{area:exists}/{controller}/{action}/{id?}");
+                pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 
             //Seedingdata
-            var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
-            SeedData.SeedingData(context);
+            //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
+            //SeedData.SeedingData(context);
             app.Run();
         }
     }
