@@ -1,5 +1,4 @@
-﻿using DAL.Context;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
 using WebView.Services.Vnpay;
 
@@ -45,17 +44,31 @@ namespace WebView
             }
 
 
-                app.UseHttpsRedirection();
-                app.UseStaticFiles();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-                app.UseRouting();
-                // Kích hoạt session
-                app.UseSession();
-                app.UseAuthorization();
+            app.UseRouting();
+            // Kích hoạt session
+            app.UseSession();
+            app.UseAuthorization();
 
-                app.MapControllerRoute(
-                name: "Areas",
-                pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+            app.MapControllerRoute(
+               name: "default",
+               pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapAreaControllerRoute(
+             name: "BanTaiQuay",
+            areaName: "BanTaiQuay",
+            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+
+            app.MapAreaControllerRoute(
+                name: "BanHangOnline",
+                areaName: "BanHangOnline",
+                pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
+
+            app.MapAreaControllerRoute(
+             name: "Admin",
+            areaName: "Admin",
+            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",
