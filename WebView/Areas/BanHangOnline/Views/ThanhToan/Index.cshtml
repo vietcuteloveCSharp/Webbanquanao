@@ -1,0 +1,426 @@
+﻿@{
+    ViewData["Title"] = "Thanh toán";
+}
+<div class="container mt-5">
+    <div class="row">
+
+        <!-- Địa chỉ giao hàng -->
+        <div class="col-md-8">
+            <h5>Địa chỉ giao hàng</h5>
+            <div>
+                <p>
+                    <strong>Họ và tên:</strong> Hoang &nbsp; <strong>SDT:</strong> 0981642651
+                    <strong>Email:</strong>
+                    nhuhoang@gmail.com
+                </p>
+                <div>
+
+                    <!-- Tỉnh / Thành phố -->
+                    <div class="mb-3">
+                        <label for="province" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Tỉnh / Thành phố:
+                        </label>
+                        <select id="province" class="form-select" required>
+                            <option value="">Chọn tỉnh / thành phố</option>
+                            <!-- Options sẽ được thêm qua JavaScript -->
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn tỉnh / thành phố.</div>
+                    </div>
+
+                    <!-- Quận / Huyện -->
+                    <div class="mb-3">
+                        <label for="district" class="form-label">
+                            <i class="fas fa-city"></i> Quận / Huyện:
+                        </label>
+                        <select id="district" class="form-select" required disabled>
+                            <option value="">Chọn quận / huyện</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn quận / huyện.</div>
+                    </div>
+
+                    <!-- Phường / Xã -->
+                    <div class="mb-3">
+                        <label for="ward" class="form-label">
+                            <i class="fas fa-house-user"></i> Phường / Xã:
+                        </label>
+                        <select id="ward" class="form-select" required disabled>
+                            <option value="">Chọn phường / xã</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn phường / xã.</div>
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-location-arrow"></i> Địa chỉ:
+                        </label>
+                        <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ của bạn">
+                        <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể.</div>
+                    </div>
+
+                    <!-- Ghi chú -->
+                    <div class="mb-3">
+                        <label for="note" class="form-label">
+                            <i class="fas fa-pencil-alt"></i> Ghi chú:
+                        </label>
+                        <textarea id="note" class="form-control" rows="3"
+                                  placeholder="Nhập ghi chú của bạn"></textarea>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <!-- Phương thức thanh toán -->
+            <h5>Phương thức thanh toán</h5>
+            <div>
+                <div>
+                    <input type="radio" name="payment_method" id="vnpay" value="vnpay" checked>
+                    <label for="vnpay">Thẻ ATM/Visa/Master/JCB/QR Pay qua VNPAY-QR</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn hàng -->
+        <div class="col-md-4">
+            <form id="shipping-form" class="needs-validation" novalidate>
+                <h5>Đơn hàng</h5>
+                <div>
+                    <label for="discount-code">Mã phiếu giảm giá</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="discount-code"
+                               placeholder="Nhập mã phiếu giảm giá">
+                        <button class="btn btn-danger" id="apply-discount">Áp dụng</button>
+                    </div>
+                    <a href="#" id="my-vouchers" class="text-decoration-underline" data-bs-toggle="modal"
+                       data-bs-target="#voucherModal">
+                        Phiếu giảm giá của tôi
+                    </a>
+                </div>
+                <hr>
+                <div>
+                    <p><strong>Tạm tính:</strong> <span id="subtotal">244.300 ₫</span></p>
+                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 ₫</span></p>
+                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 ₫</span></p>
+                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">274,300 ₫</span></p>
+                    <button class="btn btn-danger w-100">Đặt hàng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Giỏ hàng -->
+    <div class="row mt-4">
+        <h5>Giỏ hàng</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Tên Hàng</th>
+                    <th scope="col">Giá</th>
+                    <th scope="col">Số Lượng</th>
+                    <th scope="col">Tổng Tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="mt-2 mb-2">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
+                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
+                        </div>
+                    </td>
+                    <td>
+                        <div class=" align-items-center">
+                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
+                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
+                            <p class="mb-1">Kích thước: <span>Size L</span></p>
+                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-start">
+                            <p class="text-danger fw-bold mb-1">244.300đ</p>
+                            <p class="text-decoration-line-through mb-1">349.000đ</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <p class="fw-bold mb-0 text-start amount">
+                                1
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column align-items-start">
+                            <p class="fw-bold mb-0 text-start total-price">
+                                244,300đ
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="mt-2 mb-2">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
+                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
+                        </div>
+                    </td>
+                    <td>
+                        <div class=" align-items-center">
+                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
+                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
+                            <p class="mb-1">Kích thước: <span>Size L</span></p>
+                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-start">
+                            <p class="text-danger fw-bold mb-1">244.300đ</p>
+                            <p class="text-decoration-line-through mb-1">349.000đ</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <p class="fw-bold mb-0 text-start amount">
+                                1
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column align-items-start">
+                            <p class="fw-bold mb-0 text-start total-price">
+                                244,300đ
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Phiếu Giảm Giá -->
+<div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Phiếu giảm giá của tôi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control mb-3" id="search-voucher"
+                       placeholder="Nhập mã phiếu giảm giá">
+                <button class="btn btn-danger w-100" id="search-discount">Tìm kiếm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script defer>
+    const API_KEY = '3ca6ba1b-b145-11ef-8350-bab7316192b7'; // Thay bằng API key của bạn
+    const BASE_URL = 'https://online-gateway.ghn.vn/shiip/public-api';
+    const shopId = 5497668;
+
+    const provinceSelect = document.getElementById('province');
+    const districtSelect = document.getElementById('district');
+    const wardSelect = document.getElementById('ward');
+    const form = document.getElementById('shipping-form');
+
+    const subtotal = document.getElementById('subtotal');
+    const feeResult = document.getElementById('shipping-fee');
+    const discountAmount = document.getElementById('discount-amount');
+    const totalAmount = document.getElementById('total-amount');
+
+    function changeVndToNumber(params) {
+        let total = Math.round(params.replaceAll(',', '').replaceAll('.', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
+        return total;
+    }
+
+    const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+    function totalThanhToan() {
+        let tamTinh = changeVndToNumber(subtotal.innerText.trim());
+        let phivanchuyen = changeVndToNumber(feeResult.innerText.trim());
+        let discountamount = changeVndToNumber(discountAmount.innerText.trim());
+
+        let total = tamTinh + phivanchuyen + discountamount;
+        totalAmount.innerText = `${formatCurrency(total)}`;
+    }
+    function tamTinhTotal() {
+        let alltotalPrice = document.querySelectorAll('.total-price');
+        let total = 0;
+        alltotalPrice.forEach(e => {
+            total += changeVndToNumber(e.innerHTML);
+        });
+        subtotal.innerText = `${formatCurrency(total)}`;
+    }
+
+    tamTinhTotal()
+    totalThanhToan();
+
+    document.getElementById('apply-discount').addEventListener('click', function () {
+        const discountCode = document.getElementById('discount-code').value;
+        if (!discountCode) {
+            alert('Vui lòng nhập mã giảm giá');
+            return;
+        }
+        // Call API kiểm tra mã giảm giá
+        fetch('check-ma-giam-gia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: discountCode })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    document.getElementById('discount-amount').textContent = `-${data.discountAmount}đ`;
+                    alert('Áp dụng mã giảm giá thành công!');
+                } else {
+                    alert('Mã giảm giá không hợp lệ!');
+                }
+            });
+    });
+
+    document.getElementById('search-discount').addEventListener('click', function () {
+        const voucher = document.getElementById('search-voucher').value;
+        if (!voucher) {
+            alert('Vui lòng nhập mã phiếu giảm giá để tìm kiếm!');
+            return;
+        }
+        // Call API tìm mã giảm giá
+        fetch('check-ma-giam-gia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: voucher })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    alert(`Mã giảm giá "${voucher}" hợp lệ: Giảm ${data.discountAmount}đ`);
+                } else {
+                    alert('Không có mã giảm giá hợp lệ.');
+                }
+            });
+    });
+
+
+
+    // Hàm lấy danh sách tỉnh
+    async function loadProvinces() {
+        const response = await fetch(`${BASE_URL}/master-data/province`, {
+            headers: { 'Token': API_KEY }
+        });
+        const data = await response.json();
+        data.data.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province.ProvinceID;
+            option.textContent = province.ProvinceName;
+            provinceSelect.appendChild(option);
+        });
+    }
+
+    // Hàm lấy danh sách quận
+    async function loadDistricts(provinceId) {
+        districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
+        districtSelect.disabled = true;
+        const response = await fetch(`${BASE_URL}/master-data/district`, {
+            headers: { 'Content-Type': 'application/json', 'Token': API_KEY },
+            method: 'POST',
+            body: JSON.stringify({ province_id: parseInt(provinceId) })
+        });
+        const data = await response.json();
+        data.data.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.DistrictID;
+            option.textContent = district.DistrictName;
+            districtSelect.appendChild(option);
+        });
+        districtSelect.disabled = false;
+    }
+
+    // Hàm lấy danh sách phường
+    async function loadWards(districtId) {
+        wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
+        wardSelect.disabled = true;
+        const response = await fetch(`${BASE_URL}/master-data/ward`, {
+            headers: { 'Content-Type': 'application/json', 'Token': API_KEY },
+            method: 'POST',
+            body: JSON.stringify({ district_id: parseInt(districtId) })
+        });
+        const data = await response.json();
+        data.data.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward.WardCode;
+            option.textContent = ward.WardName;
+            wardSelect.appendChild(option);
+        });
+        wardSelect.disabled = false;
+    }
+
+    provinceSelect.addEventListener('change', () => {
+        districtSelect.disabled = true;
+        wardSelect.disabled = true;
+        wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
+        districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
+        feeResult.textContent = '0đ';
+        const provinceId = provinceSelect.value;
+        if (provinceSelect.value) {
+            loadDistricts(provinceId)
+        }
+    });
+    // Sự kiện thay đổi quận
+    districtSelect.addEventListener('change', () => {
+        wardSelect.disabled = true;
+        wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
+        feeResult.textContent = '0đ';
+        const districtId = districtSelect.value;
+        if (districtId) loadWards(districtId);
+    });
+
+    // Sự kiện submit form
+    wardSelect.addEventListener('change', async (e) => {
+        e.preventDefault();
+        const provinceId = provinceSelect.value;
+        const districtId = districtSelect.value;
+        const wardCode = wardSelect.value;
+        const address = document.getElementById('address').value;
+
+
+        const requestData = {
+            "service_type_id": 5,
+            "from_district_id": 3440,
+            "from_ward_code": "13010",
+            "to_district_id": parseInt(districtId),
+            "to_ward_code": `${wardCode}`,
+            "weight": 100,
+            "insurance_value": 0,
+            "coupon": null,
+            "items": [
+                {
+                    "name": "TEST1",
+                    "quantity": 1,
+                    "height": 100,
+                    "weight": 100,
+                    "length": 100,
+                    "width": 100
+                }
+            ]
+        };
+
+        const response = await fetch(`${BASE_URL}/v2/shipping-order/fee`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Token': API_KEY,
+                'ShopId': shopId
+            },
+            method: 'POST',
+            body: JSON.stringify(requestData)
+        });
+        const data = await response.json();
+        let numberRan = Math.random() * 0.09;
+        let totalFee = Math.round(data.data.total * numberRan);
+        feeResult.textContent = `${formatCurrency(totalFee)}`;
+        totalThanhToan();
+    });
+
+    // Tải danh sách tỉnh khi trang được load
+    loadProvinces();
+</script>

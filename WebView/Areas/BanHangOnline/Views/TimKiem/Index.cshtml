@@ -1,0 +1,321 @@
+﻿@{
+    ViewData["Title"] = "Tìm kiếm";
+}
+<style>
+   
+    .content {
+        padding: 0 147px;
+    }
+
+    /*  */
+    .product-card {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .product-card img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .product-item-name {
+        display: flex;
+        color: #333f48;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.43;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .price {
+        width: 100%;
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 22px;
+        display: block;
+        margin-bottom: 0;
+        margin-left: 0;
+        display: flex;
+        justify-content: start;
+    }
+
+    .old-price {
+        text-decoration-line: line-through;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+        display: block;
+        margin-right: 10px;
+        margin-bottom: 0;
+    }
+
+    .discount {
+        order: 3;
+        font-weight: 600;
+        color: #da291c;
+        font-size: 14px;
+        line-height: 22px;
+        display: block;
+    }
+
+    /* Từ khóa tìm kiếm */
+    .tieude-timkiem {
+        font-size: 20px;
+        line-height: 24px;
+        color: rgb(85, 85, 85);
+        margin-right: 5px;
+    }
+
+    .keyword-timkiem {
+        font-size: 20px;
+        line-height: 24px;
+        color: rgb(85, 85, 85);
+        margin-right: 5px;
+
+    }
+
+    .soluong-timkiem {
+        font-size: 14px;
+        line-height: 18px;
+        color: rgb(85, 85, 85);
+    }
+</style>
+
+
+@* content *@
+<div class="content mt-5 mb-5">
+    <div class="row">
+        <div class="col-2" style="max-height: 800px; overflow: auto;">
+            <form action="#" method="get">
+                <input type="submit" class="btn btn-danger" value="Lọc sản phẩm">
+                <div class="mt-4 mb-2">
+                    <h4>Khoảng giá</h4>
+                    <input type="range" class="form-range" min="0" max="1000000" value="1000000" name="khoangia"
+                           step="1" id="rangeInput">
+                    <div class="d-flex justify-content-between">
+                        <span id="minRange">0</span>
+                        <span><i class="fa-solid fa-arrow-right"></i></span>
+                        <span id="maxRange">1000000</span>
+                    </div>
+                </div>
+                <div class="accordion mt-4" id="BoLocTimKiem">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingDanhMuc">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseDanhMuc" aria-expanded="false"
+                                    aria-controls="collapseDanhMuc">
+                                Danh mục
+                            </button>
+                        </h2>
+                        <div id="collapseDanhMuc" class="accordion-collapse collapse "
+                             aria-labelledby="headingDanhMuc">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="danhmuc" id="danhmuc1"
+                                           value="Dm1">
+                                    <label class="form-check-label" for="danhmuc1">
+                                        Danh muc 1
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="danhmuc" id="danhmuc2"
+                                           value="Dm2">
+                                    <label class="form-check-label" for="danhmuc2">
+                                        Danh muc 2
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingMauSac">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseMauSac" aria-expanded="false"
+                                    aria-controls="collapseMauSac">
+                                Màu sắc
+                            </button>
+                        </h2>
+                        <div id="collapseMauSac" class="accordion-collapse collapse"
+                             aria-labelledby="headingMauSac">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="mausac" id="mausac1"
+                                           value="Ms1">
+                                    <label class="form-check-label" for="mausac1">
+                                        Màu trắng
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="mausac" id="mausac2"
+                                           value="Ms2">
+                                    <label class="form-check-label" for="mausac2">
+                                        Màu đen
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingKichThuoc">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseKichThuoc" aria-expanded="false"
+                                    aria-controls="collapseKichThuoc">
+                                Kích thước
+                            </button>
+                        </h2>
+                        <div id="collapseKichThuoc" class="accordion-collapse collapse"
+                             aria-labelledby="headingKichThuoc">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="kichthuoc" id="kichthuoc1"
+                                           value="Kt1">
+                                    <label class="form-check-label" for="mausac1">
+                                        Size S
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="kichthuoc" id="kichthuoc2"
+                                           value="Kt2">
+                                    <label class="form-check-label" for="mausac2">
+                                        Size L
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="col-10 " style="min-height: 500px;">
+            <!-- Từ khóa tìm kiếm -->
+            <div class="timkiem-keyword d-flex justify-content-start mt-3 mb-2">
+                <span class="tieude-timkiem">Kết quả tìm kiếm:</span>
+                <b class="keyword-timkiem">Áo khoác</b>
+                <span class="soluong-timkiem">128 sản phẩm</span>
+            </div>
+            <br>
+            <div class="border border-1 border-bottom border-black"></div>
+            <!-- Dropdown sắp xếp -->
+            <div class="timkiem-dropdown-sapxep mt-3 mb-3">
+                <div class="d-flex justify-content-start align-content-center">
+                    <div class="me-4 align-content-center">
+                        <span style="font-size: 20px;font-weight: 400;">Sắp xếp theo</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdown-sapxep"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Mặc định
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown-sapxep">
+                            <li><a class="dropdown-item" href="#">Mặc định</a></li>
+                            <li><a class="dropdown-item" href="#">Mới nhất</a></li>
+                            <li><a class="dropdown-item" href="#">Giá từ thấp đến cao</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Phần danh sách sản phẩm -->
+            <div class="row ">
+                <div class="col-4 mt-2 mb-2">
+                    <div class="product-card">
+                        <a href="#">
+                            <img class="imgsub"
+                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
+                                 alt="Product 1">
+                        </a>
+                        <div class="d-flex flex-column justify-content-start">
+                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
+                            <p class="price">384.300 đ</p>
+                            <div class="d-flex justify-content-start">
+                                <p class="old-price">549.000 đ</p>
+                                <p class="discount">-30%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 mt-2 mb-2">
+                    <div class="product-card">
+                        <a href="#">
+                            <img class="imgsub"
+                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
+                                 alt="Product 1">
+                        </a>
+                        <div class="d-flex flex-column justify-content-start">
+                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
+                            <p class="price">384.300 đ</p>
+                            <div class="d-flex justify-content-start">
+                                <p class="old-price">549.000 đ</p>
+                                <p class="discount">-30%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 mt-2 mb-2">
+                    <div class="product-card">
+                        <a href="#">
+                            <img class="imgsub"
+                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
+                                 alt="Product 1">
+                        </a>
+                        <div class="d-flex flex-column justify-content-start">
+                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
+                            <p class="price">384.300 đ</p>
+                            <div class="d-flex justify-content-start">
+                                <p class="old-price">549.000 đ</p>
+                                <p class="discount">-30%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 mt-2 mb-2">
+                    <div class="product-card">
+                        <a href="#">
+                            <img class="imgsub"
+                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
+                                 alt="Product 1">
+                        </a>
+                        <div class="d-flex flex-column justify-content-start">
+                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
+                            <p class="price">384.300 đ</p>
+                            <div class="d-flex justify-content-start">
+                                <p class="old-price">549.000 đ</p>
+                                <p class="discount">-30%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Lấy các phần tử cần sử dụng
+    const rangeInput = document.getElementById('rangeInput');
+    const minRange = document.getElementById('minRange');
+    const maxRange = document.getElementById('maxRange');
+
+    // Lắng nghe sự kiện 'input' khi người dùng thay đổi giá trị của input
+    rangeInput.addEventListener('input', () => {
+        const min = parseInt(rangeInput.min); // Lấy giá trị min
+        const value = parseInt(rangeInput.value); // Lấy giá trị hiện tại
+
+        // Đảm bảo giá trị mới không nhỏ hơn hoặc bằng giá trị min
+        if (value > min) {
+            maxRange.textContent = value;
+        } else {
+            maxRange.textContent = min + 1; // Giá trị không được nhỏ hơn min
+            rangeInput.value = min + 1; // Reset lại giá trị
+        }
+    });
+</script>
