@@ -52,10 +52,16 @@ namespace WebView
             app.MapControllerRoute(
                name: "default",
                pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapAreaControllerRoute(
              name: "BanTaiQuay",
             areaName: "BanTaiQuay",
             pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+
+            app.MapAreaControllerRoute(
+            name: "BanHangOnline",
+             areaName: "BanHangOnline",
+            pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
 
             app.MapAreaControllerRoute(
              name: "Admin",
