@@ -25,6 +25,7 @@ namespace DAL.Context
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
+        public virtual DbSet<SoLuongSanPham> ProductQuantities { get; set; }
 
         public WebBanQuanAoDbContext()
         {
