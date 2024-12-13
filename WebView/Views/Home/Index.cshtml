@@ -3,31 +3,76 @@
 <div class="col-sm-3">
     @Html.Partial("_SidebarPartial")
 </div>
+
 <style>
+    /* Style cho các lựa chọn màu sắc và kích thước */
+    .size-option,
+    .color-option {
+        display: inline-block;
+        border-radius: 50%; /* Bo tròn cho màu sắc */
+        padding: 10px;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .color-option {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #ddd;
+    }
+
+        .color-option:hover,
+        .color-option.selected {
+            border-color: #ff5722; /* Màu viền khi hover hoặc đã chọn */
+        }
+
+    .size-option {
+        padding: 8px 16px;
+        font-size: 14px;
+        background-color: #f5f5f5;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+    }
+
+        .size-option:hover,
+        .size-option.selected {
+            background-color: #ff5722; /* Màu nền khi hover hoặc đã chọn */
+            color: white;
+            border-color: #ff5722;
+        }
+
+    .product-options {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Khoảng cách giữa các lựa chọn */
+        margin-top: 10px;
+        flex-wrap: wrap; /* Cho phép các lựa chọn xuống dòng khi không đủ chỗ */
+    }
+
+    /* Điều chỉnh giao diện cho phần sản phẩm */
     .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
-        justify-content: space-around; /* Đảm bảo khoảng cách đều giữa các sản phẩm */
+        justify-content: space-around;
+    }
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        transition: all 0.3s ease-in-out;
     }
 
     .product-image img {
         width: 100%;
-        height: 200px; /* Chiều cao cố định */
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy khung mà không bị méo */
-        border-bottom: 1px solid #ddd;
-    }
-
-    .product-card {
-        border: 1px solid #ddd;
+        height: 200px;
+        object-fit: cover;
         border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: hidden;
-        height: 100%; /* Để các khung sản phẩm đều nhau */
+        border-bottom: 1px solid #ddd;
     }
 
     .product-info {
@@ -38,79 +83,26 @@
 
     .product-name {
         font-size: 16px;
-        color: #333;
-        margin-bottom: 5px;
         font-weight: bold;
     }
 
     .product-price {
         font-size: 18px;
         color: #ff5722;
-        margin-bottom: 10px;
-        font-weight: bold;
     }
-
-    .product-options {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 10px;
+    /* Thêm opacity và pointer-events cho các lựa chọn không hợp lệ */
+    .size-option.disabled,
+    .color-option.disabled {
+        opacity: 0.4; /* Làm cho màu và kích thước mờ đi */
+        pointer-events: none; /* Ngăn không cho người dùng chọn các lựa chọn này */
     }
-
-    .color-selection,
-    .size-selection {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .color-option {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        cursor: pointer;
-        border: 2px solid transparent;
-    }
-
-        .color-option:hover,
-        .color-option.selected {
-            border-color: #ff5722;
-        }
-
-    .size-option {
-        padding: 5px 10px;
-        background-color: #f5f5f5;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-        .size-option:hover,
-        .size-option.selected {
-            background-color: #ff5722;
-            color: white;
-        }
-
-    .btn.add-to-cart {
-        margin-top: 10px;
-        background-color: #ff5722;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        width: 100%;
-    }
-
-        .btn.add-to-cart:hover {
-            background-color: #e64a19;
-        }
 
 </style>
+
 <h2 class="title text-center">Sản Phẩm</h2>
+
 <div class="product-container">
     <div class="product-grid">
-
         @foreach (var item in Model)
         {
             <div class="product-card" data-product-id="@item.Id">
@@ -122,113 +114,105 @@
                 <div class="product-info">
                     <p class="product-name">@item.Ten</p>
                     <p class="product-price">@item.Gia.ToString("#,##0") VND</p>
+
                     <div class="product-options">
-                        @{
-                            var selectedColors = new HashSet<string>();
-                            var selectedSizes = new HashSet<string>();
-                        }
                         <div class="color-selection">
-                            @foreach (var ct in item.ChiTietSanPhams)
+                            @foreach (var ct in item.ChiTietSanPhams.GroupBy(c => c.MauSac))
                             {
-                                if (ct.MauSac != null && !selectedColors.Contains(ct.MauSac.MaHex))
+                                if (ct.Key != null)
                                 {
                                     <span class="color-option"
-                                          style="background-color: @ct.MauSac.MaHex;"
-                                          title="@ct.MauSac.Ten"
-                                          data-color-id="@ct.MauSac.Id">
+                                          style="background-color: @ct.Key.MaHex;"
+                                          data-color-id="@ct.Key.Id"
+                                          data-product-id="@item.Id">
                                     </span>
-                                    selectedColors.Add(ct.MauSac.MaHex);
                                 }
                             }
                         </div>
                         <div class="size-selection">
-                            @foreach (var ct in item.ChiTietSanPhams)
+                            @foreach (var ct in item.ChiTietSanPhams.GroupBy(c => c.KichThuoc))
                             {
-                                if (ct.KichThuoc != null && !selectedSizes.Contains(ct.KichThuoc.Ten))
+                                if (ct.Key != null)
                                 {
-                                    <span class="size-option" data-size-id="@ct.KichThuoc.Id">
-                                        @ct.KichThuoc.Ten
+                                    <span class="size-option"
+                                          data-size-id="@ct.Key.Id"
+                                          data-color-id="@ct.First().MauSac.Id"
+                                          data-product-id="@item.Id">
+                                        @ct.Key.Ten
                                     </span>
-                                    selectedSizes.Add(ct.KichThuoc.Ten);
                                 }
                             }
                         </div>
                     </div>
-                    <a>
 
-                        <!-- Nút Thêm vào giỏ hàng bên ngoài thẻ <a> -->
-                        @if (item.SoLuong > 0)
-                        {
-                            <button class="btn add-to-cart" data-product_id="@item.Id">
-                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
-                            </button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-default disabled" disabled>
-                                <i class="fa fa-shopping-cart"></i> Hết hàng
-                            </button>
-                        }
-                    </a>
-
+                    <button class="btn add-to-cart" data-product-id="@item.Id">
+                        <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
+                    </button>
                 </div>
             </div>
         }
-
     </div>
 </div>
-
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            var selectedColor = null;
-            var selectedSize = null;
-
-            // Lắng nghe sự kiện chọn màu sắc
+            // Lắng nghe sự kiện chọn màu
             $('.color-option').click(function () {
-                var productId = $(this).closest('.product-card').data("product-id"); // Lấy productId từ data attribute
-                var colorId = $(this).data("color-id");
-                var colorHex = $(this).css("background-color");
+                const productId = $(this).data('product-id');
+                const colorId = $(this).data('color-id');
 
-                $(this).siblings().removeClass('selected'); // Hủy chọn màu trước đó
-                $(this).addClass('selected'); // Chọn màu hiện tại
+                // Highlight màu đã chọn
+                $(`.product-card[data-product-id="${productId}"] .color-option`).removeClass('selected');
+                $(this).addClass('selected');
 
-                selectedColor = colorId; // Lưu lại màu đã chọn
+                // Kiểm tra kích thước liên quan và gạch những kích thước không hợp lệ
+                $(`.product-card[data-product-id="${productId}"] .size-option`).each(function () {
+                    if ($(this).data('color-id') == colorId) {
+                        $(this).removeClass('disabled');
+                        $(this).css('opacity', '1'); // Hiện lại kích thước
+                    } else {
+                        $(this).addClass('disabled');
+                        $(this).css('opacity', '0.4'); // Làm mờ kích thước không hợp lệ
+                    }
+                });
 
-                console.log("Sản phẩm ID:", productId, "Màu đã chọn:", colorId);
+                // Reset selected size nếu không hợp lệ
+                const selectedSize = $(`.product-card[data-product-id="${productId}"] .size-option.selected`);
+                if (selectedSize.length > 0 && selectedSize.data('color-id') != colorId) {
+                    selectedSize.removeClass('selected');
+                }
             });
 
             // Lắng nghe sự kiện chọn kích thước
             $('.size-option').click(function () {
-                var productId = $(this).closest('.product-card').data("product-id"); // Lấy productId từ data attribute
-                var sizeId = $(this).data("size-id");
+                const productId = $(this).data('product-id');
+                if ($(this).hasClass('disabled')) return;
 
-                $(this).siblings().removeClass('selected'); // Hủy chọn size trước đó
-                $(this).addClass('selected'); // Chọn size hiện tại
-
-                selectedSize = sizeId; // Lưu lại size đã chọn
-
-                console.log("Sản phẩm ID:", productId, "Size đã chọn:", sizeId);
+                $(`.product-card[data-product-id="${productId}"] .size-option`).removeClass('selected');
+                $(this).addClass('selected');
             });
 
-            // Sự kiện thêm vào giỏ hàng
+            // Xử lý sự kiện thêm vào giỏ hàng
             $('.add-to-cart').click(function () {
+                const productId = $(this).data('product-id');
+                const selectedColor = $(`.product-card[data-product-id="${productId}"] .color-option.selected`).data('color-id');
+                const selectedSize = $(`.product-card[data-product-id="${productId}"] .size-option.selected`).data('size-id');
+
                 if (!selectedColor || !selectedSize) {
                     Swal.fire({
-                        title: 'Lỗi!',
-                        text: 'Bạn phải chọn màu và kích thước!',
-                        icon: 'error',
+                        title: 'Chưa chọn đầy đủ!',
+                        text: 'Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng.',
+                        icon: 'warning',
                         confirmButtonText: 'OK'
                     });
                     return;
                 }
 
-                var productId = $(this).closest('.product-card').data("product-id"); // Lấy ID của sản phẩm khi thêm vào giỏ
-
+                // Gửi yêu cầu AJAX thêm vào giỏ hàng
                 $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddToCart", "GioHang")",
+                    type: 'POST',
+                    url: '@Url.Action("AddToCart", "GioHang")',
                     data: {
                         productId: productId,
                         colorId: selectedColor,
@@ -238,7 +222,7 @@
                     success: function (response) {
                         Swal.fire({
                             title: response.success ? 'Thành công!' : 'Thất bại!',
-                            text: response.message || 'Không thể thêm sản phẩm vào giỏ hàng',
+                            text: response.message || 'Không thể thêm sản phẩm vào giỏ hàng.',
                             icon: response.success ? 'success' : 'error',
                             confirmButtonText: 'OK'
                         });
@@ -246,7 +230,7 @@
                     error: function () {
                         Swal.fire({
                             title: 'Lỗi!',
-                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng',
+                            text: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -254,13 +238,5 @@
                 });
             });
         });
-
-        $(document).ready(function () {
-            $('.add-to-cart').click(function () {
-                var productId = $(this).closest('.product-card').data("product-id");
-                console.log("ID sản phẩm:", productId);
-            });
-        });
-
     </script>
 }

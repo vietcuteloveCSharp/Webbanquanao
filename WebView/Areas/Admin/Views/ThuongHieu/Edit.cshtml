@@ -1,0 +1,38 @@
+﻿@model WebView.NghiaDTO.ThuongHieuDTO
+
+<h2>Chỉnh sửa Thương Hiệu</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="Ten">Tên Thương Hiệu</label>
+        <input type="text" class="form-control" asp-for="Ten" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MoTa">Mô Tả</label>
+        <input type="text" class="form-control" asp-for="MoTa" />
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TrangThai">Trạng Thái</label>
+        <select class="form-control" asp-for="TrangThai">
+            <option value="true">Kích Hoạt</option>
+            <option value="false">Không Kích Hoạt</option>
+        </select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+</form>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

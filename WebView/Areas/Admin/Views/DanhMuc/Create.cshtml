@@ -1,0 +1,30 @@
+﻿@model WebView.NghiaDTO.DanhMucDTO
+
+<h2>Thêm mới Danh Mục</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="TenDanhMuc">Tên Danh Mục</label>
+        <input type="text" class="form-control" asp-for="TenDanhMuc" />
+        <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TrangThai">Trạng Thái</label>
+        <select class="form-control" asp-for="TrangThai">
+            <option value="true">Kích Hoạt</option>
+            <option value="false">Không Kích Hoạt</option>
+        </select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm Danh Mục</button>
+</form>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
