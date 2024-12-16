@@ -1,0 +1,248 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+<style>
+    .cart-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .soluongsp {
+        margin: 0px 0px 0px 8px;
+        line-height: 1.5;
+        text-transform: none;
+        font-family: SVN-poppins, sans-serif;
+        font-weight: 400;
+        font-size: 12px;
+    }
+
+    .order-box {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        max-width: 400px;
+        margin: 50px auto;
+        background-color: #fff;
+    }
+
+    .order-total {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d9534f;
+    }
+
+    .submit-btn {
+        background-color: #d9534f;
+        color: white;
+        border: none;
+    }
+
+    .submit-btn:hover {
+        background-color: #c9302c;
+    }
+</style>
+
+<div class="container my-4 mt-4">
+    <div class="row">
+        <div class="col-8 bg-light">
+            <h4>GIỎ HÀNG <span class="text-danger soluongsp">(1 sản phẩm)</span></h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Tên Hàng</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Số Lượng</th>
+                        <th scope="col">Tổng Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="mt-2 mb-2">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
+                                     style="width: 100px;" alt="product" class="img-thumbnail me-3">
+                            </div>
+                        </td>
+                        <td>
+                            <div class=" align-items-center">
+                                <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
+                                <p class="mb-1 text-muted">Mã SP: 40000795</p>
+                                <p class="mb-1">Kích thước: <span id="current-size">Size L</span></p>
+                                <p class="mb-1">Màu sắc: <span id="current-color">Trắng</span></p>
+                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modal-sp1">
+                                    Chọn
+                                    phân loại
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-start">
+                                <p class="text-danger fw-bold mb-1" id="price1">244.300đ</p>
+                                <p class="text-decoration-line-through mb-1">349.000đ</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-outline-danger me-2" id="btn-decrease-1"
+                                        onclick="updateQuantity(1,-1)">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity1" class="form-control text-center" value="1"
+                                       style="width: 80px;" readonly>
+                                <button class="btn btn-sm btn-outline-primary ms-2" id="btn-increase-1"
+                                        onclick="updateQuantity(1,1)">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="position-relative">
+                            <div class="d-flex flex-column align-items-end">
+                                <p class="fw-bold mb-0 text-end position-absolute top-0 end-0 total-price"
+                                   id="total-price-1">
+                                    244,300đ
+                                </p>
+                                <button class="btn btn-link text-danger position-absolute bottom-0 end-0"
+                                        onclick="confirmDelete(this)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-4">
+            <div class="order-box text-center">
+                <h4 class="mb-3">ĐƠN HÀNG</h4>
+                <div class="mb-3 d-flex justify-content-between">
+                    <span>Tổng giá trị đơn hàng</span>
+                    <div id="order-total">244.300đ</div>
+                </div>
+                <form id="paymentForm" action="thanh-toan" method="GET">
+                    <button type="submit" class="btn submit-btn w-100 py-2">
+                        TIẾP TỤC THANH TOÁN →
+                    </button>
+                </form>
+                <p class="mt-3 text-muted">
+                    Dùng mã giảm giá của <strong>TokyoLife</strong> trong bước tiếp theo
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-sp1" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="/thay-doi-phan-loai" method="post">
+                <h5 class="modal-title">Chọn phân loại</h5>
+                <hr>
+                <div>
+                    <h6>Màu sắc:</h6>
+                    <div class="form-check d-flex align-items-center mb-2">
+                        <input class="form-check-input me-2" type="radio" name="mausac" id="mausac1" value="mausac1"
+                               checked>
+                        <label class="form-check-label" for="mausac1">
+                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
+                                 alt="color" style="width: 50px;height: 50px;" class="me-2 rounded-circle">
+                            Màu đen
+                        </label>
+                    </div>
+                    <div class="form-check d-flex align-items-center mb-2">
+                        <input class="form-check-input me-2" type="radio" name="mausac" id="mausac2"
+                               value="mausac2">
+                        <label class="form-check-label" for="mausac2">
+                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-1-u.webp"
+                                 alt="color" style="width: 50px;height: 50px;" class="me-2 rounded-circle">
+                            Màu Trắng
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <h6>Kích thước:</h6>
+                    <div class="form-check d-flex align-items-center mb-2">
+                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc1"
+                               value="kicthuoc1" checked>
+                        <label class="form-check-label" for="kicthuoc1">
+                            Size S
+                        </label>
+                    </div>
+                    <div class="form-check d-flex align-items-center mb-2">
+                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc2"
+                               value="kicthuoc2">
+                        <label class="form-check-label" for="kicthuoc2">
+                            Size M
+                        </label>
+                    </div>
+                    <div class="form-check d-flex align-items-center mb-2">
+                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc3"
+                               value="kicthuoc3">
+                        <label class="form-check-label" for="kicthuoc3">
+                            Size L
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-end">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Trở lại</button>
+                    <button class="btn btn-primary" onclick="changeType()">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script defer>
+    // const price = 244300;
+    const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+    function updateQuantity(index, change) {
+        const price = parseInt(document.getElementById(`price${index}`).innerHTML.replaceAll('đ', '').replaceAll(',', '').replaceAll('.', '').trim());
+
+        const quantity = document.getElementById(`quantity${index}`);
+        let newQuantity = parseInt(quantity.value) + change;
+        if (newQuantity < 1) return;
+        quantity.value = newQuantity;
+
+        $(`#btn-decrease-${index}`).prop("disabled", newQuantity === 1);
+
+        // Update total price
+        $(`#total-price-${index}`).text(formatCurrency(newQuantity * price));
+        updateDonHang()
+        // Call API
+        console.log(`Call API: update-so-luong, quantity=${newQuantity}`);
+    }
+    function updateDonHang() {
+        let allTotalPrice = document.querySelectorAll(".total-price");
+        let totalPriceSubmit = 0;
+        allTotalPrice.forEach(ele => {
+            console.log(ele);
+            let priceTotal = parseInt(ele.innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '').trim());
+            totalPriceSubmit += priceTotal;
+        });
+        $(`#order-total`).text(formatCurrency(totalPriceSubmit));
+    }
+    updateDonHang();
+    function confirmDelete(obj) {
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+            console.log("Call API: xoa-san-phan-khoi-gio-hang");
+            console.log(obj.value);
+        }
+    }
+
+    function changeType() {
+        console.log("Call API: thay-doi-phan-loai");
+        $("#selectModal").modal("hide");
+    }
+</script>

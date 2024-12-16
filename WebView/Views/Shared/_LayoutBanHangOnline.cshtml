@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    @* slick css *@
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Slick JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'SVN-poppins', sans-serif;
+            color: #333f48;
+            letter-spacing: 0;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        a {
+            text-decoration: none;
+        }
+        h5 {
+            margin: 0px 0px 24px;
+            font-family: SVN-poppins, sans-serif;
+            text-transform: none;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 18px;
+            color: rgb(0, 0, 0);
+            cursor: text;
+            user-select: text;
+        }
+
+        .css-21p8mg {
+            margin: 0px;
+            text-transform: none;
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 26px;
+            color: rgb(0, 0, 0);
+            font-family: SVN-poppins, sans-serif;
+            text-decoration: none;
+            transition: 100ms linear;
+            white-space: normal;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+
+        .nav-item {
+            margin-right: 15px;
+        }
+
+        .nav-link {
+
+            color: #333f48;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 40px;
+            text-transform: uppercase;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .icon-button {
+            margin-left: 15px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand" href="#">
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Canifa-Red.png" alt="Logo">
+            </a>
+
+            <!-- Toggler for mobile view -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar links and search -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#">Nữ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Nam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bé gái</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bé trai</a></li>
+                </ul>
+
+                <!-- Search bar -->
+                <form class="d-flex search-bar">
+                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                </form>
+
+                <!-- Icons -->
+                <div class="d-flex">
+                    <a href="#" class="icon-button">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <a href="#" class="icon-button">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section style="min-height: 900px;">
+        @RenderBody()
+    </section>
+    <footer class="bg-light text-dark pt-4">
+        <div class="container">
+            <div class="row">
+                <!-- VỀ BANHANGONLINE -->
+                <div class="col-md-3">
+                    <h5>VỀ BANHANGONLINE</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chúng tôi là ai</a></li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Cam kết của chúng tôi</a></li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Tin tuyển dụng</a></li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Hệ thống cửa hàng</a></li>
+                    </ul>
+                </div>
+                <!-- HỖ TRỢ KHÁCH HÀNG -->
+                <div class="col-md-3">
+                    <h5>HỖ TRỢ KHÁCH HÀNG</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Hướng dẫn đặt hàng</a></li>
+                        <li>
+                            <a href="#" class="text-dark text-decoration-none css-21p8mg">Phương thức thanh toán</a>
+                        </li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chính sách thành viên</a></li>
+                        <li>
+                            <a href="#" class="text-dark text-decoration-none css-21p8mg">
+                                Chính sách tích - tiêu
+                                điểm
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- CHÍNH SÁCH -->
+                <div class="col-md-3">
+                    <h5>CHÍNH SÁCH</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chính sách vận chuyển</a></li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chính sách kiểm hàng</a></li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chính sách đổi trả</a></li>
+                        <li>
+                            <a href="#" class="text-dark text-decoration-none css-21p8mg">Điều kiện & Điều khoản</a>
+                        </li>
+                        <li><a href="#" class="text-dark text-decoration-none css-21p8mg">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+                <!-- LIÊN HỆ -->
+                <div class="col-md-3">
+                    <h5>LIÊN HỆ</h5>
+                    <p class="mb-0 css-21p8mg"><strong>Tư vấn mua online:</strong> 024 7308 2882</p>
+                    <p class="mb-0 css-21p8mg"><strong>Khiếu nại và bảo hành:</strong> 024 7300 6999</p>
+                    <p class="mb-0 css-21p8mg">
+                        <strong>Email:</strong> <a href="mailto:cskh@banhangonline.vn"
+                                                   class="text-dark text-decoration-none">cskh@banhangonline.vn</a>
+                    </p>
+                    <p class="mb-0 css-21p8mg"><strong>Giờ làm việc:</strong> 8:30 - 22:00 hàng ngày</p>
+                </div>
+            </div>
+            <div class="text-start mt-4 pt-3 border-top">
+                <h5>Chúng tôi kết nối thanh toán qua</h5>
+                <div class="d-flex">
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png"
+                         style="height: 30px;" alt="">
+                    <span class="ms-1 me-1 border border-end"></span>
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png"
+                         style="height: 30px;" alt="">
+                </div>
+            </div>
+            <!-- Thông tin công ty -->
+            <div class="text-start mt-4 pt-3 border-top">
+                <h5>Công ty Cổ phần Staaar</h5>
+                <p class="css-21p8mg">
+                    <span class="text-decoration-underline">Địa chỉ:</span> Tầng 6, số 96 Thái Hà,
+                    Phường Trung Liệt, Quận Đống Đa, Thành phố Hà Nội,
+                    Việt Nam
+                </p>
+                <p class="css-21p8mg">
+                    <span class="text-decoration-underline">Mã số thuế:</span> 0109749326, ngày cấp
+                    ĐKKD 29/04/2021. Nơi cấp: Sở kế hoạch và đầu tư
+                    thành phố Hà Nội
+                </p>
+                <p class="css-21p8mg">
+                    <span class="text-decoration-underline">Điện thoại:</span> 024.7300.6999 | Email:
+                    <a href="mailto:cskh@banhangonline.vn"
+                       class="text-dark text-decoration-none">cskh@banhangonline.vn</a>
+                </p>
+
+            </div>
+        </div>
+        <div class="text-center mt-4 pt-3 border-top pb-3" style="background-color: black; color: aliceblue;">
+            <p class="mb-0">Copyright © 2014–2024 BanHangOnline.vn All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    
+</body>
+
+</html>
