@@ -354,25 +354,19 @@ namespace WebView.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> AddQuantity(int id)
         {
-            var product = await _context.SanPhams
-                .Include(sp => sp.ChiTietSanPhams)
-                    .ThenInclude(ct => ct.MauSac) // Bao gồm thông tin Màu sắc
-                .Include(sp => sp.ChiTietSanPhams)
-                    .ThenInclude(ct => ct.KichThuoc) // Bao gồm thông tin Kích thước
-                .FirstOrDefaultAsync(sp => sp.Id == id);
+            var productDetails = await _context.ChiTietSanPhams
+                .Include(ct => ct.MauSac)
+                .Include(ct => ct.KichThuoc)
+                .Where(ct => ct.Id_SanPham == id)
+                .ToListAsync();
 
-            if (product == null)
+            if (!productDetails.Any())
             {
                 return NotFound();
             }
 
-            // Truyền thông tin chi tiết sản phẩm vào ViewBag
-            ViewBag.ChiTietSanPhams = product.ChiTietSanPhams;
-
-            // Truyền số lượng hiện tại của sản phẩm vào ViewBag
-            var productByQuantity = await _context.ProductQuantities.Where(pq => pq.SanPhamId == id).ToListAsync();
-            ViewBag.ProductByQuantity = productByQuantity;
-
+            ViewBag.ChiTietSanPhams = productDetails;
+            ViewBag.ProductByQuantity = productDetails;
             ViewBag.Id = id;
 
             return View();
@@ -381,47 +375,51 @@ namespace WebView.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StoreProductQuantity(SoLuongSanPhamDTO productQuantityDTO)
+        public async Task<IActionResult> StoreProductQuantity(ChiTietSanPhamDTO productQuantityDTO)
         {
-            var product = await _context.SanPhams.FindAsync(productQuantityDTO.SanPhamId);
+            if (productQuantityDTO.SoLuong <= 0)
+            {
+                TempData["error"] = "Số lượng phải lớn hơn 0.";
+                return RedirectToAction("AddQuantity", new { id = productQuantityDTO.Id_SanPham });
+            }
+
+            var product = await _context.SanPhams.FindAsync(productQuantityDTO.Id_SanPham);
             if (product == null)
             {
                 return NotFound();
             }
 
-            // Cập nhật số lượng sản phẩm chính
             product.SoLuong += productQuantityDTO.SoLuong;
 
-            // Cập nhật số lượng cho các chi tiết sản phẩm (CTSP) theo màu sắc và kích thước
             var chiTietSanPham = await _context.ChiTietSanPhams
-                .FirstOrDefaultAsync(ct => ct.Id_SanPham == productQuantityDTO.SanPhamId &&
-                                            ct.Id_MauSac == productQuantityDTO.Id_MauSac &&
-                                            ct.Id_KichThuoc == productQuantityDTO.Id_KichThuoc);
+                .FirstOrDefaultAsync(ct => ct.Id_SanPham == productQuantityDTO.Id_SanPham &&
+                                           ct.Id_MauSac == productQuantityDTO.Id_MauSac &&
+                                           ct.Id_KichThuoc == productQuantityDTO.Id_KichThuoc);
 
             if (chiTietSanPham != null)
             {
                 chiTietSanPham.SoLuong += productQuantityDTO.SoLuong;
             }
-
-            // Tạo một entity mới từ DTO và lưu vào bảng ProductQuantities
-            var productQuantityEntity = new SoLuongSanPham
+            else
             {
-                SanPhamId = productQuantityDTO.SanPhamId,
-                SoLuong = productQuantityDTO.SoLuong,
-                Id_MauSac = productQuantityDTO.Id_MauSac,
-                Id_KichThuoc = productQuantityDTO.Id_KichThuoc,
-                NgayTao = DateTime.Now
-            };
+                var newProductQuantity = new ChiTietSanPham
+                {
+                    Id_SanPham = productQuantityDTO.Id_SanPham,
+                    SoLuong = productQuantityDTO.SoLuong,
+                    Id_MauSac = productQuantityDTO.Id_MauSac,
+                    Id_KichThuoc = productQuantityDTO.Id_KichThuoc,
+                    NgayTao = DateTime.Now
+                };
 
-            _context.ProductQuantities.Add(productQuantityEntity);
+                _context.Add(newProductQuantity);
+            }
 
-            // Lưu thay đổi vào cơ sở dữ liệu
             await _context.SaveChangesAsync();
 
-            // Hiển thị thông báo thành công
             TempData["success"] = "Thêm số lượng sản phẩm thành công";
-            return RedirectToAction("AddQuantity", "SanPham", new { Id = productQuantityDTO.SanPhamId });
+            return RedirectToAction("AddQuantity", "SanPham", new { Id = productQuantityDTO.Id_SanPham });
         }
+
 
     }
 }
