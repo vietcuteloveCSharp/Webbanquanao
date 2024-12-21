@@ -80,12 +80,12 @@ namespace DAL.DataSeed
             var giamGiaFaker = new Faker<MaGiamGia>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiGiamGia, f => (int)f.PickRandom<LoaiGiamGiaEnum>())
-                .RuleFor(x => x.DieuKienGiamGia, f => f.Commerce.Price(200000, 1000000))
+                .RuleFor(x => x.DieuKienGiamGia, f => f.Random.Int(200000, 1000000))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(10, 50))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
-                .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+               .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
+        .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
+        .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
 
             var giamGias = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(giamGiaFaker, i))
@@ -143,8 +143,8 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiKhuyenMai, f => f.Random.Number(0, 1))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(5, 80))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(10000, 1000000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(50000, 500000))
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+                       .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
                 .RuleFor(x => x.Id_KhuyenMai, f => f.PickRandom(khuyenmais).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom(danhMucs).Id);
 
