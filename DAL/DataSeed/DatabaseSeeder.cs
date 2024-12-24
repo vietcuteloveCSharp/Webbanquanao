@@ -26,6 +26,7 @@ namespace DAL.DataSeed
         public IReadOnlyCollection<SanPham> SanPhams { get; } = new List<SanPham>();
         public IReadOnlyCollection<ThanhToanHoaDon> ThanhToanHoaDons { get; } = new List<ThanhToanHoaDon>();
         public IReadOnlyCollection<ThuongHieu> ThuongHieus { get; } = new List<ThuongHieu>();
+        public IReadOnlyCollection<HinhAnh> HinhAnhs { get; } = new List<HinhAnh>();
 
         public DatabaseSeeder()
         {
@@ -36,7 +37,7 @@ namespace DAL.DataSeed
             MauSacs = GenerateMauSacs(10);
             KichThuocs = GenerateKichThuocs(10);
             ThuongHieus = GenerateThuongHieus(10);
-            SanPhams = GenerateSanPhams(100, ThuongHieus, DanhMucs);
+            SanPhams = GenerateSanPhams(50, ThuongHieus, DanhMucs);
             ChiTietSanPhams = GenerateChiTietSanPhams(100, SanPhams, MauSacs, KichThuocs);
             KhachHangs = GenerateKhachHangs(50);
             GioHangs = GenerateGioHangs(100, KhachHangs, ChiTietSanPhams);
@@ -48,6 +49,27 @@ namespace DAL.DataSeed
             ChiTietHoaDons = GenerateChiTietHoaDons(100, ChiTietSanPhams, HoaDons);
             MaGiamGias = GenerateMaGiamGias(50);
             ChiTietMaGiamGias = GenerateChiTietMaGiamGias(100, MaGiamGias, KhachHangs);
+            HinhAnhs = GenerateHinhAnhs(250, SanPhams);
+        }
+
+        private IReadOnlyCollection<HinhAnh> GenerateHinhAnhs(int amount, IEnumerable<SanPham> sanPhams)
+        {
+            var dieuKienId = 1;
+            var lstFaker = new Faker<HinhAnh>(locale: "vi");
+
+
+
+            lstFaker = lstFaker.RuleFor(x => x.Id_SanPham, f => f.PickRandom(sanPhams).Id);
+            for (global::System.Int32 i = 0; i < 5; i++)
+            {
+                lstFaker = lstFaker
+            .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
+            .RuleFor(x => x.Url, f => f.Image.PicsumUrl(800, 1000));
+            }
+            var hinhAnhs = Enumerable.Range(1, amount)
+                .Select(i => SeedRow(lstFaker, i))
+                .ToList();
+            return hinhAnhs;
         }
 
         // Seed table CuHang

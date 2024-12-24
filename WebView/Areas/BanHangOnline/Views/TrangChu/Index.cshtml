@@ -1,5 +1,11 @@
-﻿@{
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Trang chủ";
+    var lstSanPham = ViewData["lstSanPham"] as DictionarySanPhamResp;
+    decimal TinhPhanTramGiamGia(decimal giaBanDau, decimal giaBan){
+
+        return (((giaBanDau - giaBan) / giaBanDau) * 100);
+    }
 }
 <style>
     .carousel-item {
@@ -156,6 +162,54 @@
 
 @* danh sach san pham *@
 <div class="container-fluid content mt-4">
+    @if (lstSanPham != null && lstSanPham.DictionarySanPham.Any())
+    {
+       foreach (var item in lstSanPham.DictionarySanPham)
+        {
+            <div class="mt-3 mb-3">
+                <div class="d-flex justify-content-between">
+                    <span class="ten-danhmuc">@item.Key.TenDanhMuc</span>
+                    <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span>
+                </div>
+                <div class="row">
+                    <!-- Phần 1: Hình ảnh tổng quát -->
+
+                    <div class="general-image mb-4 col-4">
+                        <img id="imgBig" src="@item.Value.FirstOrDefault().ListHinHAnh?.FirstOrDefault()?.Url"
+                             alt="Hình ảnh sản phẩm @item.Value.FirstOrDefault().Ten">
+                    </div>
+
+                    <!-- Phần 2: Slider sản phẩm -->
+                    <div class="product-slider col-8">
+                        @foreach (var sp in item.Value)
+                        {
+                        
+                        <div class="product-card">
+                                <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id">
+                                <img class="imgsub" src="@sp.ListHinHAnh?.FirstOrDefault()?.Url" alt="@sp.Ten">
+                            </a>
+                            <div class="d-flex flex-column justify-content-start">
+                                    <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
+                                <p class="price">@sp.GiaBan đ</p>
+                                @if (sp.GiaBanDau != 0)
+                                    {
+                                        <div class="d-flex justify-content-start">
+                                            <p class="old-price">@sp.GiaBanDau đ</p>
+                                            <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
+                                        </div>
+                                    }
+                            </div>
+                        </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        
     <div>
         <div class="d-flex justify-content-between">
             <span class="ten-danhmuc">Áo nỉ</span>
@@ -236,8 +290,10 @@
 
         </div>
     </div>
+
+    }
 </div>
-<script >
+<script  defer>
     $(document).ready(function () {
         $('.product-slider').slick({
             dots: false,
