@@ -7,19 +7,19 @@
         <!-- Đăng nhập -->
         <div class="col-md-6 border-end">
             <h3 class="mb-4">Đăng nhập</h3>
-            <form id="loginForm" action="#" method="post" novalidate>
+            <form id="loginForm" action="/BanHangOnline/DangNhapdangky/DangNhap" method="post" novalidate>
                 <div class="mb-3">
-                    <label for="emailDN" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" id="emailDN" name="emailDN"
-                           placeholder="Nhập email của bạn" required>
-                    <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                    <label for="taikhoanDN" class="form-label">Tài khoản <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="taikhoanDN" name="TaikhoanDN"
+                           placeholder="Nhập tài khoản của bạn" required>
+                    <div class="invalid-feedback">Vui lòng nhập tài khoản hợp lệ.</div>
                 </div>
                 <div class="mb-3">
                     <label for="loginPasswordDN" class="form-label">
                         Mật khẩu <span class="text-danger">*</span>
                     </label>
                     <div class="input-group">
-                        <input type="password" class="form-control" name="passwordDN" id="loginPasswordDN"
+                        <input type="password" class="form-control" name="PasswordDN" id="loginPasswordDN"
                                placeholder="Nhập mật khẩu" required>
                         <button type="button" class="btn btn-outline-secondary"
                                 onclick="togglePassword('loginPasswordDN')">
@@ -29,10 +29,10 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
+                    @* <div>
                         <input type="checkbox" name="rememberMe" id="rememberMe">
                         <label for="rememberMe">Giữ trạng thái đăng nhập</label>
-                    </div>
+                    </div> *@
                     <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Quên mật khẩu?</a>
                 </div>
                 <button type="submit" class="btn btn-danger w-100">Đăng nhập</button>

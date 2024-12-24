@@ -1,5 +1,11 @@
-﻿@{
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Chi tiết sản phẩm";
+    var spChiTiet = ViewData["sanphamchitiet"] as ChiTietSanPhamResp;
+    decimal TinhPhanTramGiamGia(decimal? giaBanDau, decimal? giaBan)
+    {
+        return (decimal)(((giaBanDau - giaBan) / giaBanDau) * 100);
+    }
 }
 <style>
    
@@ -52,13 +58,13 @@
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        border: 1px solid #ccc;
+        border: 2px solid #ccc;
         margin-right: 8px;
         cursor: pointer;
     }
 
     .color-options input:checked+label {
-        border-color: #000;
+        border-color: yellow;
     }
 
     .color-black {
@@ -139,6 +145,99 @@
 <div class="content mt-5">
     <!-- Slider chính -->
     <div class="row">
+        @if (spChiTiet != null && spChiTiet.SanPham.Id != null)
+        {
+            <div class="col-7 row">
+                <div class="slider-for col-9">
+                    @foreach (var item in spChiTiet.SanPham.ListHinHAnh)
+                    {
+                      <div>
+                        <img src="@item.Url" alt="@spChiTiet?.SanPham?.Ten img" class="zoom-image">
+                    </div>  
+                    }
+                    
+                </div>
+
+                <!-- Slider điều hướng -->
+                <div class="slider-nav mt-4 col-3">
+                    @foreach (var item in spChiTiet.SanPham.ListHinHAnh)
+                    {
+                      <div>
+                        <img src="@item.Url" alt="@spChiTiet?.SanPham?.Ten img">
+                    </div>  
+                    }
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="container ">
+                    <div class="product-card">
+                        <input type="text" name="Id" value="@spChiTiet.SanPham.Id" Id="SanPhamChiTiet" hidden/>
+                        <h1 class="mb-3 product-name">@spChiTiet?.SanPham?.Ten</h1>
+                        <div class="price-box mb-3">
+                            <span class="normal-price">
+                                <span class="price">@spChiTiet?.SanPham?.GiaBan ₫</span>
+                            </span>
+                            @if (spChiTiet.SanPham.GiaBanDau > 0)
+                            {
+                                <span class="old-price">
+                                    @spChiTiet?.SanPham?.GiaBanDau ₫
+                                </span>
+                                <span class="price-percent">-@(TinhPhanTramGiamGia(spChiTiet?.SanPham?.GiaBanDau, spChiTiet?.SanPham?.GiaBan))%</span>
+                            }
+                            
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Màu sắc:</strong></label>
+                            <div class="color-options">
+                                @if (spChiTiet.MauSacResps != null)
+                                {
+                                    int id = (int)spChiTiet.MauSacResps.First().Id;
+                                    @foreach (var ms in spChiTiet.MauSacResps)
+                                    {
+                                        if (id == ms.Id)
+                                        {
+                                            <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id) checked>
+                                            <label for="color-@ms.Id" style="background-color: @ms.Ten" onclick="fetchProductDetails(@ms.Id)"></label>
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id)>
+                                            <label for="color-@ms.Id" style="background-color: @ms.Ten"  onclick="fetchProductDetails(@ms.Id)"></label>
+                                        }
+                                    
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Kích cỡ:</strong></label>
+                            <div class="size-options d-flex justify-content-start flex-wrap gap-1">
+                                @if (spChiTiet.KichThuocResps != null)
+                                {
+                                    int id = (int)spChiTiet.MauSacResps.First().Id;
+                                    @foreach (var kt in spChiTiet.KichThuocResps)
+                                    {
+                                            if (id == kt.Id_MauSac)
+                                            {
+                                                <input type="radio" id="size-@kt.Id" name="size" value="@kt.Id">
+                                                 <label for="size-@kt.Id">@kt.Ten</label>
+                                            }
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-danger w-100" onclick="SubmitSp()">
+                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            
         <div class="col-7 row">
             <div class="slider-for col-9">
                 <div>
@@ -223,19 +322,95 @@
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-danger w-100">
-                            <i class="fas fa-shopping-cart"></i> Thêm vào
-                            giỏ
+                            <button type="button" class="btn btn-danger w-100" onclick="SubmitSp()">
+                            <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        }
     </div>
 
 </div>
+<script defer>
+                async function fetchProductDetails(id_mausac) {
+                    try {
+                        // Gửi yêu cầu GET đến API
+                        const response = await fetch(`https://localhost:7043/BanHangOnline/ChiTietSanPham/GetSessionSanPhamChiTiet?id=${id_mausac}`);
+            
+                        // Kiểm tra nếu API trả về lỗi
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
 
-<script>
+                        // Lấy dữ liệu JSON từ API
+                        const data = await response.json();
+
+                        // Chọn phần tử có class 'size-options'
+                        const ktOptionsContainer = document.querySelector('.size-options');
+
+                        // Xóa nội dung cũ
+                        ktOptionsContainer.innerHTML = '';
+
+                        // Lặp qua dữ liệu và tạo cấu trúc HTML
+                        data.forEach(item => {
+                            const inputId = `size-${item.Id}`;
+                            const inputElement = `<input type="radio" id="${inputId}" name="size" value="${item.Id}">`;
+                            const labelElement = `<label for="${inputId}">${item.Ten}</label>`;
+
+                            // Thêm cấu trúc HTML vào container
+                            ktOptionsContainer.innerHTML += inputElement + labelElement;
+                        });
+                    } catch (error) {
+                        console.error('Lỗi khi gọi API:', error);
+                    }
+                }
+                async function SubmitSp() {
+                const selectedColor = document.querySelector('.color-options input[name="color"]:checked');
+                const selectedSize = document.querySelector('.size-options input[name="size"]:checked');
+
+                // Kiểm tra nếu chưa chọn màu sắc hoặc kích thước
+                if (!selectedColor || !selectedSize) {
+                    alert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng.');
+                    return;
+                }
+
+                // Chuẩn bị model dữ liệu
+                const model = {
+                    IdMauSac: selectedColor.value,
+                    IdKichThuoc: selectedSize.value
+                };
+
+                try {
+                    // Gửi yêu cầu POST đến API
+                    const response = await fetch('https://localhost:7043/BanHangOnline/ChiTietSanPham/PostSanPhamVaoGioHang', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Định nghĩa kiểu dữ liệu JSON
+                        },
+                        body: JSON.stringify(model) // Chuyển đổi model sang chuỗi JSON
+                    });
+
+                    // Kiểm tra phản hồi từ server
+                    if (response.ok) {
+                        const result = await response.json(); // Nếu cần xử lý dữ liệu trả về
+                        alert('Sản phẩm đã được thêm vào giỏ hàng!');
+                        console.log('Kết quả:', result);
+                    } else {
+                        const error = await response.json();
+                        alert('Thêm sản phẩm thất bại. Lỗi: ' + error.message);
+                        console.error('Lỗi:', error);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi gọi API:', error);
+                    alert('Không thể thêm sản phẩm vào giỏ hàng.');
+                }
+        }
+</script>
+
+<script defer>
     document.querySelectorAll('.zoom-image').forEach(function (image) {
         image.addEventListener('mousemove', function (e) {
             const containerRect = image.getBoundingClientRect();
@@ -255,7 +430,7 @@
         });
     });
 </script>
-<script>
+<script defer>
     $(document).ready(function () {
         // Slider chính
         $('.slider-for').slick({
