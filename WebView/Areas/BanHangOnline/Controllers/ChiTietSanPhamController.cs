@@ -78,6 +78,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 resp.KichThuocResps = lstKichThuoc;
             }
             ViewData["sanphamchitiet"] = resp;
+            // Xóa Session cũ có tên "ChiTietSanPham"
+            HttpContext.Session.Remove("ChiTietSanPham");
             HttpContext.Session.SetString("ChiTietSanPham", JsonConvert.SerializeObject(resp));
             return View("Index");
         }
@@ -86,12 +88,46 @@ namespace WebView.Areas.BanHangOnline.Controllers
         public async Task<IActionResult> PostSanPhamVaoGioHang([FromBody] AddSanPhamGioHang param)
         {
             var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
-            var a = new
+            var spReq = new
             {
-                param = param,
-                tk = tk,
+                idSP = int.Parse(param.IdSanPham),
+                idMs = int.Parse(param.IdMauSac),
+                idKt = int.Parse(param.IdKichThuoc),
             };
-            return Json(a);
+            if (tk == null)
+            {
+                return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
+            }
+            // Kiểm tra kh đã thêm sản phẩm này vào giỏ hàng hay chưa -> chưa : thêm mới sản phẩm vào giỏ hàng với sp =1 || rồi : tăng số số lượng thêm 1 trong giỏ hàng của kh
+            // toàn bộ có trạng thái là 1 == hiển thị
+            // tìm sản phẩm chi tiết
+            var spct = await _context.ChiTietSanPhams.FirstOrDefaultAsync(x => x.Id_SanPham == spReq.idSP && x.Id_MauSac == spReq.idMs && x.Id_KichThuoc == spReq.idKt);
+            if (spct == null)
+            {
+                return Json(new { status = 404, success = false, message = "Không tìm thấy sản phẩm" });
+            }
+            string mess = "";
+            var spGiogHang = await _context.GioHangs.FirstOrDefaultAsync(x => x.Id_KhachHang == tk.Id && x.Id_ChiTietSanPham == spReq.idSP);
+            if (spGiogHang == null)
+            {
+
+                _context.GioHangs.Add(new GioHang
+                {
+                    Id_ChiTietSanPham = spReq.idSP,
+                    Id_KhachHang = tk.Id,
+                    SoLuong = 1,
+                    TrangThai = true
+                });
+                _context.SaveChanges();
+                mess = "Thêm sản phẩm thành công vào giỏ hàng";
+            }
+            else
+            {
+                spGiogHang.SoLuong += 1;
+                _context.SaveChanges();
+                mess = "Sản phẩm này đã có trong giỏ hàng. Tăng số lượng thêm 1";
+            }
+            return Json(new { status = 200, success = true, message = mess });
         }
         public string GetSessionSanPhamChiTiet(int id = -1)
         {
@@ -110,8 +146,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
         }
         public IActionResult ClearSession()
         {
-            // Xóa toàn bộ Session
-            HttpContext.Session.Clear();
+            // Xóa  Session có tên "ChiTietSanPham"
+            HttpContext.Session.Remove("ChiTietSanPham");
             return Content("Session đã được xóa.");
         }
     }
