@@ -2,7 +2,8 @@
 {
     public class AddSanPhamGioHang
     {
-        public string? IdMauSac { get; set; }
-        public string? IdKichThuoc { get; set; }
+        public string? IdSanPham { get; set; } = "0";
+        public string? IdMauSac { get; set; } = "0";
+        public string? IdKichThuoc { get; set; } = "0";
     }
 }
