@@ -10,7 +10,7 @@ namespace Enum.EnumVVA
     {
         // Trạng thái chung
         ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
-        HoanThanhDon =5,      // Đơn hàng đã hoàn thành
+        HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
         HuyDon = 7,            // Đơn hàng bị hủy
 
         // Trạng thái dành riêng cho bán online
