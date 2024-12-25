@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@using WebView.Areas.BanHangOnline.Utilities
+@{
+    // var lstdmt = ViewData["Danhmuctitle"] as List<DanhMucResp>;
+    var lstdmt = UtilitiClass.GetDanhMucSanPham();
+}
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -32,6 +38,9 @@
             font-weight: 400;
         }
 
+        .content {
+            padding: 0 147px;
+        }
         a {
             text-decoration: none;
         }
@@ -73,7 +82,7 @@
 
             color: #333f48;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
             line-height: 40px;
             text-transform: uppercase;
         }
@@ -93,9 +102,9 @@
 <body>
 
     <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-        <div class="container">
+        <div class="container-fluid content">
             <!-- Logo -->
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/BanHangOnline/TrangChu/Index">
                 <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Canifa-Red.png" alt="Logo">
             </a>
 
@@ -108,10 +117,18 @@
             <!-- Navbar links and search -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="#">Nữ</a></li>
+                   @*  <li class="nav-item"><a class="nav-link" href="#">Nữ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Nam</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Bé gái</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Bé trai</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bé trai</a></li> *@
+                    @if (lstdmt.Count > 0)
+                    {
+                        @foreach (var item in lstdmt)
+                        {
+                            <li class="nav-item"><a class="nav-link" href="#">@item.TenDanhMuc</a></li>
+                        }
+                    }
+                   
                 </ul>
 
                 <!-- Search bar -->
@@ -122,7 +139,7 @@
 
                 <!-- Icons -->
                 <div class="d-flex">
-                    <a href="#" class="icon-button">
+                    <a href="/BanHangOnline/DangNhapDangKy" class="icon-button">
                         <i class="fa-regular fa-user"></i>
                     </a>
                     <a href="#" class="icon-button">

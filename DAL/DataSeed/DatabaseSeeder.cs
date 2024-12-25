@@ -26,6 +26,7 @@ namespace DAL.DataSeed
         public IReadOnlyCollection<SanPham> SanPhams { get; } = new List<SanPham>();
         public IReadOnlyCollection<ThanhToanHoaDon> ThanhToanHoaDons { get; } = new List<ThanhToanHoaDon>();
         public IReadOnlyCollection<ThuongHieu> ThuongHieus { get; } = new List<ThuongHieu>();
+        public IReadOnlyCollection<HinhAnh> HinhAnhs { get; } = new List<HinhAnh>();
 
         public DatabaseSeeder()
         {
@@ -36,7 +37,7 @@ namespace DAL.DataSeed
             MauSacs = GenerateMauSacs(10);
             KichThuocs = GenerateKichThuocs(10);
             ThuongHieus = GenerateThuongHieus(10);
-            SanPhams = GenerateSanPhams(100, ThuongHieus, DanhMucs);
+            SanPhams = GenerateSanPhams(50, ThuongHieus, DanhMucs);
             ChiTietSanPhams = GenerateChiTietSanPhams(100, SanPhams, MauSacs, KichThuocs);
             KhachHangs = GenerateKhachHangs(50);
             GioHangs = GenerateGioHangs(100, KhachHangs, ChiTietSanPhams);
@@ -48,6 +49,27 @@ namespace DAL.DataSeed
             ChiTietHoaDons = GenerateChiTietHoaDons(100, ChiTietSanPhams, HoaDons);
             MaGiamGias = GenerateMaGiamGias(50);
             ChiTietMaGiamGias = GenerateChiTietMaGiamGias(100, MaGiamGias, KhachHangs);
+            HinhAnhs = GenerateHinhAnhs(250, SanPhams);
+        }
+
+        private IReadOnlyCollection<HinhAnh> GenerateHinhAnhs(int amount, IEnumerable<SanPham> sanPhams)
+        {
+            var dieuKienId = 1;
+            var lstFaker = new Faker<HinhAnh>(locale: "vi");
+
+
+
+            lstFaker = lstFaker.RuleFor(x => x.Id_SanPham, f => f.PickRandom(sanPhams).Id);
+            for (global::System.Int32 i = 0; i < 5; i++)
+            {
+                lstFaker = lstFaker
+            .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
+            .RuleFor(x => x.Url, f => f.Image.PicsumUrl(800, 1000));
+            }
+            var hinhAnhs = Enumerable.Range(1, amount)
+                .Select(i => SeedRow(lstFaker, i))
+                .ToList();
+            return hinhAnhs;
         }
 
         // Seed table CuHang
@@ -80,12 +102,12 @@ namespace DAL.DataSeed
             var giamGiaFaker = new Faker<MaGiamGia>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiGiamGia, f => (int)f.PickRandom<LoaiGiamGiaEnum>())
-                .RuleFor(x => x.DieuKienGiamGia, f => f.Commerce.Price(200000, 1000000))
+                .RuleFor(x => x.DieuKienGiamGia, f => f.Random.Int(200000, 1000000))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(10, 50))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
-                .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+               .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
+        .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
+        .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
 
             var giamGias = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(giamGiaFaker, i))
@@ -143,8 +165,8 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiKhuyenMai, f => f.Random.Number(0, 1))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(5, 80))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(10000, 1000000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(50000, 500000))
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+                       .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
                 .RuleFor(x => x.Id_KhuyenMai, f => f.PickRandom(khuyenmais).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom(danhMucs).Id);
 
