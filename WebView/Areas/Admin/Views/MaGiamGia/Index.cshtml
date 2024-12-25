@@ -1,0 +1,80 @@
+﻿@model IEnumerable<WebView.NghiaDTO.MaGiamGiaDTO>
+
+@{
+    ViewData["Title"] = "Danh Sách Mã Giảm Giá";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3 text-right">
+    <a asp-action="Create" asp-controller="MaGiamGia" class="btn btn-success">
+        <i class="fa fa-plus"></i> Thêm Mã
+    </a>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-hover" id="myTable">
+        <thead class="thead-dark">
+        <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Ten</th>
+                <th scope="col">Loại giảm giá</th>
+                @* <th scope="col" >Loại giảm giá</th> *@
+                <th scope="col">Điều kiện</th>
+                <th scope="col">Giá trị giảm</th>
+                <th scope="col">Mệnh giá</th>
+                <th scope="col">Giá trị tối đa</th>
+                <th scope="col">Trạng thái</th> 
+                <th scope="col">Ngày tạo</th>
+                <th scope="col">Ngày kết thúc</th>
+                <th scope="col">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Ten</td>
+                <td>@(item.LoaiGiamGia == 0 ? "Coupon" : "Voucher")</td>
+                    <td>@item.DieuKienGiamGia.ToString("#,##0 VNĐ")</td>
+                    <td>@(item.GiaTriGiam + "%")</td>
+                    <td>@item.MenhGia.ToString("#,##0 VNĐ")</td>
+                    <td>@item.GiaTriToiDa.ToString("#,##0 VNĐ")</td>
+                    <td>
+                        @if (item.TrangThai == 0)
+                        {
+                            @:Chưa phát hành
+                        }
+                        else if (item.TrangThai == 1)
+                        {
+                            @:Đang phát hành
+                        }
+                        else if (item.TrangThai == 2)
+                        {
+                            @:Kết thúc
+                        }
+                        else
+                        {
+                            @:Không xác định
+                        }
+                    </td>
+
+                <td>@item.ThoiGianTao.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.ThoiGianKetThuc.HasValue ? item.ThoiGianKetThuc.Value.ToString("dd/MM/yyyy") : "Không xác định")</td>
+
+
+                <td>
+                        <a asp-action="Edit" asp-controller="MaGiamGia" asp-route-Id="@item.Id" class="btn btn-sm btn-warning">
+                            <i class="fa fa-edit"></i> Sửa
+                        </a>
+                        <a asp-action="Delete" asp-controller="MaGiamGia" asp-route-Id="@item.Id" class="btn btn-sm btn-danger confirmDeletion">
+                            <i class="fa fa-trash"></i> Xóa
+                        </a>
+                        <a asp-action="AddQuantity" asp-controller="MaGiamGia" asp-route-Id="@item.Id" class="btn btn-sm btn-info">
+                            <i class="fa fa-plus-square"></i> Số lượng
+                        </a>
+                    </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>

@@ -3,12 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
 using WebView.Services.Vnpay;
 
-namespace WebView
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
+
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddScoped<IVnPayService, VnPayService>();
             // add httpclient
@@ -48,6 +43,7 @@ namespace WebView
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
 
+<<<<<<< Updated upstream
                 app.UseRouting();
                 // Kích hoạt session
                 app.UseSession();
@@ -56,8 +52,26 @@ namespace WebView
                 app.MapControllerRoute(
                 name: "Areas",
                 pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+=======
+            app.UseRouting();
+            // Kích hoạt session
+            app.UseSession();
+            app.UseAuthorization();
+app.MapControllerRoute(
+ name: "Areas",
+pattern: "{area:exists}/{controller=bannhanh}/{action=index}/{id?}");
 
-            app.MapControllerRoute(
+app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
+
+
+app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+>>>>>>> Stashed changes
+
+app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
@@ -67,6 +81,3 @@ namespace WebView
             var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
             SeedData.SeedingData(context);
             app.Run();
-        }
-    }
-}
