@@ -1,0 +1,126 @@
+﻿
+@model WebView.NghiaDTO.SanPhamDTO
+@{
+    ViewData["Title"] = "Thêm Sản Phẩm Mới";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="Ten">Tên Sản Phẩm</label>
+        <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
+    </div>
+    <div class="form-group">
+        <label for="Gia">Giá</label>
+        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
+    </div>
+    <div id="price-convert"></div>
+    <div class="form-group">
+        <label for="NgayTao">Ngày Tạo</label>
+        <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="form-group">
+        <label for="Id_ThuongHieu">Thương Hiệu</label>
+        <select class="form-control" id="Id_ThuongHieu" name="Id_ThuongHieu">
+            @foreach (var item in ViewBag.ThuongHieus as SelectList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Id_DanhMuc">Danh Mục</label>
+        <select class="form-control" id="Id_DanhMuc" name="Id_DanhMuc">
+            @foreach (var item in ViewBag.DanhMucs as SelectList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    </div>
+
+    <div id="chiTietSanPhamContainer">
+        <div class="chiTietSanPham-item" id="chiTietSanPham-template" style="display: none;">
+            <div class="form-group">
+                <label for="Id_MauSac">Màu Sắc</label>
+                <select class="form-control" name="chiTietSanPhams[INDEX].Id_MauSac">
+                    @foreach (var item in ViewBag.MauSacs as SelectList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Id_KichThuoc">Kích Thước</label>
+                <select class="form-control" name="chiTietSanPhams[INDEX].Id_KichThuoc">
+                    @foreach (var item in ViewBag.KichThuocs as SelectList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="SoLuong">Số Lượng</label>
+                <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="0" />
+            </div>
+
+            <button type="button" class="btn btn-danger remove-item">Xóa</button>
+        </div>
+    </div>
+
+    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
+    <div class="form-group">
+        <label for="Image">Hình Ảnh</label>
+        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
+</form>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(".typing-price").on("input", function () {
+            // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
+            var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+
+            // Chuyển đổi sang kiểu số
+            var numberValue = parseFloat(rawValue.replace(',', '.'));
+
+            // Nếu giá trị hợp lệ, hiển thị định dạng tiền tệ, nếu không thì hiển thị giá trị ban đầu
+            if (!isNaN(numberValue)) {
+                $("#price-convert").html(
+                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
+                );
+            } else {
+                $("#price-convert").html('');
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            let index = 0;
+
+            $("#addChiTiet").click(function () {
+                const template = $("#chiTietSanPham-template").clone(true)
+                    .removeAttr("id")
+                    .css("display", "block");
+                template.html(template.html().replace(/INDEX/g, index));
+                $("#chiTietSanPhamContainer").append(template);
+                index++;
+            });
+
+            $(document).on("click", ".remove-item", function () {
+                $(this).closest(".chiTietSanPham-item").remove();
+            });
+        });
+    </script>
+}

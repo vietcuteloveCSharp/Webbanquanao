@@ -26,28 +26,50 @@ namespace DAL.DataSeed
         public IReadOnlyCollection<SanPham> SanPhams { get; } = new List<SanPham>();
         public IReadOnlyCollection<ThanhToanHoaDon> ThanhToanHoaDons { get; } = new List<ThanhToanHoaDon>();
         public IReadOnlyCollection<ThuongHieu> ThuongHieus { get; } = new List<ThuongHieu>();
+        public IReadOnlyCollection<HinhAnh> HinhAnhs { get; } = new List<HinhAnh>();
 
         public DatabaseSeeder()
         {
             CuaHangs = GenerateCuaHangs(1);
-            KhuyenMais = GenerateKhuyenMais(100);
-            DanhMucs = GenerateDanhMucs(50);
-            ChiTietKhuyenMais = GenerateChiTietKhuyenMais(500, KhuyenMais, DanhMucs);
-            MauSacs = GenerateMauSacs(100);
+            KhuyenMais = GenerateKhuyenMais(20);
+            DanhMucs = GenerateDanhMucs(20);
+            ChiTietKhuyenMais = GenerateChiTietKhuyenMais(100, KhuyenMais, DanhMucs);
+            MauSacs = GenerateMauSacs(10);
             KichThuocs = GenerateKichThuocs(10);
-            ThuongHieus = GenerateThuongHieus(20);
-            SanPhams = GenerateSanPhams(200, ThuongHieus, DanhMucs);
-            ChiTietSanPhams = GenerateChiTietSanPhams(1000, SanPhams, MauSacs, KichThuocs);
-            KhachHangs = GenerateKhachHangs(500);
-            GioHangs = GenerateGioHangs(1000, KhachHangs, ChiTietSanPhams);
-            PhuongThucThanhToans = GeneratePhuongThucThanhToans(20);
+            ThuongHieus = GenerateThuongHieus(10);
+            SanPhams = GenerateSanPhams(50, ThuongHieus, DanhMucs);
+            ChiTietSanPhams = GenerateChiTietSanPhams(100, SanPhams, MauSacs, KichThuocs);
+            KhachHangs = GenerateKhachHangs(50);
+            GioHangs = GenerateGioHangs(100, KhachHangs, ChiTietSanPhams);
+            PhuongThucThanhToans = GeneratePhuongThucThanhToans(10);
             ChucVus = GenerateChucVus(10);
-            NhanViens = GenerateNhanViens(20, ChucVus);
-            HoaDons = GenerateHoaDons(500, KhachHangs, NhanViens);
-            ThanhToanHoaDons = GenerateThanhToanHoaDons(500, PhuongThucThanhToans, HoaDons);
-            ChiTietHoaDons = GenerateChiTietHoaDons(4000, ChiTietSanPhams, HoaDons);
-            MaGiamGias = GenerateMaGiamGias(500);
-            ChiTietMaGiamGias = GenerateChiTietMaGiamGias(500, MaGiamGias, KhachHangs);
+            NhanViens = GenerateNhanViens(10, ChucVus);
+            HoaDons = GenerateHoaDons(50, KhachHangs, NhanViens);
+            ThanhToanHoaDons = GenerateThanhToanHoaDons(50, PhuongThucThanhToans, HoaDons);
+            ChiTietHoaDons = GenerateChiTietHoaDons(100, ChiTietSanPhams, HoaDons);
+            MaGiamGias = GenerateMaGiamGias(50);
+            ChiTietMaGiamGias = GenerateChiTietMaGiamGias(100, MaGiamGias, KhachHangs);
+            HinhAnhs = GenerateHinhAnhs(250, SanPhams);
+        }
+
+        private IReadOnlyCollection<HinhAnh> GenerateHinhAnhs(int amount, IEnumerable<SanPham> sanPhams)
+        {
+            var dieuKienId = 1;
+            var lstFaker = new Faker<HinhAnh>(locale: "vi");
+
+
+
+            lstFaker = lstFaker.RuleFor(x => x.Id_SanPham, f => f.PickRandom(sanPhams).Id);
+            for (global::System.Int32 i = 0; i < 5; i++)
+            {
+                lstFaker = lstFaker
+            .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
+            .RuleFor(x => x.Url, f => f.Image.PicsumUrl(800, 1000));
+            }
+            var hinhAnhs = Enumerable.Range(1, amount)
+                .Select(i => SeedRow(lstFaker, i))
+                .ToList();
+            return hinhAnhs;
         }
 
         // Seed table CuHang
@@ -80,12 +102,12 @@ namespace DAL.DataSeed
             var giamGiaFaker = new Faker<MaGiamGia>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiGiamGia, f => (int)f.PickRandom<LoaiGiamGiaEnum>())
-                .RuleFor(x => x.DieuKienGiamGia, f => f.Commerce.Price(200000, 1000000))
+                .RuleFor(x => x.DieuKienGiamGia, f => f.Random.Int(200000, 1000000))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(10, 50))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(100000, 500000))
-                .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
-                .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+               .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
+        .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
+        .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiMaGiamGiaEnum>());
 
             var giamGias = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(giamGiaFaker, i))
@@ -143,8 +165,8 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiKhuyenMai, f => f.Random.Number(0, 1))
                 .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(5, 80))
-                .RuleFor(x => x.MenhGia, f => f.Commerce.Price(10000, 1000000))
-                .RuleFor(x => x.GiaTriToiDa, f => f.Commerce.Price(50000, 500000))
+                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
+                       .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
                 .RuleFor(x => x.Id_KhuyenMai, f => f.PickRandom(khuyenmais).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom(danhMucs).Id);
 

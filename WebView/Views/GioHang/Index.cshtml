@@ -1,87 +1,81 @@
-﻿@model IEnumerable<DAL.Entities.GioHang>
+﻿@model List<WebView.NghiaDTO.GioHangDTO>
 
-<h4 class="text-center mb-4">Ở Giỏ hàng của bạn</h4>
+<h4 class="text-center mb-4">Giỏ hàng của bạn</h4>
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning">@TempData["WarningMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 @if (!Model.Any())
 {
-    <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống.</div>
+    <div class="alert alert-info">Giỏ hàng trống.</div>
 }
 else
 {
-    <section id="cart_items" class="container">
-        <form method="post">
-            <div class="table-responsive cart_info">
-                <table class="table table-bordered table-hover">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="text-center">Sản phẩm</th>
-                            <th class="text-center">Số lượng</th>
-                            <th class="text-center">Giá</th>
-                            <th class="text-center">Thành tiền</th>
-                            <th class="text-center">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="text-center align-middle">
-                                    <span class="font-weight-bold">@item.ChiTietSanPham.SanPham.Ten</span>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <form asp-action="UpdateQuantity" method="post" class="d-inline">
-                                        <div class="input-group">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <input type="number" name="soLuong" value="@item.SoLuong" min="1" class="form-control text-center" style="width: 80px;" />
-                                            <div class="input-group-append">
-                                                <button type="submit" class="btn btn-outline-primary">Cập nhật</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </td>
-                                <td class="text-center align-middle">
-                                    @item.ChiTietSanPham.SanPham.Gia.ToString("#,##0 VNĐ")
-                                </td>
-                                <td class="text-center align-middle">
-                                    @{
-                                        decimal giaSanPham = item.ChiTietSanPham.SanPham.Gia;
-                                        decimal thanhTien = item.SoLuong * giaSanPham;
-                                        <span>@thanhTien.ToString("#,##0 VNĐ")</span>
-                                    }
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Kích cỡ</th>
+                <th>Màu sắc</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Thành tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SanPhamTen</td>
+                    <td>@item.KichThuocTen</td>
+                    <td>@item.MauSacTen</td>
+                    <td>
+                        <form asp-action="UpdateQuantity" method="post">
+                            <input type="hidden" name="productId" value="@item.ChiTietSanPhams.Id_SanPham" />
+                            <input type="hidden" name="colorId" value="@item.ChiTietSanPhams.Id_MauSac" />
+                            <input type="hidden" name="sizeId" value="@item.ChiTietSanPhams.Id_KichThuoc" />
+                            <input type="number" name="soLuong" value="@item.SoLuong" min="1" class="form-control text-center" style="width: 80px;" />
+                            <button type="submit" class="btn btn-primary btn-sm mt-1">Cập nhật</button>
+                        </form>
+                    </td>
+                    <td>@item.Gia.ToString("#,##0 VNĐ")</td>
+                    <td>@item.TongTien.ToString("#,##0 VNĐ")</td>
+                    <td>
+                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
 
-                                </td>
-                                <td class="text-center align-middle">
-                                    <a asp-action="RemoveFromCart" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Xóa</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" class="text-right"><b>Tổng cộng:</b></td>
-                            <td colspan="2" class="text-center">
-                                @{
-                                    decimal tongCong = 0;
-                                    foreach (var item in Model)
-                                    {
-                                        decimal giaSanPhamTong = item.ChiTietSanPham.SanPham.Gia;
-                                        tongCong += item.SoLuong * giaSanPhamTong;
-                                    }
-                                }
 
-                                <b>@tongCong.ToString("#,##0 VNĐ")</b>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="text-right">
-                                <form asp-action="ProceedToCheckout" method="get">
-                                    <button type="submit" class="btn btn-success btn-lg">Tiến hành mua hàng</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </form>
-    </section>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6" class="text-right"><strong>Tổng cộng:</strong></td>
+
+                <td colspan="2">
+                    <strong>
+                        @(ViewData["TongCong"] != null ? ((decimal)ViewData
+                            ["TongCong"]).ToString("#,##0 VNĐ") : "0 VNĐ")
+                    </strong>
+                    <form method="POST" asp-action="CreatePaymentUrlVnpay" asp-controller="PayMent">
+                        <input type="hidden" name="Amount" value="abc" />
+                        <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" />
+                        <input type="hidden" name="OrderInfo" value="Thanh toán Momo cho đơn hàng tại Shop F-gear" />
+                        <input type="hidden" name="FullName" value="NghiaStore" />
+                        <button class="btn btn-success" type="submit">Thanh toán VNPAY</button>
+                    </form>
+                </td>
+
+            </tr>
+        </tfoot>
+    </table>
 }

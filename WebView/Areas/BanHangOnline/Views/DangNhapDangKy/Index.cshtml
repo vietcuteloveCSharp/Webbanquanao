@@ -1,0 +1,228 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập - Đăng ký";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Đăng nhập -->
+        <div class="col-md-6 border-end">
+            <h3 class="mb-4">Đăng nhập</h3>
+            <form id="loginForm" action="/BanHangOnline/DangNhapdangky/DangNhap" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="taikhoanDN" class="form-label">Tài khoản <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="taikhoanDN" name="TaikhoanDN"
+                           placeholder="Nhập tài khoản của bạn" required>
+                    <div class="invalid-feedback">Vui lòng nhập tài khoản hợp lệ.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPasswordDN" class="form-label">
+                        Mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" name="PasswordDN" id="loginPasswordDN"
+                               placeholder="Nhập mật khẩu" required>
+                        <button type="button" class="btn btn-outline-secondary"
+                                onclick="togglePassword('loginPasswordDN')">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                        <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    @* <div>
+                        <input type="checkbox" name="rememberMe" id="rememberMe">
+                        <label for="rememberMe">Giữ trạng thái đăng nhập</label>
+                    </div> *@
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Quên mật khẩu?</a>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Đăng nhập</button>
+            </form>
+        </div>
+
+        <!-- Đăng ký -->
+        <div class="col-md-6">
+            <h3 class="mb-4">Đăng ký</h3>
+            <form id="registerForm" action="#" method="post" novalidate>
+                <div class=" mb-3">
+                    <label for="nameFull" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="nameFull" name="nameFullDK"
+                           placeholder="Nhập họ và tên của bạn" required>
+                    <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="registerPhone" class="form-label">SĐT <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="sdtDK" id="registerPhone"
+                           placeholder="Nhập số điện thoại" required>
+                    <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                    <div>
+                        <input type="radio" id="genderFemale" name="gender" value="Nữ" checked>
+                        <label for="genderFemale" class="me-3">Nữ</label>
+                        <input type="radio" id="genderMale" name="gender" value="Nam">
+                        <label for="genderMale">Nam</label>
+                    </div>
+                    <div class="invalid-feedback">Vui lòng chọn giới tính.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="emailDK" class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="emailDK" name="emailDK"
+                           placeholder="Nhập email của bạn" required>
+                    <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="dob" class="form-label">Ngày sinh</label>
+                    <input type="date" class="form-control" name="ngaySinh" id="dob" required>
+                    <div class="invalid-feedback">Vui lòng nhập ngày sinh.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">
+                        Mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" name="registerPasswordDK" id="registerPassword"
+                           placeholder="Nhập mật khẩu" required>
+                    <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">
+                        Xác nhận mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" id="confirmPassword"
+                           placeholder="Nhập lại mật khẩu xác nhận" required>
+                    <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Quên Mật Khẩu -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/lay-lai-mk" method="post" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordLabel">Quên mật khẩu?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Vui lòng nhập email của Quý Khách để đặt lại mật khẩu.</p>
+                    <div class="mb-3">
+                        <label for="emailDK" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="emailDK" name="emailDK"
+                               placeholder="Nhập email của bạn" required>
+                        <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle mật khẩu
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+        } else {
+            input.type = 'password';
+        }
+    }
+    // Validation cho form
+    // Validation cho form
+    (function () {
+        'use strict';
+
+        const registerForm = document.querySelector('#registerForm');
+        // forms.forEach(form => {
+        registerForm.addEventListener('submit', event => {
+            // Lấy các trường mật khẩu
+            const password = document.getElementById('registerPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            let isValid = true;
+
+
+            // Kiểm tra độ dài của mật khẩu
+            if (password && password.value.length < 6) {
+                event.preventDefault();
+                event.stopPropagation();
+                isValid = false;
+
+                // Hiển thị lỗi cho trường mật khẩu
+                password.classList.add('is-invalid');
+                password.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
+            } else {
+                password.classList.remove('is-invalid');
+            }
+
+            // Kiểm tra độ dài của mật khẩu xác nhận
+            if (confirmPassword && confirmPassword.value.length < 6) {
+                event.preventDefault();
+                event.stopPropagation();
+                isValid = false;
+
+                // Hiển thị lỗi cho trường mật khẩu xác nhận
+                confirmPassword.classList.add('is-invalid');
+                confirmPassword.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
+            } else {
+                confirmPassword.classList.remove('is-invalid');
+            }
+
+            // Kiểm tra mật khẩu và mật khẩu xác nhận có khớp không
+            if (isValid && password && confirmPassword && password.value !== confirmPassword.value) {
+                event.preventDefault();
+                event.stopPropagation();
+                isValid = false;
+
+                // Hiển thị lỗi cho trường mật khẩu xác nhận
+                confirmPassword.classList.add('is-invalid');
+                confirmPassword.nextElementSibling.textContent = "Mật khẩu xác nhận không khớp.";
+            } else if (isValid) {
+                confirmPassword.classList.remove('is-invalid');
+            }
+
+            registerForm.classList.add('was-validated');
+        });
+        // });
+
+        const forms = document.querySelector('#loginForm');
+        forms.addEventListener('submit', event => {
+            // Lấy các trường mật khẩu
+            const password = document.getElementById('loginPasswordDN');
+            let isValid = true;
+
+
+            // Kiểm tra độ dài của mật khẩu
+            if (password.value.length < 6) {
+                event.preventDefault();
+                event.stopPropagation();
+                isValid = false;
+                let invalid = password.parentElement.getElementsByClassName('invalid-feedback');
+
+                password.classList.add('is-invalid');
+                invalid[0].classList.add('is-invalid');
+                // invalid[0;
+                // Hiển thị lỗi cho trường mật khẩu
+                invalid[0].style.display = 'block';
+                invalid[0].innerHTML = "Mật khẩu phải có ít nhất 6 ký tự.";
+            } else {
+                let invalid = password.parentElement.getElementsByClassName('invalid-feedback');
+                password.classList.remove('is-invalid');
+                invalid[0].classList.remove('is-invalid');
+                invalid[0].style.display = 'none';
+            }
+
+
+            forms.classList.add('was-validated');
+        });
+    })();
+
+
+</script>

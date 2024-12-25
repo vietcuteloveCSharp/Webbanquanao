@@ -25,6 +25,7 @@ namespace DAL.Context
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
+        public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
 
         public WebBanQuanAoDbContext()
         {
@@ -61,6 +62,7 @@ namespace DAL.Context
             modelBuilder.Entity<ChiTietHoaDon>().HasData(databaseSeeder.ChiTietHoaDons);
             modelBuilder.Entity<MaGiamGia>().HasData(databaseSeeder.MaGiamGias);
             modelBuilder.Entity<ChiTietMaGiamGia>().HasData(databaseSeeder.ChiTietMaGiamGias);
+            modelBuilder.Entity<HinhAnh>().HasData(databaseSeeder.HinhAnhs);
 
 
 

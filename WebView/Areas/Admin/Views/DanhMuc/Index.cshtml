@@ -1,108 +1,116 @@
-﻿@model IEnumerable<DAL.Entities.SanPham>
-<div class="col-sm-3">
-    @Html.Partial("_SidebarPartial")
-</div>
-<style>
-    <style >
-
-    .product-image-wrapper {
-        margin-bottom: 20px; /* Khoảng cách dưới mỗi sản phẩm */
-    }
-
-    .product-image-container {
-        width: 100%;
-        height: 150px; /* Đặt chiều cao cố định cho hình ảnh */
-        overflow: hidden; /* Ẩn các phần của hình ảnh ra ngoài vùng chứa */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .product-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Đảm bảo hình ảnh bao phủ toàn bộ phần tử mà không bị biến dạng */
-        }
-
-    .productinfo {
-        text-align: center;
-    }
-
-        .productinfo h2 {
-            font-size: 18px; /* Điều chỉnh kích thước tiêu đề */
-            margin: 10px 0; /* Khoảng cách trên và dưới tiêu đề */
-        }
-
-        .productinfo p {
-            margin: 5px 0; /* Khoảng cách trên và dưới các đoạn văn */
-        }
-
-    .btn.add-to-cart {
-        margin-top: 10px; /* Khoảng cách trên nút "Thêm vào giỏ hàng" */
-    }
-
-</style>
-</style>
-<div class="col-sm-9 padding-right">
-    <div class="features_items">
-        <!--features_items-->
-        <h2 class="title text-center">Sản Phẩm</h2>
-        @foreach (var item in Model)
-        {
-            <div class="col-sm-4">
-                <div class="product-image-wrapper">
-                    <div class="single-products">
-                        <div class="productinfo text-center">
-                            <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id">
-                                <div class="product-image-container">
-                                    <img src="~/images/@item.HinhAnh" alt="@item.Ten" />
-                                </div>
-                                @* <h2>@item.Gia.ToString("#,##0 VNĐ")</h2> *@
-                                <p>@item.Ten</p>
-                                <p>Danh mục: @item.DanhMuc.TenDanhMuc</p>
-                                <p>Thương hiệu: @item.ThuongHieu.Ten</p>
-                            </a>
-                            @if (item.SoLuong > 0)
-                            {
-                                <button class="btn btn-default add-to-cart" data-product_id="@item.Id"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-default "><i class="fa fa-shopping-cart"></i>Hết hàng</button>
-                            }
-                            <div class="choose">
-                                @if (User.Identity?.IsAuthenticated ?? false)
-                                {
-                                    <ul class="nav nav-pills nav-justified">
-                                        <li><button class="btn btn-danger add-btn-wishlist" data-product_id="@item.Id"><i class="fa-solid fa-heart"></i> Yêu thích</button></li>
-                                        <li><button class="btn btn-info add-btn-compare" data-product_id="@item.Id"> <i class="fas fa-exchange-alt"></i> So sánh</button></li>
-                                    </ul>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-
-    </div><!--features_items-->
-</div>
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $('.add-to-cart').click(function () {
-                var Id = $(this).data("product_id");
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("Add", "Cart")",
-                    data: { Id: Id },
-                    success: function (result) {
-                        if (result) {
-                            Swal.fire("Thêm vào giỏ hàng thành công");
-                        }
-                    }
-                });
-            });
-        });
-    </script>
+﻿@model IEnumerable<WebView.NghiaDTO.DanhMucDTO>
+@{
+    ViewData["Title"] = "Danh sách danh mục";
 }
+
+<style>
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    /* Tạo kiểu dáng cho ô màu sắc */
+    .color-box {
+        border-radius: 50%; /* Làm cho ô màu tròn */
+        border: 1px solid #ddd; /* Thêm viền nhẹ cho ô màu */
+        display: inline-block;
+        width: 25px; /* Kích thước ô màu lớn hơn một chút */
+        height: 25px; /* Kích thước ô màu lớn hơn một chút */
+        margin-right: 5px; /* Khoảng cách giữa các ô màu */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+    }
+
+        /* Thêm hiệu ứng hover cho các ô màu */
+        .color-box:hover {
+            transform: scale(1.2); /* Phóng to khi hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+        }
+
+    /* Tạo kiểu dáng cho các nút hành động */
+    .btn {
+        border-radius: 5px; /* Làm tròn các góc của nút */
+        padding: 8px 12px; /* Thêm padding để nút rộng hơn */
+        font-size: 0.9rem; /* Giảm kích thước font cho các nút */
+        transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền khi hover */
+    }
+
+        .btn:hover {
+            background-color: #007bff; /* Màu nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+        }
+
+    .btn-sm {
+        padding: 6px 10px; /* Giảm kích thước nút nhỏ */
+    }
+
+    /* Thêm kiểu cho badge (kích thước) */
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    }
+</style>
+<h1 class="text-center mb-4">Danh sách Sản phẩm</h1>
+<h1>@ViewData["Title"]</h1>
+
+<div class="mb-3 text-right">
+    <a asp-action="Create" asp-controller="DanhMuc" class="btn btn-success">
+        <i class="fa fa-plus"></i> Thêm danh mục
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover" id="myTable">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Tên Danh Mục</th>
+                <th scope="col">Trạng Thái</th>
+                <th scope="col">Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td scope="row">@item.Id</td>
+                    <td>@item.TenDanhMuc</td>
+                    <td>
+                        @if (item.TrangThai)
+                        {
+                            <span class="badge badge-success">Kích Hoạt</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">Không Kích Hoạt</span>
+                        }
+                    </td>
+
+
+                    <td>
+                        <a asp-action="Edit" asp-controller="DanhMuc" asp-route-Id="@item.Id" class="btn btn-sm btn-warning">
+                            <i class="fa fa-edit"></i> Sửa
+                        </a>
+                        <a asp-action="Delete" asp-controller="DanhMuc" asp-route-Id="@item.Id" class="btn btn-sm btn-danger confirmDeletion">
+                            <i class="fa fa-trash"></i> Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
