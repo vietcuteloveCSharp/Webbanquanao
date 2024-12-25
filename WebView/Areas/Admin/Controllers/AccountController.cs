@@ -22,14 +22,14 @@ namespace WebView.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(LoginResquest data)
         {
             string apiUrl = "https://localhost:7169/api/Account/Login"; 
 
             var loginRequest = new LoginResquest
             {
-                TaiKhoan = username,
-                MatKhau = password
+                TaiKhoan = data.TaiKhoan,
+                MatKhau = data.MatKhau,
             };
 
             // Gọi API đăng nhập để lấy JWT
@@ -46,7 +46,7 @@ namespace WebView.Areas.Admin.Controllers
                     HttpContext.Session.SetString("JWTToken", loginResponse.Token);
 
                     // Xử lý thành công, có thể chuyển hướng hoặc trả về dữ liệu
-                    return RedirectToAction("Index", "Home"); // Chuyển hướng tới trang chủ
+                    return RedirectToAction("Index", "SanPham"); // Chuyển hướng tới trang chủ
                 }
                 // Xử lý khi đăng nhập thất bại
                 ModelState.AddModelError(string.Empty, loginResponse.Message);

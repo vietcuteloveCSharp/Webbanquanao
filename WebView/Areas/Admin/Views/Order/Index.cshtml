@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Đơn Hàng</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Tìm kiếm</h2>
+    <form id="searchForm">
+        <label for="orderID">Mã hóa đơn:</label>
+        <input type="text" id="orderID" name="orderID">
+        <label for="orderStatus">Trạng thái:</label>
+        <select id="orderStatus" name="orderStatus">
+            <option value="">Tất cả</option>
+            <option value="processing">Đang xử lý</option>
+            <option value="shipped">Đã giao hàng</option>
+            <option value="delivered">Đã nhận hàng</option>
+            <option value="cancelled">Đã hủy</option>
+        </select>
+        <button type="button" onclick="filterOrders()">Tìm kiếm</button>
+    </form>
+
+    <h1>Thông Tin Đơn Hàng</h1>
+    <table>
+        <tr>
+            <th>Thông tin khách hàng</th>
+            <th>Thông tin đơn hàng</th>
+            <th>Thời Gian</th>
+            <th>Địa chỉ Giao Hàng</th>
+            <th>Tổng Tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+        <tr>
+            <td>
+                <p>SĐT: 0123456789</p>
+                <p>Tên Khách Hàng: Nguyễn Văn A</p>
+            </td>
+            <td>
+
+                <p>Mã đơn hàng: DH001</p>
+                <table border="none">
+                    <tr>
+                        <th>Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                    </tr>
+                    <tr>
+                        <th>Ao Polo</th>
+                        <th>2</th>
+                    </tr>
+                </table>
+            </td>
+            <td>01/01/2023</td>
+            <td>123 Đường ABC, Quận 1, TP.HCM</td>
+            <td>1,000,000 VND</td>
+            <td>
+                <select>
+                    <option value="processing">Đang xử lý</option>
+                    <option value="shipped">Đã giao hàng</option>
+                    <option value="delivered">Đã nhận hàng</option>
+                    <option value="cancelled">Đã hủy</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</body>
+<script>
+    function filterOrders() {
+        var orderID = document.getElementById('orderID').value.toLowerCase();
+        var orderStatus = document.getElementById('orderStatus').value;
+        var table = document.querySelector('table');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 1; i < rows.length; i++) {
+            var orderIDCell = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+            var statusCell = rows[i].getElementsByTagName('td')[5].innerText;
+            var showRow = true;
+
+            if (orderID && !orderIDCell.includes(orderID)) {
+                showRow = false;
+            }
+
+            if (orderStatus && statusCell !== orderStatus) {
+                showRow = false;
+            }
+
+            rows[i].style.display = showRow ? '' : 'none';
+        }
+    }
+</script>
+</html>

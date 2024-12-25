@@ -68,6 +68,7 @@ namespace Service.VuVietAnhService.Repository.Account
                     response.Message = "Tài khoản không tồn tại.";
                     return response;
                 }
+                ///USE KHAC
                 var role = await _chucvuService.GetChucVuById(account.Id_ChucVu);
                 // Kiểm tra mật khẩu
                 if (account.MatKhau != loginResquest.MatKhau)
