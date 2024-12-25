@@ -1,0 +1,124 @@
+﻿@model WebView.NghiaDTO.ChiTietSanPhamDTO
+
+@{
+    ViewData["title"] = "Tạo số lượng";
+    var total_quantities = 0;
+    var key = 1;
+
+    // Lấy danh sách màu sắc và kích thước duy nhất
+    var colors = ((IEnumerable<dynamic>)ViewBag.ChiTietSanPhams)?.Select(x => new { Id_MauSac = (int)x.Id_MauSac, Ten = (string)x.MauSac?.Ten }).Distinct().ToList();
+    var sizes = ((IEnumerable<dynamic>)ViewBag.ChiTietSanPhams)?.Select(x => new { Id_MauSac = (int)x.Id_MauSac, Id_KichThuoc = (int)x.Id_KichThuoc, Ten = (string)x.KichThuoc?.Ten }).ToList();
+}
+
+<h1>Tạo số lượng</h1>
+<div class="col-md-9">
+    <form asp-action="StoreProductQuantity" asp-controller="SanPham" enctype="multipart/form-data">
+        <!-- Ẩn thông tin Id sản phẩm -->
+        <input type="hidden" name="Id_SanPham" value="@ViewBag.Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <!-- Form nhập số lượng -->
+        <div class="mb-3">
+            <label class="form-label">Số lượng</label>
+            <input type="number" min="1" value="1" max="1000" asp-for="SoLuong" class="form-control" required>
+            <span asp-validation-for="SoLuong" class="text-danger"></span>
+        </div>
+
+        <!-- Dropdown chọn Màu sắc -->
+        <div class="mb-3">
+            <label class="form-label">Màu sắc</label>
+            <select id="colorDropdown" asp-for="Id_MauSac" class="form-control" required>
+                <option value="">Chọn màu sắc</option>
+                @foreach (var color in colors)
+                {
+                    <option value="@color.Id_MauSac">@color.Ten</option>
+                }
+            </select>
+            <span asp-validation-for="Id_MauSac" class="text-danger"></span>
+        </div>
+
+        <!-- Dropdown chọn Kích thước -->
+        <div class="mb-3">
+            <label class="form-label">Kích thước</label>
+            <select id="sizeDropdown" asp-for="Id_KichThuoc" class="form-control" required>
+                <option value="">Chọn kích thước</option>
+                @foreach (var size in sizes)
+                {
+                    <option value="@size.Id_KichThuoc" data-color="@size.Id_MauSac">@size.Ten</option>
+                }
+            </select>
+            <span asp-validation-for="Id_KichThuoc" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-primary">Tạo</button>
+        </div>
+    </form>
+
+    <!-- Hiển thị bảng số lượng sản phẩm hiện có -->
+    <h3>Số lượng sản phẩm hiện có:</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
+                <th>Số lượng đã thêm</th>
+                <th>Ngày</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var productQuantity in ViewBag.ProductByQuantity ?? new List<WebView.NghiaDTO.ChiTietSanPhamDTO>())
+            {
+                total_quantities += productQuantity.SoLuong;
+                <tr>
+                    <td>@key</td>
+                    <td>@productQuantity.MauSac?.Ten</td>
+                    <td>@productQuantity.KichThuoc?.Ten</td>
+                    <td>@productQuantity.SoLuong</td>
+                    <td>@productQuantity.NgayTao.ToString("dd/MM/yyyy")</td>
+                </tr>
+                key++;
+            }
+
+            <tr>
+                <td><strong>Tổng số lượng:</strong></td>
+                <td colspan="4">@total_quantities</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Link quay lại danh sách sản phẩm -->
+    <a asp-controller="SanPham" asp-action="Index">Trở lại danh sách sản phẩm</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const colorDropdown = document.getElementById("colorDropdown");
+            const sizeDropdown = document.getElementById("sizeDropdown");
+
+            colorDropdown.addEventListener("change", function () {
+                const selectedColor = colorDropdown.value;
+
+                // Lọc các tùy chọn kích thước dựa trên màu sắc đã chọn
+                Array.from(sizeDropdown.options).forEach(option => {
+                    if (option.value === "") {
+                        option.style.display = "block"; // Hiển thị tùy chọn mặc định
+                    } else if (option.getAttribute("data-color") === selectedColor) {
+                        option.style.display = "block";
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+
+                // Đặt lại giá trị dropdown kích thước
+                sizeDropdown.value = "";
+            });
+        });
+    </script>
+}

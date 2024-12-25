@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Xác nhận OTP";
+}
+<style>
+    .otp-input {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        text-align: center;
+        margin: 0;
+    }
+</style>
+<!-- Modal Nhập Mã Xác Minh -->
+<div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="otpModalLabel">NHẬP MÃ XÁC MINH</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Chúng tôi đã gửi mã xác minh OTP đến email
+                    <strong>nhuhoang@gmail.com</strong> của Quý Khách. Vui lòng kiểm tra tin nhắn và nhập mã OTP 6 số để
+                    hoàn thành đăng ký.
+                </p>
+                <form id="otpForm" novalidate>
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                        <input type="text" maxlength="1" class="form-control otp-input text-center" required>
+                    </div>
+                    <div id="timer" class="text-center text-muted mb-3">Còn lại 02:00</div>
+                    <div class="alert alert-danger d-none" id="otpError" role="alert">
+                        Mã xác minh đã hết thời gian.
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger w-100">Hoàn thành</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const otpForm = document.getElementById('otpForm');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const timerElement = document.getElementById('timer');
+        const otpError = document.getElementById('otpError');
+        const API_OTP_URL = 'https://example.com/xac-nhan-opt'; // API xác nhận OTP
+        let countdownTime = 120; // 2 phút (120 giây)
+        let countdownInterval;
+
+        // Bắt đầu đếm ngược thời gian
+        function startCountdown() {
+            updateTimerDisplay();
+            countdownInterval = setInterval(() => {
+                countdownTime--;
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    otpError.classList.remove('d-none');
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        // Cập nhật giao diện hiển thị bộ đếm thời gian
+        function updateTimerDisplay() {
+            const minutes = Math.floor(countdownTime / 60);
+            const seconds = countdownTime % 60;
+            timerElement.textContent = `Còn lại ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+
+
+        // Gửi mã OTP đến API khi nhập đủ
+        function sendOtpToApi(otp) {
+            fetch(`${API_OTP_URL}?otp=${otp}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Xác nhận OTP thành công:', data);
+                    alert('Mã OTP đã được xác nhận!');
+                })
+                .catch(error => {
+                    console.error('Lỗi xác nhận OTP:', error);
+                    alert('Xác nhận OTP thất bại. Vui lòng thử lại.');
+                });
+        }
+
+        // Chuyển focus tự động giữa các ô nhập OTP
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+
+                // Kiểm tra nếu đã nhập đủ tất cả các ô OTP
+                const otpValues = Array.from(otpInputs).map(input => input.value).join('');
+                if (otpValues.length === 6 && !otpValues.includes('')) {
+                    sendOtpToApi(otpValues); // Gửi mã OTP đến API
+                }
+            });
+
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Backspace' && input.value === '' && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Xử lý validation form khi nhấn nút "Hoàn thành"
+        otpForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            otpError.classList.add('d-none');
+
+            const otpValues = Array.from(otpInputs).map(input => input.value).join('');
+            if (otpValues.length < 6) {
+                alert('Vui lòng nhập đầy đủ mã OTP.');
+                return;
+            }
+
+            alert('Xác minh thành công!');
+            // Thực hiện các bước tiếp theo...
+            sendOtpToApi(otpValues);
+        });
+
+        // Hiển thị modal và bắt đầu đếm ngược
+        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+        otpModal.show();
+        startCountdown();
+    });
+
+</script>

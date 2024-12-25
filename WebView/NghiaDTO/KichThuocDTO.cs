@@ -9,6 +9,7 @@ namespace WebView.NghiaDTO
 {
     public class KichThuocDTO
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = "Tên kích thước là bắt buộc.")]
         [MaxLength(20, ErrorMessage = "Không vượt quá 20 kí tự")]
         [RegularExpression(@"^(?!\s*$).+", ErrorMessage = "Tên không được chỉ chứa khoảng trắng.")]

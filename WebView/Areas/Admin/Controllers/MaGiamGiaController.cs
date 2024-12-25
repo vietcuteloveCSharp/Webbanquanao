@@ -1,4 +1,4 @@
-﻿using DAL.Context;
+using DAL.Context;
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,115 +9,81 @@ namespace WebView.Areas.Admin.Controllers
     [Area("Admin")]
     public class MaGiamGiaController : Controller
     {
-        private readonly WebBanQuanAoDbContext _context;    
+        private readonly WebBanQuanAoDbContext _context;
         public MaGiamGiaController(WebBanQuanAoDbContext dbcontext, IWebHostEnvironment webHostEnvironment)
         {
             _context = dbcontext;
         }
         // GET: Admin/MaGiamGia
-        // GET: Index (List all MaGiamGia)
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Simulate fetching data from a database
-            var mockData = new List<MaGiamGiaDTO>
-            {
-                new MaGiamGiaDTO
+            var maGiamGiaList = await _context.MaGiamGias
+                .Include(m => m.ChiTietMaGiamGias)
+                .Select(m => new MaGiamGiaDTO
                 {
-                    Id = 1,
-                    Ten = "Mã giảm giá 1",
-                    LoaiGiamGia = 0,
-                    DieuKienGiamGia = 100000,
-                    GiaTriGiam = "10",
-                    MenhGia = 0,
-                    NoiDung = "Áp dụng cho đơn hàng trên 100k",
-                    GiaTriToiDa = 50000,
-                    TrangThai = 1,
-                    ThoiGianTao = DateTime.Now,
-                    ThoiGianKetThuc = DateTime.Now.AddDays(7)
-                }
-            };
+                    Id = m.Id,
+                    Ten = m.Ten,
+                    LoaiGiamGia = m.LoaiGiamGia,
+                    DieuKienGiamGia = m.DieuKienGiamGia,
+                    GiaTriGiam = m.GiaTriGiam,
+                    MenhGia = m.MenhGia,
+                    NoiDung = m.NoiDung,
+                    GiaTriToiDa = m.GiaTriToiDa,
+                    TrangThai = m.TrangThai,
+                    ThoiGianTao = m.ThoiGianTao,
+                    ThoiGianKetThuc =m.ThoiGianKetThuc,
+                    ChiTietMaGiamGiaDTOs = m.ChiTietMaGiamGias.Select(c => new ChiTietMaGiamGiaDTO
+                    {
+                        Id = c.Id,
+                        Id_KhachHang = c.Id_KhachHang,
+                        NoiDung = c.NoiDung,
+                        NgaySuDung = c.NgaySuDung,
+                        Id_MaGiamGia = c.Id_MaGiamGia
+                    }).ToList()
+                })
+                .ToListAsync();
 
-            return View(mockData);
+            return View(maGiamGiaList);
         }
-    
-    [HttpGet]
+        [HttpGet]
 
-        // GET: Create
+        // GET: Admin/MaGiamGia/Create
         public IActionResult Create()
         {
-            return View(new MaGiamGiaDTO());
+            var magiamgia = _context.MaGiamGias.ToList();
+            return View();
         }
-
-        // POST: Create
+        // POST: Admin/MaGiamGia/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MaGiamGiaDTO model)
+        public async Task<IActionResult> Create(MaGiamGiaDTO maGiamGiaDto)
         {
-            // Validate LoaiGiamGia logic
-            if (model.LoaiGiamGia == 0) // Coupon
+            if (ModelState.IsValid)
             {
-                if (model.GiaTriGiam == null || decimal.Parse(model.GiaTriGiam) <= 0)
+                var entity = new MaGiamGia
                 {
-                    ModelState.AddModelError("GiaTriGiam", "Giá trị giảm phải lớn hơn 0 với Coupon.");
-                }
-
-                if (model.MenhGia > 0)
-                {
-                    ModelState.AddModelError("MenhGia", "MenhGia không được sử dụng cho Coupon.");
-                }
+                    Id = maGiamGiaDto.Id,
+                    Ten = maGiamGiaDto.Ten,
+                    LoaiGiamGia = maGiamGiaDto.LoaiGiamGia,
+                    DieuKienGiamGia = maGiamGiaDto.DieuKienGiamGia,
+                    GiaTriGiam = maGiamGiaDto.GiaTriGiam,
+                    MenhGia = maGiamGiaDto.MenhGia,
+                    NoiDung = maGiamGiaDto.NoiDung,
+                    GiaTriToiDa = maGiamGiaDto.GiaTriToiDa,
+                    TrangThai = maGiamGiaDto.TrangThai,
+                    ThoiGianTao = maGiamGiaDto.ThoiGianTao,
+                    ThoiGianKetThuc = maGiamGiaDto.ThoiGianKetThuc,
+                    // Thêm bất kỳ trường nào cần thiết khác vào đây.
+                };
+                // Gán thời gian tạo
+                _context.MaGiamGias.Add(entity);
+                await _context.SaveChangesAsync();
+                TempData["success"] = "Thêm mới thành công!";
+                return RedirectToAction(nameof(Index));
             }
-            else if (model.LoaiGiamGia == 1) // Voucher
-            {
-                if (model.MenhGia <= 0)
-                {
-                    ModelState.AddModelError("MenhGia", "MenhGia là bắt buộc với Voucher và phải lớn hơn 0.");
-                }
-
-                if (!string.IsNullOrEmpty(model.GiaTriGiam))
-                {
-                    ModelState.AddModelError("GiaTriGiam", "GiaTriGiam không được sử dụng cho Voucher.");
-                }
-            }
-
-            // Check DieuKienGiamGia logic
-            if (model.LoaiGiamGia == 0 && model.DieuKienGiamGia < 0)
-            {
-                ModelState.AddModelError("DieuKienGiamGia", "Điều kiện giảm giá không được nhỏ hơn 0.");
-            }
-
-            // Check general logic
-            if (model.ThoiGianKetThuc.HasValue && model.ThoiGianKetThuc <= model.ThoiGianTao)
-            {
-                ModelState.AddModelError("ThoiGianKetThuc", "Thời gian kết thúc phải sau thời gian tạo.");
-            }
-
-            // Return to View if any validation failed
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // Save logic to add data to database
-            var maGiamGiaEntity = new MaGiamGia
-            {
-                Ten = model.Ten,
-                LoaiGiamGia = model.LoaiGiamGia,
-                DieuKienGiamGia = model.DieuKienGiamGia,
-                GiaTriGiam = model.GiaTriGiam,
-                MenhGia = model.MenhGia,
-                NoiDung = model.NoiDung,
-                GiaTriToiDa = model.GiaTriToiDa,
-                TrangThai = model.TrangThai,
-                ThoiGianTao = model.ThoiGianTao,
-                ThoiGianKetThuc = model.ThoiGianKetThuc
-            };
-
-            _context.MaGiamGias.Add(maGiamGiaEntity);
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Mã giảm giá đã được tạo thành công!";
-            return RedirectToAction("Index");
+            return View(maGiamGiaDto);
         }
+
 
 
     }

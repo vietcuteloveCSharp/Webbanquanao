@@ -1,6 +1,6 @@
 ﻿@model WebView.NghiaDTO.SanPhamDTO
 @{
-    ViewData["Title"] = "Thêm Sản Phẩm Mới";
+    ViewData["Title"] = "Sửa Sản Phẩm";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -10,10 +10,12 @@
         <label for="Ten">Tên Sản Phẩm</label>
         <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
     </div>
+
     <div class="form-group">
-        <label for="Giá">Giá</label>
-        <input type="text" class="form-control" id="Gia" name="Gia" value="@Model.Gia" required />
+        <label for="Gia">Giá</label>
+        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
     </div>
+
     <div class="form-group">
         <label for="NgayTao">Ngày Tạo</label>
         <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
@@ -21,70 +23,138 @@
 
     <div class="form-group">
         <label for="Id_ThuongHieu">Thương Hiệu</label>
-        <select class="form-control" id="Id_ThuongHieu" name="Id_ThuongHieu">
-            @foreach (var item in ViewBag.ThuongHieus as SelectList)
-            {
-                <option value="@item.Value">@item.Text</option>
-            }
-        </select>
+        <select class="form-control" asp-for="Id_ThuongHieu" asp-items="ViewBag.ThuongHieus"></select>
     </div>
+
+
 
     <div class="form-group">
         <label for="Id_DanhMuc">Danh Mục</label>
-        <select class="form-control" id="Id_DanhMuc" name="Id_DanhMuc">
-            @foreach (var item in ViewBag.DanhMucs as SelectList)
-            {
-                <option value="@item.Value">@item.Text</option>
-            }
-        </select>
+        <select class="form-control" asp-for="Id_DanhMuc" asp-items="ViewBag.DanhMucs"></select>
     </div>
 
-    <div id="chiTietSanPhamContainer">
-        <div class="form-group">
-            <label for="Id_MauSac">Màu Sắc</label>
-            <select class="form-control" id="Id_MauSac" name="chiTietSanPhams[0].Id_MauSac">
-                @foreach (var item in ViewBag.MauSacs as SelectList)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        </div>
+    <!-- Nút Show để hiển thị các phần màu sắc và kích thước -->
+    <button type="button" class="btn btn-secondary" id="toggleChiTiet">Hiển Thị Màu & Kích Thước</button>
 
-        <div class="form-group">
-            <label for="Id_KichThuoc">Kích Thước</label>
-            <select class="form-control" id="Id_KichThuoc" name="chiTietSanPhams[0].Id_KichThuoc">
-                @foreach (var item in ViewBag.KichThuocs as SelectList)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        </div>
+    <div id="chiTietSanPhamContainer" style="display: none;">
+        @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
+        {
+            <div class="chiTietSanPham-item" id="chiTietSanPham-@i">
+                <div class="form-group">
+                    <label for="Id_MauSac">Màu Sắc</label>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs">
+                        <!-- Không cần viết lại vòng lặp foreach, asp-items sẽ tự động tạo option từ ViewBag -->
+                    </select>
+                </div>
 
-        <div id="chiTietSanPhamContainer">
-            @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
-            {
+                <div class="form-group">
+                    <label for="Id_KichThuoc">Kích Thước</label>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs">
+                        <!-- Không cần viết lại vòng lặp foreach, asp-items sẽ tự động tạo option từ ViewBag -->
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="SoLuong">Số Lượng</label>
-                    <input type="number" class="form-control" id="SoLuong" name="chiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
+                    <input type="number" class="form-control" name="chiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
                 </div>
-            }
-        </div>
-        <!-- Thêm trường chọn file ảnh -->
-        <div class="form-group">
-            <label for="Image">Hình Ảnh</label>
-            <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
 
-            @if (!string.IsNullOrEmpty(Model.HinhAnh))
-            {
-                <div class="mt-2">
-                    <img src="@Model.HinhAnh" alt="Hình ảnh hiện tại" style="max-width: 100px;" />
-                  
-                </div>
-            }
-        </div>
+                <button type="button" class="btn btn-danger remove-item">Xóa</button>
+            </div>
+        }
     </div>
 
-    <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
+    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
+
+    <div class="form-group">
+        <label for="Image">Hình Ảnh</label>
+        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
+
+        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+        {
+            <div class="mt-2">
+                <img src="@Model.HinhAnh" alt="Hình ảnh hiện tại" style="max-width: 100px;" />
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
 </form>
 
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+
+@section Scripts {
+   Html.RenderPartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Xử lý hiển thị ẩn màu sắc và kích thước khi nhấn nút
+        document.getElementById('toggleChiTiet').addEventListener('click', function () {
+            var chiTietContainer = document.getElementById('chiTietSanPhamContainer');
+            if (chiTietContainer.style.display === 'none') {
+                chiTietContainer.style.display = 'block';
+                this.textContent = 'Ẩn Màu & Kích Thước'; // Thay đổi văn bản nút
+            } else {
+                chiTietContainer.style.display = 'none';
+                this.textContent = 'Hiển Thị Màu & Kích Thước'; // Thay đổi văn bản nút
+            }
+        });
+
+        // Thêm chi tiết sản phẩm mới
+        document.getElementById('addChiTiet').addEventListener('click', function () {
+            var container = document.getElementById('chiTietSanPhamContainer');
+            var index = container.getElementsByClassName('chiTietSanPham-item').length;
+
+            var newItem = document.createElement('div');
+            newItem.classList.add('chiTietSanPham-item');
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <label for="Id_MauSac">Màu Sắc</label>
+                    <select class="form-control" name="chiTietSanPhams[${index}].Id_MauSac">
+                        @foreach (var item in ViewBag.MauSacs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="Id_KichThuoc">Kích Thước</label>
+                    <select class="form-control" name="chiTietSanPhams[${index}].Id_KichThuoc">
+                        @foreach (var item in ViewBag.KichThuocs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="SoLuong">Số Lượng</label>
+                    <input type="number" class="form-control" name="chiTietSanPhams[${index}].SoLuong" value="0" />
+                </div>
+
+                <button type="button" class="btn btn-danger remove-item">Xóa</button>
+            `;
+            container.appendChild(newItem);
+        });
+
+        // Xóa chi tiết sản phẩm
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-item')) {
+                var item = e.target.closest('.chiTietSanPham-item');
+                item.remove();
+            }
+        });
+
+        $(".typing-price").on("input", function () {
+            var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+            var numberValue = parseFloat(rawValue.replace(',', '.'));
+            if (!isNaN(numberValue)) {
+                $("#price-convert").html(
+                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
+                );
+            } else {
+                $("#price-convert").html('');
+            }
+        });
+    </script>
+}

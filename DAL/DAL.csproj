@@ -21,10 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DTO\DTO.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\Enum\Enum.csproj" />
   </ItemGroup>
 
 </Project>

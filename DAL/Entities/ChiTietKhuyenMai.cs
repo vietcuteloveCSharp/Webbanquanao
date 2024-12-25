@@ -11,8 +11,8 @@ namespace DAL.Entities
 
         public int LoaiKhuyenMai { get; set; } // 0 - theo % || 1 - theo Giá
         public string GiaTriGiam { get; set; } // % giảm
-        public string MenhGia { get; set; } // số tiền giảm
-        public string GiaTriToiDa { get; set; }  // số tiền tối đa có thể giảm
+        public decimal MenhGia { get; set; } // số tiền giảm
+        public decimal GiaTriToiDa { get; set; }  // số tiền tối đa có thể giảm
 
         [ForeignKey("KhuyenMai")]
         public int? Id_KhuyenMai { get; set; } = null;

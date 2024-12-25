@@ -1,9 +1,13 @@
-﻿using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
 using WebView.Services.Vnpay;
 
-
+namespace WebView
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddScoped<IVnPayService, VnPayService>();
             // add httpclient
@@ -40,44 +44,42 @@ using WebView.Services.Vnpay;
             }
 
 
-                app.UseHttpsRedirection();
-                app.UseStaticFiles();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-<<<<<<< Updated upstream
-                app.UseRouting();
-                // Kích hoạt session
-                app.UseSession();
-                app.UseAuthorization();
-
-                app.MapControllerRoute(
-                name: "Areas",
-                pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-=======
             app.UseRouting();
             // Kích hoạt session
             app.UseSession();
             app.UseAuthorization();
-app.MapControllerRoute(
- name: "Areas",
-pattern: "{area:exists}/{controller=bannhanh}/{action=index}/{id?}");
 
-app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
+            app.MapControllerRoute(
+               name: "default",
+               pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapAreaControllerRoute(
+             name: "BanTaiQuay",
+            areaName: "BanTaiQuay",
+            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
 
+            app.MapAreaControllerRoute(
+                name: "BanHangOnline",
+                areaName: "BanHangOnline",
+                pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
 
-app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
->>>>>>> Stashed changes
+            app.MapAreaControllerRoute(
+             name: "Admin",
+            areaName: "Admin",
+            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
 
-app.MapControllerRoute(
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 
             //Seedingdata
-            var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
-            SeedData.SeedingData(context);
+            //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
+            //SeedData.SeedingData(context);
             app.Run();
+        }
+    }
+}

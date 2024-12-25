@@ -9,12 +9,15 @@ namespace WebView.NghiaDTO
 {
     public class MauSacDTO
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Tên là bắt buộc.")]
         [MaxLength(50, ErrorMessage = "không được vượt quá 50 kí tự")]
         [RegularExpression(@"^\S+$", ErrorMessage = "Tên không được chứa chỉ khoảng trắng.")]
         public string Ten { get; set; } = string.Empty;
         [MaxLength(20, ErrorMessage = "Mã Hex không thể dài hơn 20 ký tự.")]
-        [RegularExpression(@"^[A-Fa-f0-9]+$", ErrorMessage = "Mã Hex chỉ chứa các ký tự A-F và 0-9.")]
+        [RegularExpression(@"^#?[A-Fa-f0-9]{6}$", ErrorMessage = "Mã Hex chỉ chứa ký tự A-F, 0-9 và có độ dài 6 ký tự.")]
+
         public string MaHex { get; set; } = string.Empty;
     }
 }
