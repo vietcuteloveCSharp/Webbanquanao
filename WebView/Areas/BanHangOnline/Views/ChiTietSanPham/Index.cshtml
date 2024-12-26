@@ -201,12 +201,12 @@
                                         if (id == ms.Id)
                                         {
                                             <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id) checked>
-                                            <label for="color-@ms.Id" style="background-color: @ms.Ten" onclick="fetchProductDetails(@ms.Id)"></label>
+                                            <label for="color-@ms.Id" style="background-color: @ms.MaHex.Replace(" ","")" onclick="fetchProductDetails(@ms.Id)"></label>
                                         }
                                         else
                                         {
                                             <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id)>
-                                            <label for="color-@ms.Id" style="background-color: @ms.Ten"  onclick="fetchProductDetails(@ms.Id)"></label>
+                                            <label for="color-@ms.Id" style="background-color: @ms.MaHex.Replace(" "," ")" onclick="fetchProductDetails(@ms.Id)"></label>
                                         }
                                     
                                     }
