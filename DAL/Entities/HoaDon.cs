@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Enum.EnumVVA;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
@@ -10,7 +11,7 @@ namespace DAL.Entities
         public int Id { get; set; }
         public string TongTien { get; set; }
         public DateTime NgayTao { get; set; } = DateTime.Now;
-        public int TrangThai { get; set; }
+        public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXuLy;
 
         [ForeignKey("NhanVien")]
         public int Id_NhanVien { get; set; }

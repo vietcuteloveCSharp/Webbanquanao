@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using DAL.Entities;
 using DTO.Hoangnn;
+using Enum.EnumVVA;
 using static DAL.DataSeed.EnumableClass;
 
 namespace DAL.DataSeed
@@ -391,7 +392,7 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.TongTien, f => f.Commerce.Price(200000, 10000000))
                 .RuleFor(x => x.NgayTao, f => f.Date.Recent())
-                .RuleFor(x => x.TrangThai, f => (int)f.PickRandom<TrangThaiHoaDonEnum>())
+                .RuleFor(x => x.TrangThai, f => f.PickRandom<ETrangThaiHD>())
                 .RuleFor(x => x.Id_NhanVien, f => f.PickRandom(nhanViens).Id)
                 .RuleFor(x => x.Id_KhachHang, f => f.PickRandom(khachHangs).Id);
 

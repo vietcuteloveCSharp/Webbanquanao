@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
 using WebView.Services.Vnpay;
 
@@ -22,9 +22,7 @@ namespace WebView
             {
                 option.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectionDb"]);
             });
-
             // Cấu hình session
-            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn session là 30 phút
@@ -37,6 +35,7 @@ namespace WebView
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -44,12 +43,13 @@ namespace WebView
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseRouting();
             // Kích hoạt session
             app.UseSession();
-            app.UseRouting();
             app.UseAuthorization();
 
             app.MapControllerRoute(
