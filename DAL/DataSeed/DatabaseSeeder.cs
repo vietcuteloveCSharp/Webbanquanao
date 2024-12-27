@@ -104,7 +104,7 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiGiamGia, f => (int)f.PickRandom<LoaiGiamGiaEnum>())
                 .RuleFor(x => x.DieuKienGiamGia, f => f.Random.Int(200000, 1000000))
-                .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(10, 50))
+                .RuleFor(x => x.GiaTriGiam, (f, _) => f.Random.Decimal(10, 50))
                  .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
                .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
         .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))

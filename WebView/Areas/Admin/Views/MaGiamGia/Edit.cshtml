@@ -1,18 +1,17 @@
-@model WebView.NghiaDTO.MaGiamGiaDTO
+﻿@model WebView.NghiaDTO.MaGiamGiaDTO
 
 @{
-    ViewData["Title"] = "Tạo mã giảm giá mới";
+    ViewData["Title"] = "Chỉnh sửa mã giảm giá";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Edit" method="post">
     @* Tên mã *@
     <div class="form-group">
         <label asp-for="Ten"></label>
         <input asp-for="Ten" class="form-control" />
         <span asp-validation-for="Ten" class="text-danger"></span>
-
     </div>
 
     @* Loại giảm giá *@
@@ -25,8 +24,9 @@
         <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
     </div>
 
+
     @* Trường dành riêng cho Coupon *@
-    <div id="coupon-fields" style="display: none;">
+    <div id="coupon-fields" style="@(Model.LoaiGiamGia == 0 ? "display:block" : "display:none")">
         <div class="form-group">
             <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
             <input asp-for="DieuKienGiamGia" class="form-control typing-price" />
@@ -40,7 +40,7 @@
     </div>
 
     @* Trường dành riêng cho Voucher *@
-    <div id="voucher-fields" style="display: none;">
+    <div id="voucher-fields" style="@(Model.LoaiGiamGia == 1 ? "display:block" : "display:none")">
         <div class="form-group">
             <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
             <input asp-for="MenhGia" class="form-control typing-price" />
@@ -72,12 +72,11 @@
         </select>
         <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>
+
     @* Thời gian tạo *@
     <div class="form-group">
         <label asp-for="ThoiGianTao"></label>
-        <input asp-for="ThoiGianTao" class="form-control"
-               type="datetime-local"
-               value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+        <input asp-for="ThoiGianTao" class="form-control" type="datetime-local" value="@Model.ThoiGianTao.ToString("yyyy-MM-ddTHH:mm")" readonly />
     </div>
 
     @* Thời gian kết thúc *@
@@ -86,27 +85,18 @@
         <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" />
         <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
     </div>
-    @* Thêm số lượng voucher *@
+
+    @* Số lượng mã giảm giá *@
     <div class="form-group">
         <label asp-for="SoLuong">Số lượng</label>
         <input asp-for="SoLuong" class="form-control" type="number" min="1" />
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Tạo</button>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
-@if (TempData["error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["error"]
-    </div>
-}
-@if (TempData["success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["success"]
-    </div>
-}
+
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
