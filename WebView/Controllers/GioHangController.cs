@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using DAL.Entities;
 using DAL.Extensions;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
@@ -205,7 +206,7 @@ namespace WebView.Controllers
                 Id_KhachHang = khachHangId.Value,
                 TongTien = tongTien.ToString("#,##0 VNĐ"),
                 NgayTao = DateTime.Now,
-                TrangThai = 1, // Đơn hàng mới đặt, trạng thái là 1 (Chờ xử lý)
+                TrangThai = (ETrangThaiHD)1, // Đơn hàng mới đặt, trạng thái là 1 (Chờ xử lý)
                 Id_NhanVien = 1,
             };
 
