@@ -1,7 +1,16 @@
-﻿@{
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Thanh toán";
+    var resp = ViewData["SpThanhToan"] as ThanhToanResp;
 }
 <div class="container mt-5">
+    <form method="POST" asp-action="CreatePaymentUrlVnpay" asp-controller="PayMent">
+        <input type="hidden" name="Amount" value=100000 />
+        <input type="hidden" name="OrderType" value="other" />
+        <input type="hidden" name="OrderDescription" value="Thanh toán Momo cho đơn hàng tại Shop F-gear" />
+        <input type="hidden" name="Name" value="Hoangnn" />
+        <button class="btn btn-success" type="submit">Thanh toán VNPAY</button>
+    </form>
     <div class="row">
 
         <!-- Địa chỉ giao hàng -->
@@ -9,9 +18,9 @@
             <h5>Địa chỉ giao hàng</h5>
             <div>
                 <p>
-                    <strong>Họ và tên:</strong> Hoang &nbsp; <strong>SDT:</strong> 0981642651
+                    <strong>Họ và tên:</strong> @resp.KhachHangModel.Ten  &nbsp; <strong>SDT:</strong> @resp.KhachHangModel.Sdt
                     <strong>Email:</strong>
-                    nhuhoang@gmail.com
+                    @resp.KhachHangModel.Email
                 </p>
                 <div>
 
@@ -49,32 +58,43 @@
                         <div class="invalid-feedback">Vui lòng chọn phường / xã.</div>
                     </div>
 
-                    <!-- Địa chỉ -->
+                    @* <!-- Địa chỉ -->
                     <div class="mb-3">
                         <label for="address" class="form-label">
                             <i class="fas fa-location-arrow"></i> Địa chỉ:
                         </label>
                         <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ của bạn">
                         <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể.</div>
-                    </div>
+                    </div> *@
 
-                    <!-- Ghi chú -->
+                   @*  <!-- Ghi chú -->
                     <div class="mb-3">
                         <label for="note" class="form-label">
                             <i class="fas fa-pencil-alt"></i> Ghi chú:
                         </label>
                         <textarea id="note" class="form-control" rows="3"
                                   placeholder="Nhập ghi chú của bạn"></textarea>
-                    </div>
+                    </div> *@
                 </div>
             </div>
             <hr>
             <!-- Phương thức thanh toán -->
             <h5>Phương thức thanh toán</h5>
             <div>
-                <div>
-                    <input type="radio" name="payment_method" id="vnpay" value="vnpay" checked>
-                    <label for="vnpay">Thẻ ATM/Visa/Master/JCB/QR Pay qua VNPAY-QR</label>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" checked>
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="">
+                    <label for="vnpay">Thẻ ATM qua VNPAY</label>
+                </div>
+            </div>
+            <hr>
+            <!-- Phương thức giao hàng -->
+            <h5>Phương thức giao hàng</h5>
+            <div>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="ship_method" id="ptgh" value="giaohangnhanh" checked>
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;" alt="">
+                    <label for="ptgh">Giao hàng nhanh GHN</label>
                 </div>
             </div>
         </div>
@@ -121,78 +141,53 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="mt-2 mb-2">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
-                        </div>
-                    </td>
-                    <td>
-                        <div class=" align-items-center">
-                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
-                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
-                            <p class="mb-1">Kích thước: <span>Size L</span></p>
-                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="text-start">
-                            <p class="text-danger fw-bold mb-1">244.300đ</p>
-                            <p class="text-decoration-line-through mb-1">349.000đ</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <p class="fw-bold mb-0 text-start amount">
-                                1
-                            </p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column align-items-start">
-                            <p class="fw-bold mb-0 text-start total-price">
-                                244,300đ
-                            </p>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="mt-2 mb-2">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
-                        </div>
-                    </td>
-                    <td>
-                        <div class=" align-items-center">
-                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
-                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
-                            <p class="mb-1">Kích thước: <span>Size L</span></p>
-                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="text-start">
-                            <p class="text-danger fw-bold mb-1">244.300đ</p>
-                            <p class="text-decoration-line-through mb-1">349.000đ</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <p class="fw-bold mb-0 text-start amount">
-                                1
-                            </p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column align-items-start">
-                            <p class="fw-bold mb-0 text-start total-price">
-                                244,300đ
-                            </p>
-                        </div>
-                    </td>
-                </tr>
+                @if (resp.GioHang != null && resp.GioHang.Count > 0)
+                {
+                    foreach (var item in resp.GioHang)
+                    {
+                        <tr class="mt-2 mb-2">
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <img src="@item.SanPham.ListHinHAnh.FirstOrDefault().Url"
+                                         style="width: 100px;" alt="hinh anh @item.SanPham?.Ten" class="img-thumbnail me-3">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="align-items-center">
+                                    <h6>@item.SanPham?.Ten</h6>
+                                    @* <p class="mb-1 text-muted">Mã SP: 40000795</p> *@
+                                    <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps.FirstOrDefault().Ten</span></p>
+                                    <p class="mb-1">Màu sắc: <span>@item.MauSacResps.FirstOrDefault().Ten</span></p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-start">
+                                    <p class="text-danger fw-bold mb-1">@item.SanPham.GiaBan đ</p>
+                                    @if (item.SanPham.GiaBanDau > 0)
+                                    {
+                                        <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau đ</p>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <p class="fw-bold mb-0 text-start amount">
+                                        @item.SoLuong
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-start">
+                                    <p class="fw-bold mb-0 text-start total-price">
+                                       @(item.SoLuong * item.SanPham.GiaBan) đ
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                    }
+                    
+                }
             </tbody>
         </table>
     </div>
@@ -230,7 +225,7 @@
     const totalAmount = document.getElementById('total-amount');
 
     function changeVndToNumber(params) {
-        let total = Math.round(params.replaceAll(',', '').replaceAll('.', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
+        let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
     }
 
@@ -381,7 +376,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-        const address = document.getElementById('address').value;
+       
 
 
         const requestData = {
