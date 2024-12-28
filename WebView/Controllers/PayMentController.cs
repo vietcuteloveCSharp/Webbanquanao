@@ -14,6 +14,7 @@ namespace WebView.Controllers
             _vnPayService = vnPayService;
         }
 
+        [HttpPost]
         public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
         {
             var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
@@ -21,7 +22,7 @@ namespace WebView.Controllers
             return Redirect(url);
         }
         [HttpGet]
-        public IActionResult PaymentCallbackVnpay()
+        public IActionResult PaymentCallbackVnpay(PaymentResponseModel model)
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
 
