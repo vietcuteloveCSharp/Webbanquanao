@@ -1,17 +1,16 @@
-﻿
-@model Responses.Resquests.LoginResquest
+﻿@model Responses.Resquests.LoginResquest
 @{
     Layout = null;
 }
 <!DOCTYPE html>
-    <html>
-    <head>
-        <title>- |Admin Login</title>
+<html>
+<head>
+    <title>- |Admin Login</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-image: url('background-image.jpg'); /* Thay thế bằng URL hình nền thực tế */
+           /*  background-image: url('https://tse3.mm.bing.net/th?id=OIG2.ulnTdG.s5dwY_Bocn57T&pid=ImgGn'); */
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -25,8 +24,8 @@
             background: rgba(0, 0, 0, 0.5);
             padding: 20px;
             border-radius: 10px;
-            border: 2px solid white; /* Thêm đường viền */
-            width: 400px; /* Tăng chiều rộng của form */
+            border: 2px solid white; 
+            width: 400px; 
         }
 
         .form-control {
@@ -41,14 +40,14 @@
             margin-bottom: 10px;
         }
     </style>
-    <
-    </head>
-    <body>
     
-    <div class="login-container ">
+</head>
+<body>
+
+<div class="login-container ">
     <h2>Welcome back</h2>
     <p>Login to your account</p>
-    <form asp-action="Login" method="post">
+    <form asp-route="~/Admin/Account/Login" method="post">
         <div class="form-group">
             <label asp-for="TaiKhoan" >User name</label>
             <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="account name">
@@ -56,9 +55,15 @@
         </div>
         <div class="form-group">
             <label asp-for="MatKhau">Password</label>
-                <input type="password" asp-for="MatKhau" class="form-control" placeholder="*****">
+            <input type="password" asp-for="MatKhau" class="form-control" placeholder="*****">
             <span asp-validation-for="MatKhau" class="text-danger"></span>
         </div>
+            <div>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div class="text-danger">@error.ErrorMessage</div>
+                }
+            </div>
         <div class="remember-forgot">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="rememberMe">
@@ -66,14 +71,9 @@
             </div>
             <a href="#" class="forgot-password">Forgot password?</a>
         </div>
-        <button type="submit" class="btn btn-primary btn-block"> Login </button>
+        <button type="submit" class="btn btn-primary btn-block"> Login</button>
     </form>
-    </div>
- <div>
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div class="text-danger">@error.ErrorMessage</div>
-        }
-    </div>
-    </body>
-    </html>
+</div>
+
+</body>
+</html>

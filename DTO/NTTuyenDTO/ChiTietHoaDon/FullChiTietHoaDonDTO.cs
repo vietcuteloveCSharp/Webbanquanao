@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DTO.ThoiDongSonDTO.ChiTietHoaDon
+namespace DTO.NTTuyen.ChiTietHoaDon
 {
     public class FullChiTietHoaDonDTO
     {

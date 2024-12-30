@@ -3,10 +3,11 @@ using WebView.Extensions;
 using WebView.Services;
 using WebView.Services.Vnpay;
 
+
 namespace WebView
 {
     public class Program
-    {
+    { 
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -55,28 +56,23 @@ namespace WebView
             app.UseRouting();
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapAreaControllerRoute(
-             name: "BanTaiQuay",
-            areaName: "BanTaiQuay",
-            pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
+                app.MapControllerRoute(
+                   name: "default",
+                   pattern: "{controller=Home}/{action=Index}/{id?}");
+                app.MapAreaControllerRoute(
+                 name: "BanTaiQuay",
+                areaName: "BanTaiQuay",
+                pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
 
-            app.MapAreaControllerRoute(
-                name: "BanHangOnline",
-                areaName: "BanHangOnline",
-                pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
+                app.MapAreaControllerRoute(
+                    name: "BanHangOnline",
+                    areaName: "BanHangOnline",
+                    pattern: "{area:exists}/{controller=TrangChu}/{action=Index}/{id?}");
 
-            app.MapAreaControllerRoute(
-             name: "Admin",
-            areaName: "Admin",
-            pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
+                app.MapAreaControllerRoute(
+                 name: "Admin",
+                areaName: "Admin",
+                pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}");
 
 
             //Seedingdata

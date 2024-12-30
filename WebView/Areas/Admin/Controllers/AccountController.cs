@@ -42,17 +42,17 @@ namespace WebView.Areas.Admin.Controllers
 
                 if (loginResponse.Success)
                 {
-                    // Lưu token JWT vào session hoặc cookie
+                    // Lưu token JWT vào session 
                     HttpContext.Session.SetString("JWTToken", loginResponse.Token);
 
                     // Xử lý thành công, có thể chuyển hướng hoặc trả về dữ liệu
-                    return RedirectToAction("Index", "SanPham"); // Chuyển hướng tới trang chủ
+                    return Redirect("/Admin/SanPham/Index");
+                    // Chuyển hướng tới trang sản phẩm admin
                 }
                 // Xử lý khi đăng nhập thất bại
-                ModelState.AddModelError(string.Empty, loginResponse.Message);
+                ModelState.AddModelError(string.Empty,loginResponse.Message);
                 return View();
             }
-
             ModelState.AddModelError(string.Empty, "Error logging in");
             return View();
         }
