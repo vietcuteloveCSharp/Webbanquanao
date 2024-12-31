@@ -16,7 +16,7 @@ namespace DAL.Entities
         
         public int ImageSourceType { get; set; } // 0: File, 1: Link URL
         public DateTime NgayTao { get; set; } = DateTime.Now;
-        public virtual SanPham SanPham { get; set; }
+        public  SanPham SanPham { get; set; }
 
         [NotMapped]
         [FileExtensions]
