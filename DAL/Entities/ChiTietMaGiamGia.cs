@@ -9,6 +9,7 @@ namespace DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int? Id_KhachHang { get; set; } = null;
+        public int? Id_HoaDon { get; set; } = null;
         public string NoiDung { get; set; } = string.Empty;
         public DateTime? NgaySuDung { get; set; } = null;
 

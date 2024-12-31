@@ -56,36 +56,20 @@ namespace WebView.Areas.BanHangOnline.Controllers
             }).ToList();
             // Lấy list Mau sac va kich thuoc dựa trên sp sản phẩm chi tiết
             var lstSpCTTheoIdSp = await _context.ChiTietSanPhams.Where(x => lstIdSp.Contains(x.Id_SanPham)).Include(x => x.MauSac).Include(x => x.KichThuoc).ToListAsync();
-            var lstMauSac = lstSpCTTheoIdSp.Where(x => lstIdSp.Contains(x.Id_SanPham)).Select(x => new
+            var lstMauSac = lstSpCTTheoIdSp.Select(x => new
             {
                 Id = x.MauSac.Id,
                 MaHex = x.MauSac.MaHex,
                 Ten = x.MauSac.Ten,
                 IdSp = x.Id_SanPham
             }).Distinct().ToList(); ;
-            var lstKichThuoc = lstSpCTTheoIdSp.Where(x => lstIdSp.Contains(x.Id_SanPham)).Select(x => new
+            var lstKichThuoc = lstSpCTTheoIdSp.Select(x => new
             {
                 Id = x.KichThuoc.Id,
                 Ten = x.KichThuoc.Ten,
                 IdSp = x.Id_SanPham,
                 IdMs = x.Id_MauSac
             }).Distinct().ToList();
-            //foreach (var item in lstIdSp)
-            //{
-            //    var ms = lstSpCTTheoIdSp.Where(x => x.Id_SanPham == item).Select(x => new
-            //    {
-            //        Id = x.MauSac.Id,
-            //        MaHex = x.MauSac.MaHex,
-            //        Ten = x.MauSac.Ten,
-            //        IdSp = x.Id_SanPham
-            //    }).ToList();
-            //    var kt = lstSpCTTheoIdSp.Where(x => x.Id_SanPham == item).Select(x => new
-            //    {
-            //        Id = x.KichThuoc.Id,
-            //        Ten = x.KichThuoc.Ten,
-            //        IdSp = x.Id_SanPham
-            //    }).ToList();
-            //}
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
 
             resp = lstGioHang.Select(x => new GioHangResp
