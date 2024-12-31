@@ -27,6 +27,9 @@ namespace WebView.NghiaDTO{
                                                               // Thêm trường Gia
         public decimal Gia { get; set; }  
         public List<SanPhamDTO> sanPhamDTOs{ get; set; }
+        public List<string> HinhAnhList { get; set; } = new List<string>();
+
+
     }
 
 }

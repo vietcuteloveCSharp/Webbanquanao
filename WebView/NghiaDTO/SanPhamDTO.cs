@@ -24,7 +24,9 @@ namespace WebView.NghiaDTO
 
         public string ThuongHieuTen { get; set; } = string.Empty;
         public string DanhMucTen { get; set; } = string.Empty;
-
+        public List<string> HinhAnhList { get; set; } = new List<string>();
         public List<ChiTietSanPhamDTO> ChiTietSanPhams { get; set; }
+        public List<HinhAnhDTO> HinhAnhs { get; set; } = new();
+
     }
 }
