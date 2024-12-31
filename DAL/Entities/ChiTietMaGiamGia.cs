@@ -14,6 +14,10 @@ namespace DAL.Entities
 
         [ForeignKey("MaGiamGia")]
         public int? Id_MaGiamGia { get; set; } = null;
+        [ForeignKey("HoaDon")]
+        public int? Id_HoaDon {  get; set; }
+
+        public virtual HoaDon HoaDon{ get; set; }
 
         public virtual MaGiamGia MaGiamGia { get; set; }
     }

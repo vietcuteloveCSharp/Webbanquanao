@@ -221,7 +221,8 @@ namespace WebView.Controllers
                     Id_HoaDon = hoaDon.Id,
                     Id_ChiTietSanPham = item.Id_ChiTietSanPham,
                     SoLuong = item.SoLuong,
-                    Gia = item.ChiTietSanPham.SanPham.Gia.ToString("0.##") // hoặc ToString("#,##0.##") để định dạng số
+                    Gia = item.ChiTietSanPham.SanPham.Gia
+                    // hoặc ToString("#,##0.##") để định dạng số
                 };
 
                 _context.ChiTietHoaDons.Add(chiTietHoaDon);

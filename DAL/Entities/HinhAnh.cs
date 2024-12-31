@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
@@ -10,6 +11,16 @@ namespace DAL.Entities
         public int Id { get; set; }
         public string? Url { get; set; }
         public string? ImageData { get; set; }
-        public int? Id_SanPham { get; set; }
+        [ForeignKey("SanPham")]
+        public int Id_SanPham { get; set; }
+        
+        public int ImageSourceType { get; set; } // 0: File, 1: Link URL
+        public DateTime NgayTao { get; set; } = DateTime.Now;
+        public virtual SanPham SanPham { get; set; }
+
+        [NotMapped]
+        [FileExtensions]
+
+        public IFormFile? ImageUpload { get; set; }
     }
 }
