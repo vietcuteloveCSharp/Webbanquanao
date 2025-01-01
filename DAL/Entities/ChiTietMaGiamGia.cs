@@ -13,6 +13,7 @@ namespace DAL.Entities
 
         public int? Id_HoaDon { get; set; } = null;
         public string NoiDung { get; set; } = string.Empty;
+        public decimal TongTien { get; set; } = 0; // tổng số tiền giảm trên hóa đơn
         public DateTime? NgaySuDung { get; set; } = null;
 
         [ForeignKey("MaGiamGia")]
