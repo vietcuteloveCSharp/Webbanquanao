@@ -5,22 +5,18 @@
 
 <h1>@ViewData["Title"]</h1>
 
-
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
         <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
+        <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
-
     <div class="form-group">
         <label for="Gia">Giá</label>
-        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
+        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" value="1" required />
+        <span asp-validation-for="Gia" class="text-danger"></span>
     </div>
     <div id="price-convert"></div>
-    <div class="form-group">
-        <label for="NgayTao">Ngày Tạo</label>
-        <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
-    </div>
 
     <div class="form-group">
         <label for="Id_ThuongHieu">Thương Hiệu</label>
@@ -93,99 +89,87 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-    // Xử lý sự kiện checkbox "Xóa" được chọn
-    document.querySelectorAll('.delete-image-checkbox').forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            var imageUrlInput = document.getElementById('ImageUrl');
-            
-            // Nếu có checkbox được chọn, vô hiệu hóa ô nhập "Link ảnh"
-            if (this.checked) {
-                imageUrlInput.setAttribute('disabled', 'disabled');
-            } else {
-                imageUrlInput.removeAttribute('disabled'); // Bật lại ô nhập nếu checkbox không được chọn
-            }
-        });
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hiển thị/ẩn các input dựa trên lựa chọn của người dùng
+            document.getElementById('toggleChiTiet').addEventListener('click', function () {
+                var chiTietContainer = document.getElementById('chiTietSanPhamContainer');
+                var isHidden = chiTietContainer.style.display === 'none';
+                chiTietContainer.style.display = isHidden ? 'block' : 'none';
+                this.textContent = isHidden ? 'Ẩn Màu & Kích Thước' : 'Hiển Thị Màu & Kích Thước';
+            });
 
-    <script>
-        // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
-        document.getElementById("ImageOption").addEventListener("change", function () {
-            const selectedOption = this.value;
-            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
-        });
-        // Xử lý hiển thị ẩn màu sắc và kích thước khi nhấn nút
-        document.getElementById('toggleChiTiet').addEventListener('click', function () {
-            var chiTietContainer = document.getElementById('chiTietSanPhamContainer');
-            var isHidden = chiTietContainer.style.display === 'none';
-            chiTietContainer.style.display = isHidden ? 'block' : 'none';
-            this.textContent = isHidden ? 'Ẩn Màu & Kích Thước' : 'Hiển Thị Màu & Kích Thước';
-        });
+            // Thêm chi tiết sản phẩm mới
+            document.getElementById('addChiTiet').addEventListener('click', function () {
+                var container = document.getElementById('chiTietSanPhamContainer');
+                var index = container.getElementsByClassName('chiTietSanPham-item').length;
 
-        // Thêm chi tiết sản phẩm mới
-        document.getElementById('addChiTiet').addEventListener('click', function () {
-            var container = document.getElementById('chiTietSanPhamContainer');
-            var index = container.getElementsByClassName('chiTietSanPham-item').length;
-
-            var newItem = document.createElement('div');
-            newItem.classList.add('chiTietSanPham-item');
-            newItem.innerHTML = `
-                        <div class="form-group">
-                            <label for="Id_MauSac">Màu Sắc</label>
-                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
+                var newItem = document.createElement('div');
+                newItem.classList.add('chiTietSanPham-item');
+                newItem.innerHTML = `
+                            <div class="form-group">
+                                <label for="Id_MauSac">Màu Sắc</label>
+                                <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
         @foreach (var item in ViewBag.MauSacs as SelectList)
         {
-                                        <option value="@item.Value">@item.Text</option>
+                                            <option value="@item.Value">@item.Text</option>
         }
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="Id_KichThuoc">Kích Thước</label>
-                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
+                            <div class="form-group">
+                                <label for="Id_KichThuoc">Kích Thước</label>
+                                <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
         @foreach (var item in ViewBag.KichThuocs as SelectList)
         {
-                                        <option value="@item.Value">@item.Text</option>
+                                            <option value="@item.Value">@item.Text</option>
         }
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="SoLuong">Số Lượng</label>
-                            <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
-                        </div>
+                            <div class="form-group">
+                                <label for="SoLuong">Số Lượng</label>
+                                <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
+                            </div>
 
-                        <button type="button" class="btn btn-danger remove-item">Xóa</button>
-                    `;
-            container.appendChild(newItem);
-        });
+                            <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                        `;
+                container.appendChild(newItem);
+            });
 
-        // Xóa chi tiết sản phẩm
-        document.addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('remove-item')) {
-                var item = e.target.closest('.chiTietSanPham-item');
-                item.remove();
-            }
-        });
+            // Xóa chi tiết sản phẩm
+            document.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-item')) {
+                    var item = e.target.closest('.chiTietSanPham-item');
+                    item.remove();
+                }
+            });
 
-    
-    </script>
-    <script>
-        $(".typing-price").on("input", function () {
-            // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
-            var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+            // Xử lý sự kiện checkbox "Xóa" được chọn
+            document.querySelectorAll('.delete-image-checkbox').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var imageUrlInput = document.getElementById('ImageUrl');
 
-            // Chuyển đổi sang kiểu số
-            var numberValue = parseFloat(rawValue.replace(',', '.'));
+                    // Nếu có checkbox được chọn, vô hiệu hóa ô nhập "Link ảnh"
+                    if (this.checked) {
+                        imageUrlInput.setAttribute('disabled', 'disabled');
+                    } else {
+                        imageUrlInput.removeAttribute('disabled'); // Bật lại ô nhập nếu checkbox không được chọn
+                    }
+                });
+            });
 
-            // Nếu giá trị hợp lệ, hiển thị định dạng tiền tệ, nếu không thì hiển thị giá trị ban đầu
-            if (!isNaN(numberValue)) {
-                $("#price-convert").html(
-                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
-                );
-            } else {
-                $("#price-convert").html('');
-            }
+            $(".typing-price").on("input", function () {
+                var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+                var numberValue = parseFloat(rawValue.replace(',', '.'));
+
+                if (!isNaN(numberValue)) {
+                    $("#price-convert").html(
+                        new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
+                    );
+                } else {
+                    $("#price-convert").html('');
+                }
+            });
         });
     </script>
 }
