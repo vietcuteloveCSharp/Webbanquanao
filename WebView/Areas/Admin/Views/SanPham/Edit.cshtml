@@ -5,6 +5,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
+
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
@@ -15,7 +16,7 @@
         <label for="Gia">Giá</label>
         <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
     </div>
-
+    <div id="price-convert"></div>
     <div class="form-group">
         <label for="NgayTao">Ngày Tạo</label>
         <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
@@ -25,8 +26,6 @@
         <label for="Id_ThuongHieu">Thương Hiệu</label>
         <select class="form-control" asp-for="Id_ThuongHieu" asp-items="ViewBag.ThuongHieus"></select>
     </div>
-
-
 
     <div class="form-group">
         <label for="Id_DanhMuc">Danh Mục</label>
@@ -42,21 +41,17 @@
             <div class="chiTietSanPham-item" id="chiTietSanPham-@i">
                 <div class="form-group">
                     <label for="Id_MauSac">Màu Sắc</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs">
-                        <!-- Không cần viết lại vòng lặp foreach, asp-items sẽ tự động tạo option từ ViewBag -->
-                    </select>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
                 </div>
 
                 <div class="form-group">
                     <label for="Id_KichThuoc">Kích Thước</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs">
-                        <!-- Không cần viết lại vòng lặp foreach, asp-items sẽ tự động tạo option từ ViewBag -->
-                    </select>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
                 </div>
 
                 <div class="form-group">
                     <label for="SoLuong">Số Lượng</label>
-                    <input type="number" class="form-control" name="chiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
+                    <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
                 </div>
 
                 <button type="button" class="btn btn-danger remove-item">Xóa</button>
@@ -65,38 +60,66 @@
     </div>
 
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
-
-    <div class="form-group">
-        <label for="Image">Hình Ảnh</label>
-        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
-
-        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+    <div>
+        <h4>Hình ảnh hiện tại</h4>
+        @foreach (var hinhAnh in Model.HinhAnhs)
         {
-            <div class="mt-2">
-                <img src="@Model.HinhAnh" alt="Hình ảnh hiện tại" style="max-width: 100px;" />
+            <div style="display: inline-block; margin-right: 10px;">
+                <img src="@(hinhAnh.ImageSourceType == 0 ? hinhAnh.Url : (string.IsNullOrEmpty(hinhAnh.ImageData) ? hinhAnh.Id_SanPham : hinhAnh.ImageData))"
+                     alt="Hình ảnh sản phẩm"
+                     style="max-width: 200px; max-height: 200px;" />
+                <!-- Checkbox để xác định ảnh có bị xóa hay không -->
+                <label>
+                    <input type="checkbox" class="delete-image-checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
+                    Xóa
+                </label>
             </div>
         }
     </div>
 
+    <div class="form-group">
+        <label for="ImageUrl">Link ảnh</label>
+        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
+    </div>
+
     <button type="submit" class="btn btn-primary">Lưu</button>
+
 </form>
 
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 
 @section Scripts {
-   Html.RenderPartialAsync("_ValidationScriptsPartial")
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+    // Xử lý sự kiện checkbox "Xóa" được chọn
+    document.querySelectorAll('.delete-image-checkbox').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            var imageUrlInput = document.getElementById('ImageUrl');
+            
+            // Nếu có checkbox được chọn, vô hiệu hóa ô nhập "Link ảnh"
+            if (this.checked) {
+                imageUrlInput.setAttribute('disabled', 'disabled');
+            } else {
+                imageUrlInput.removeAttribute('disabled'); // Bật lại ô nhập nếu checkbox không được chọn
+            }
+        });
+    });
+</script>
 
     <script>
+        // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
+        document.getElementById("ImageOption").addEventListener("change", function () {
+            const selectedOption = this.value;
+            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
+        });
         // Xử lý hiển thị ẩn màu sắc và kích thước khi nhấn nút
         document.getElementById('toggleChiTiet').addEventListener('click', function () {
             var chiTietContainer = document.getElementById('chiTietSanPhamContainer');
-            if (chiTietContainer.style.display === 'none') {
-                chiTietContainer.style.display = 'block';
-                this.textContent = 'Ẩn Màu & Kích Thước'; // Thay đổi văn bản nút
-            } else {
-                chiTietContainer.style.display = 'none';
-                this.textContent = 'Hiển Thị Màu & Kích Thước'; // Thay đổi văn bản nút
-            }
+            var isHidden = chiTietContainer.style.display === 'none';
+            chiTietContainer.style.display = isHidden ? 'block' : 'none';
+            this.textContent = isHidden ? 'Ẩn Màu & Kích Thước' : 'Hiển Thị Màu & Kích Thước';
         });
 
         // Thêm chi tiết sản phẩm mới
@@ -107,33 +130,33 @@
             var newItem = document.createElement('div');
             newItem.classList.add('chiTietSanPham-item');
             newItem.innerHTML = `
-                <div class="form-group">
-                    <label for="Id_MauSac">Màu Sắc</label>
-                    <select class="form-control" name="chiTietSanPhams[${index}].Id_MauSac">
-                        @foreach (var item in ViewBag.MauSacs as SelectList)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label for="Id_MauSac">Màu Sắc</label>
+                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
+        @foreach (var item in ViewBag.MauSacs as SelectList)
+        {
+                                        <option value="@item.Value">@item.Text</option>
+        }
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="Id_KichThuoc">Kích Thước</label>
-                    <select class="form-control" name="chiTietSanPhams[${index}].Id_KichThuoc">
-                        @foreach (var item in ViewBag.KichThuocs as SelectList)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label for="Id_KichThuoc">Kích Thước</label>
+                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
+        @foreach (var item in ViewBag.KichThuocs as SelectList)
+        {
+                                        <option value="@item.Value">@item.Text</option>
+        }
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="SoLuong">Số Lượng</label>
-                    <input type="number" class="form-control" name="chiTietSanPhams[${index}].SoLuong" value="0" />
-                </div>
+                        <div class="form-group">
+                            <label for="SoLuong">Số Lượng</label>
+                            <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
+                        </div>
 
-                <button type="button" class="btn btn-danger remove-item">Xóa</button>
-            `;
+                        <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                    `;
             container.appendChild(newItem);
         });
 
@@ -145,9 +168,17 @@
             }
         });
 
+    
+    </script>
+    <script>
         $(".typing-price").on("input", function () {
+            // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
             var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+
+            // Chuyển đổi sang kiểu số
             var numberValue = parseFloat(rawValue.replace(',', '.'));
+
+            // Nếu giá trị hợp lệ, hiển thị định dạng tiền tệ, nếu không thì hiển thị giá trị ban đầu
             if (!isNaN(numberValue)) {
                 $("#price-convert").html(
                     new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
