@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Tạo mã giảm giá mới";
+   
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -10,7 +11,8 @@
     @* Tên mã *@
     <div class="form-group">
         <label asp-for="Ten"></label>
-        <input asp-for="Ten" class="form-control" />
+        <input asp-for="Ten" class="form-control" placeholder="@Model?.Ten" value="@Model?.Ten" />
+
         <span asp-validation-for="Ten" class="text-danger"></span>
 
     </div>
@@ -60,7 +62,6 @@
         <select asp-for="TrangThai" class="form-control">
             <option value="0">Chưa phát hành</option>
             <option value="1">Đang phát hành</option>
-            <option value="2">Kết thúc</option>
         </select>
         <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>

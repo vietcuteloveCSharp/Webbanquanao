@@ -46,7 +46,13 @@ public async Task<IActionResult> Index()
         public IActionResult Create()
         {
             var magiamgia = _context.MaGiamGias.ToList();
-            return View();
+            // Tạo một đối tượng MaGiamGiaDTO
+            var model = new MaGiamGiaDTO
+            {
+                Ten = $"MG{new Random().Next(10000, 99999)}" // Tạo mã giảm giá ngẫu nhiên
+            };
+
+            return View(model);
         }
         // POST: Admin/MaGiamGia/Create
         [HttpPost]

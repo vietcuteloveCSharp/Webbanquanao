@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WebView.NghiaDTO.ChiTietKhuyenMaiDTO>
+﻿@model IEnumerable<WebView.NghiaDTO.KhuyenMaiDTO>
 
 @{
     ViewData["Title"] = "Danh Sách Mã Giảm Giá";
@@ -30,17 +30,7 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Id</td>
-                    <td>@item.KhuyenMaiDTO?.Ten ?? "N/A"</td>
-                    <td>
-                        @(item.LoaiKhuyenMai == 0 ? $"{item.GiaTriGiam}%" :
-                            item.LoaiKhuyenMai == 1 ? String.Format("{0:N0}", item.MenhGia) : "N/A")
-                    </td>
-                    <td>@(item.LoaiKhuyenMai == 0 ? $"{item.GiaTriGiam}%" : item.LoaiKhuyenMai == 1 ? String.Format("{0:N0}", item.MenhGia) : "N/A")</td>
-                    <td>@String.Format("{0:dd/MM/yyyy} - {1:dd/MM/yyyy}", item.KhuyenMaiDTO.NgayBatDau, item.KhuyenMaiDTO.NgayKetThuc)</td>
-                    <td>@String.Format("{0:N0}", item.MenhGia)</td>
-                    <td>@String.Format("{0:N0}", item.GiaTriToiDa)</td>
-                    <td>@(item.KhuyenMaiDTO.TrangThai ? "Đang khuyễn mại" : "Ngừng khuyễn mại")</td>
+                 
                     <td>
                         <a asp-action="Edit" asp-route-Id="@item.Id" class="btn btn-sm btn-warning">
                             <i class="fa fa-edit"></i> Sửa

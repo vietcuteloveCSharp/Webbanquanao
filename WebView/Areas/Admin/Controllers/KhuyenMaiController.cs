@@ -32,10 +32,6 @@ namespace WebView.Areas.Admin.Controllers
                     ChiTietKhuyenMaiDTOs = km.ChiTietKhuyenMais.Select(ct => new ChiTietKhuyenMaiDTO
                     {
                         Id = ct.Id,
-                        LoaiKhuyenMai = ct.LoaiKhuyenMai,
-                        GiaTriGiam = ct.GiaTriGiam,
-                        MenhGia = ct.MenhGia,
-                        GiaTriToiDa = ct.GiaTriToiDa,
                         Id_DanhMuc = ct.Id_DanhMuc,
                     }).ToList()
                 }).ToListAsync();
@@ -77,10 +73,6 @@ namespace WebView.Areas.Admin.Controllers
                 // Thêm ChiTietKhuyenMai
                 khuyenMai.ChiTietKhuyenMais = dto.ChiTietKhuyenMaiDTOs.Select(ct => new ChiTietKhuyenMai
                 {
-                    LoaiKhuyenMai = ct.LoaiKhuyenMai,
-                    GiaTriGiam = ct.GiaTriGiam,
-                    MenhGia = ct.MenhGia,
-                    GiaTriToiDa = ct.GiaTriToiDa,
                     Id_DanhMuc = ct.Id_DanhMuc
                 }).ToList();
 
@@ -114,10 +106,6 @@ namespace WebView.Areas.Admin.Controllers
                 ChiTietKhuyenMaiDTOs = khuyenMai.ChiTietKhuyenMais.Select(ct => new ChiTietKhuyenMaiDTO
                 {
                     Id = ct.Id,
-                    LoaiKhuyenMai = ct.LoaiKhuyenMai,
-                    GiaTriGiam = ct.GiaTriGiam,
-                    MenhGia = ct.MenhGia,
-                    GiaTriToiDa = ct.GiaTriToiDa,
                     Id_DanhMuc = ct.Id_DanhMuc
                 }).ToList()
             };
@@ -158,10 +146,7 @@ namespace WebView.Areas.Admin.Controllers
                 // Thêm các chi tiết mới
                 khuyenMai.ChiTietKhuyenMais = dto.ChiTietKhuyenMaiDTOs.Select(ct => new ChiTietKhuyenMai
                 {
-                    LoaiKhuyenMai = ct.LoaiKhuyenMai,
-                    GiaTriGiam = ct.GiaTriGiam,
-                    MenhGia = ct.MenhGia,
-                    GiaTriToiDa = ct.GiaTriToiDa,
+                 
                     Id_DanhMuc = ct.Id_DanhMuc
                 }).ToList();
 

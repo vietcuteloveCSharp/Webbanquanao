@@ -7,6 +7,9 @@ namespace WebView.NghiaDTO
         public int Id { get; set; }
         public string Ten { get; set; } = string.Empty;
         public string MoTa { get; set; } = string.Empty;
+        public int LoaiKhuyenMai { get; set; } // theo % 
+        public decimal GiaTriGiam { get; set; } // % giảm
+        public decimal DieuKienGiamGia { get; set; } // điều kiện giảm sản phẩm 
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
