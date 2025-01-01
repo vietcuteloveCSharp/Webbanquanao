@@ -4,6 +4,7 @@ using DAL.Entities;
 using DTO.NTTuyen.HoaDons;
 using Microsoft.EntityFrameworkCore;
 using Service.NTTuyenServices.IServices;
+using Service.VuVietAnhService.IRepository.IAuthentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace Service.NTTuyenServices.Services
     {
         private readonly WebBanQuanAoDbContext _context;
         private IMapper _mapper;
+        private readonly IAuthenService _authenService;
 
-        public HoaDonService(WebBanQuanAoDbContext context, IMapper mapper)
+        public HoaDonService(WebBanQuanAoDbContext context, IMapper mapper ,IAuthenService authenService)
         {
             _context = context;
             _mapper = mapper;
+            _authenService = authenService;
         }
 
         public async Task<HoaDonDTO> Add(HoaDonDTO obj)
@@ -49,7 +52,7 @@ namespace Service.NTTuyenServices.Services
             }
             else
             {
-                _context.HoaDons.Remove(hd);
+                hd.TrangThai = Enum.EnumVVA.ETrangThaiHD.HuyDon;
                 await _context.SaveChangesAsync();
                 return _mapper.Map<HoaDonDTO>(hd);
             }

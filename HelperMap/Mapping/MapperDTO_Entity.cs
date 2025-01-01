@@ -18,6 +18,8 @@ using DTO.VuvietanhDTO.Giohangs;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IThuonghieu;
 using Service.VuVietAnhService.IRepository.IDanhmuc;
+using DTO.NTTuyen.HoaDons;
+using System.Formats.Tar;
 
 
 
@@ -175,8 +177,21 @@ namespace HelperMap.Mapping
                  .ForMember(dest => dest.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang))
                  .ForMember(dest => dest.Id_ChiTietSanPham, opt => opt.MapFrom(src => src.Id_ChiTietSanPham));
             #endregion
-
-           
+            #region Map HoaDon
+            CreateMap<HoaDonDTO, HoaDon>()
+                .ForMember(dto => dto.TongTien, opt => opt.MapFrom(src => src.TongTien))
+                .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dto => dto.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien))
+                .ForMember(dto => dto.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang));
+            CreateMap <FullHoaDonDTO, HoaDon>()
+                .ForMember(dto => dto.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dto => dto.TongTien, opt => opt.MapFrom(src => src.TongTien))
+                .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dto => dto.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien))
+                .ForMember(dto => dto.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang));
+            #endregion
 
 
         }

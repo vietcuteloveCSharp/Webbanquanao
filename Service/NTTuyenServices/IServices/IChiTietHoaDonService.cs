@@ -14,6 +14,5 @@ namespace Service.NTTuyenServices.IServices
         Task<ChiTietHoaDonDTO> GetById(int id);
         Task<ChiTietHoaDonDTO> Add(ChiTietHoaDonDTO obj);
         Task<ChiTietHoaDonDTO> Update(int id, ChiTietHoaDonDTO obj);
-        Task<ChiTietHoaDonDTO> Delete(int id);
     }
 }
