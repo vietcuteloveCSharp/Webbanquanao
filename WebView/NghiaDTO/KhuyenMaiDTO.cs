@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using DAL.Entities;
 
-namespace DAL.Entities
+namespace WebView.NghiaDTO
 {
-    public class KhuyenMai
+    public class KhuyenMaiDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Ten { get; set; } = string.Empty;
         public string MoTa { get; set; } = string.Empty;
@@ -18,7 +15,6 @@ namespace DAL.Entities
         public DateTime NgayKetThuc { get; set; }
         public bool TrangThai { get; set; } // false - ngừng khuyến mại || true - đang khuyến mại
 
-
-        public virtual ICollection<ChiTietKhuyenMai> ChiTietKhuyenMais { get; set; }
+        public virtual ICollection<ChiTietKhuyenMaiDTO> ChiTietKhuyenMaiDTOs { get; set; }
     }
 }

@@ -164,10 +164,6 @@ namespace DAL.DataSeed
 
             var chiTietKhuyenMaiFaker = new Faker<ChiTietKhuyenMai>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
-                .RuleFor(x => x.LoaiKhuyenMai, f => f.Random.Number(0, 1))
-                .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(5, 80))
-                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
-                       .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
                 .RuleFor(x => x.Id_KhuyenMai, f => f.PickRandom(khuyenmais).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom(danhMucs).Id);
 

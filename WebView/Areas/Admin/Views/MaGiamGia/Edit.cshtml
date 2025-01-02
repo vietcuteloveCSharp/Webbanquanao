@@ -34,7 +34,7 @@
         </div>
         <div class="form-group">
             <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
-            <input asp-for="GiaTriGiam" class="form-control" />
+            <input asp-for="GiaTriGiam" class="form-control typing-price" />
             <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
         </div>
     </div>
@@ -46,13 +46,6 @@
             <input asp-for="MenhGia" class="form-control typing-price" />
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
-    </div>
-
-    @* Nội dung *@
-    <div class="form-group">
-        <label asp-for="NoiDung"></label>
-        <textarea asp-for="NoiDung" class="form-control"></textarea>
-        <span asp-validation-for="NoiDung" class="text-danger"></span>
     </div>
 
     @* Giá trị tối đa *@
@@ -71,12 +64,6 @@
             <option value="2">Kết thúc</option>
         </select>
         <span asp-validation-for="TrangThai" class="text-danger"></span>
-    </div>
-
-    @* Thời gian tạo *@
-    <div class="form-group">
-        <label asp-for="ThoiGianTao"></label>
-        <input asp-for="ThoiGianTao" class="form-control" type="datetime-local" value="@Model.ThoiGianTao.ToString("yyyy-MM-ddTHH:mm")" readonly />
     </div>
 
     @* Thời gian kết thúc *@
@@ -121,5 +108,15 @@
             // Sự kiện thay đổi
             loaiGiamGia.addEventListener("change", toggleFields);
         });
+        document.addEventListener("DOMContentLoaded", function () {
+            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
+
+            typingPriceFields.forEach(function (field) {
+                field.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
+                });
+            });
+        });
+
     </script>
 }

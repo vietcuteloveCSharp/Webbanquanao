@@ -186,11 +186,7 @@ namespace WebView.Areas.Admin.Controllers
                 }).ToList()
             };
 
-            ViewBag.MauSacs = new SelectList(await _context.MauSacs.ToListAsync(), "Id", "Ten");
-            ViewBag.KichThuocs = new SelectList(await _context.KichThuocs.ToListAsync(), "Id", "Ten");
-            ViewBag.ThuongHieus = new SelectList(await _context.ThuongHieus.ToListAsync(), "Id", "Ten");
-            ViewBag.DanhMucs = new SelectList(await _context.DanhMucs.ToListAsync(), "Id", "Ten");
-            // Khởi tạo các dropdown (màu sắc, kích thước)
+          
             PopulateDropDownLists(sanPhamDTO);
             return View(sanPhamDTO);
         }
