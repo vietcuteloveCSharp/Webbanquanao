@@ -72,10 +72,15 @@
 
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
     <div class="form-group">
-        <label for="ImageUrl">Link ảnh</label>
-        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
-
+        <label for="ImageUrls">Link Ảnh</label>
+        <div id="imageUrlsContainer">
+            <div class="image-url-item">
+                <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+            </div>
+        </div>
+        <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
     </div>
+
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
 </form>
 
@@ -84,6 +89,22 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            $("#addImageUrl").click(function () {
+                const newInput = `
+                        <div class="image-url-item">
+                            <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                            <button type="button" class="btn btn-danger btn-sm remove-image-url">Xóa</button>
+                        </div>`;
+                $("#imageUrlsContainer").append(newInput);
+            });
+
+            $(document).on("click", ".remove-image-url", function () {
+                $(this).closest(".image-url-item").remove();
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function () {

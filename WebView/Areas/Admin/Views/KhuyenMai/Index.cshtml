@@ -16,11 +16,11 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Id</th>
-                <th scope="col">Tên khuyến mại</th>
-                <th scope="col">Tỉ lệ khuyến mại (%)</th>
-                <th scope="col">Thời gian áp dụng</th>
+                <th scope="col">Tên</th>
                 <th scope="col">Điều kiện (VND)</th>
-                <th scope="col">Tối đa (VND)</th>
+                <th scope="col">giảm giá (%)</th>
+                <th scope="col">Thời gian bắt đầu</th>
+                <th scope="col">Thời gian kết thúc</th>
                 <th scope="col">Trạng thái</th>
                 <th scope="col">Hành động</th>
               
@@ -30,7 +30,16 @@
             @foreach (var item in Model)
             {
                 <tr>
-                 
+                    <td>@item.Id</td>
+                    <td>@item.Ten</td>
+                    <td>@item.DieuKienGiamGia.ToString("N0")</td>
+                    <td>@item.GiaTriGiam.ToString("N0")</td>
+                    <td>
+                        @item.NgayBatDau.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                  
+                    <td>@(item.TrangThai ? "Ngưng khuyến mại" : "Đang khuyến mại")</td>
                     <td>
                         <a asp-action="Edit" asp-route-Id="@item.Id" class="btn btn-sm btn-warning">
                             <i class="fa fa-edit"></i> Sửa

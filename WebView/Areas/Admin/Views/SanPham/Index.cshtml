@@ -70,7 +70,6 @@
                 <th scope="col">Màu Sắc</th>
                 <th scope="col">Kích Thước</th>
                 <th scope="col">Danh Mục</th>
-                <th scope="col">Thương Hiệu</th>
                 <th scope="col">SL Tồn Kho</th>
                 <th scope="col">Hành Động</th>
             </tr>
@@ -79,20 +78,7 @@
             @foreach (var item in Model)
             {
                 <tr>
-                   @*  <td>
-                        @if (item.HinhAnhList != null && item.HinhAnhList.Any())
-                        {
-                            foreach (var hinhAnh in item.HinhAnhList)
-                            {
-                                <img src="@hinhAnh" alt="Image" style="width: 100px; height: auto; margin-right: 5px;" />
-                            }
-                        }
-                        else
-                        {
-                            <span>No Image</span>
-                        }
-                    </td> *@
-
+                 
                     <td scope="row">@item.Id_SanPham</td>                  
                     <td>@item.TenSanPham</td>
                     <td>@item.Gia.ToString("#,##0 VNĐ")</td>
@@ -133,7 +119,6 @@
                     </td>
 
                     <td>@item.TenDanhMuc</td>
-                    <td>@item.TenThuongHieu</td>
                     <td>@item.SoLuong</td>
 
                     <td>

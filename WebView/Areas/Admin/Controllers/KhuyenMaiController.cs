@@ -1,5 +1,6 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using DTO.VuvietanhDTO.Sanphams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -25,66 +26,79 @@ namespace WebView.Areas.Admin.Controllers
                     Id = km.Id,
                     Ten = km.Ten,
                     MoTa = km.MoTa,
+                    LoaiKhuyenMai = km.LoaiKhuyenMai,
+                    GiaTriGiam = km.GiaTriGiam,
+                    DieuKienGiamGia = km.DieuKienGiamGia,
                     NgayTao = km.NgayTao,
                     NgayBatDau = km.NgayBatDau,
                     NgayKetThuc = km.NgayKetThuc,
                     TrangThai = km.TrangThai,
                     ChiTietKhuyenMaiDTOs = km.ChiTietKhuyenMais.Select(ct => new ChiTietKhuyenMaiDTO
                     {
-                        Id = ct.Id,
+                        Id_KhuyenMai = ct.Id_KhuyenMai,
                         Id_DanhMuc = ct.Id_DanhMuc,
                     }).ToList()
                 }).ToListAsync();
 
-            return View(khuyenMaiDtos.SelectMany(km => km.ChiTietKhuyenMaiDTOs));
+            return View(khuyenMaiDtos); // Truyền nguyên danh sách KhuyenMaiDTO
         }
-
-        // GET: Tạo mới khuyến mại
-        public IActionResult Create()
+        public async Task PopulateDropDownLists(KhuyenMaiDTO khuyenMaiDTO = null)
         {
-            var danhMucs = _context.DanhMucs.Select(dm => new SelectListItem
+            var danhMucs = await _context.DanhMucs.Select(dm => new SelectListItem
             {
                 Value = dm.Id.ToString(),
                 Text = dm.TenDanhMuc
-            }).ToList();
+            }).ToListAsync();
 
             ViewBag.DanhMucs = danhMucs;
+        }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var khuyenmaiDTO = _context.KhuyenMais.ToList();
 
-            return View(new KhuyenMaiDTO());
+            return View(khuyenmaiDTO);
         }
 
-        // POST: Tạo mới khuyến mại
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(KhuyenMaiDTO dto)
+        public async Task<IActionResult> Create(KhuyenMaiDTO khuyenMaiDTO)
         {
             if (ModelState.IsValid)
             {
                 var khuyenMai = new KhuyenMai
                 {
-                    Ten = dto.Ten,
-                    MoTa = dto.MoTa,
-                    NgayTao = DateTime.Now,
-                    NgayBatDau = dto.NgayBatDau,
-                    NgayKetThuc = dto.NgayKetThuc,
-                    TrangThai = dto.TrangThai
+                    Ten = khuyenMaiDTO.Ten,
+                    MoTa = khuyenMaiDTO.MoTa,
+                    GiaTriGiam = khuyenMaiDTO.GiaTriGiam,
+                    DieuKienGiamGia = khuyenMaiDTO.DieuKienGiamGia,
+                    NgayTao = khuyenMaiDTO.NgayTao,
+                    NgayBatDau = khuyenMaiDTO.NgayBatDau,
+                    NgayKetThuc = khuyenMaiDTO.NgayKetThuc,
+                    TrangThai = khuyenMaiDTO.TrangThai
                 };
 
-                // Thêm ChiTietKhuyenMai
-                khuyenMai.ChiTietKhuyenMais = dto.ChiTietKhuyenMaiDTOs.Select(ct => new ChiTietKhuyenMai
-                {
-                    Id_DanhMuc = ct.Id_DanhMuc
-                }).ToList();
-
-                _context.Add(khuyenMai);
+                await _context.KhuyenMais.AddAsync(khuyenMai);
                 await _context.SaveChangesAsync();
+
+                // Thêm ChiTietKhuyenMai nếu có
+                if (khuyenMaiDTO.ChiTietKhuyenMaiDTOs != null && khuyenMaiDTO.ChiTietKhuyenMaiDTOs.Any())
+                {
+                    foreach (var ct in khuyenMaiDTO.ChiTietKhuyenMaiDTOs)
+                    {
+                        _context.ChiTietKhuyenMais.Add(new ChiTietKhuyenMai
+                        {
+                            Id_KhuyenMai = khuyenMai.Id,
+                            Id_DanhMuc = ct.Id_DanhMuc
+                        });
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewData["DanhMucs"] = new SelectList(_context.DanhMucs, "Id", "TenDanhMuc", dto.ChiTietKhuyenMaiDTOs.FirstOrDefault()?.Id_DanhMuc);
-
-            return View(dto);
+            return View(khuyenMaiDTO);
         }
+
         // GET: Sửa khuyến mại
         public async Task<IActionResult> Edit(int id)
         {

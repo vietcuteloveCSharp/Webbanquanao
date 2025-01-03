@@ -14,7 +14,7 @@ namespace WebView.NghiaDTO
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
         public bool TrangThai { get; set; } // false - ngừng khuyến mại || true - đang khuyến mại
-
-        public virtual ICollection<ChiTietKhuyenMaiDTO> ChiTietKhuyenMaiDTOs { get; set; }
+        public int Id_DanhMuc { get; set; }
+        public List<ChiTietKhuyenMaiDTO> ChiTietKhuyenMaiDTOs { get; set; }
     }
 }
