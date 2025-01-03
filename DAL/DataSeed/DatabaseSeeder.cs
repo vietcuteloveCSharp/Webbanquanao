@@ -104,7 +104,7 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.LoaiGiamGia, f => (int)f.PickRandom<LoaiGiamGiaEnum>())
                 .RuleFor(x => x.DieuKienGiamGia, f => f.Random.Int(200000, 1000000))
-                .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(10, 50))
+                .RuleFor(x => x.GiaTriGiam, (f, _) => f.Random.Decimal(10, 50))
                  .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
                .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
         .RuleFor(x => x.NoiDung, f => f.Lorem.Sentence(39))
@@ -390,7 +390,7 @@ namespace DAL.DataSeed
 
             var hoaDonFaker = new Faker<HoaDon>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
-                .RuleFor(x => x.TongTien, f => f.Commerce.Price(200000, 10000000))
+                .RuleFor(x => x.TongTien, f => decimal.Parse(f.Commerce.Price(200000, 10000000)))
                 .RuleFor(x => x.NgayTao, f => f.Date.Recent())
                 .RuleFor(x => x.TrangThai, f => f.PickRandom<ETrangThaiHD>())
                 .RuleFor(x => x.Id_NhanVien, f => f.PickRandom(nhanViens).Id)
@@ -411,8 +411,8 @@ namespace DAL.DataSeed
 
             var thanhToanHoaDonFaker = new Faker<ThanhToanHoaDon>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
-                .RuleFor(x => x.TongTien, f => f.Commerce.Price(200000, 10000000))
-                .RuleFor(x => x.SoTienDaThanhToan, f => f.Commerce.Price(200000, 10000000))
+                .RuleFor(x => x.TongTien, f => decimal.Parse(f.Commerce.Price(200000, 10000000)))
+                .RuleFor(x => x.SoTienDaThanhToan, f => decimal.Parse(f.Commerce.Price(200000, 10000000)))
                 .RuleFor(x => x.NgayThanhToan, f => f.Date.Recent())
                 .RuleFor(x => x.MaGiaoDich, f => f.Random.Guid().ToString())
                 .RuleFor(x => x.Id_HoaDon, f => f.PickRandom(hoaDons).Id)
@@ -434,7 +434,7 @@ namespace DAL.DataSeed
             var chiTietHoaDonFaker = new Faker<ChiTietHoaDon>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
                 .RuleFor(x => x.SoLuong, f => f.Random.Number(1, 50))
-                .RuleFor(x => x.Gia, f => f.Commerce.Price(200000, 10000000))
+                .RuleFor(x => x.Gia, f => decimal.Parse(f.Commerce.Price(200000, 10000000)))
                 .RuleFor(x => x.TrangThai, f => f.Random.Bool())
                 .RuleFor(x => x.Id_HoaDon, f => f.PickRandom(hoaDons).Id)
                 .RuleFor(x => x.Id_ChiTietSanPham, f => f.PickRandom(chiTietSanPhams).Id);

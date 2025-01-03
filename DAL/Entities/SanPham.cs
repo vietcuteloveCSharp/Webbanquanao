@@ -32,10 +32,8 @@ namespace DAL.Entities
         public virtual ThuongHieu ThuongHieu { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
         public virtual ICollection<ChiTietSanPham> ChiTietSanPhams { get; set; }
+        public List<HinhAnh> HinhAnhs { get; set; } = new();
 
-        [NotMapped]
-        [FileExtensions]
-
-        public IFormFile? ImageUpload { get; set; }
+    
     }
 }

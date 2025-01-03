@@ -62,7 +62,7 @@
     <table class="table table-striped table-hover" id="myTable">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">Ảnh</th>
+                @* <th scope="col">Ảnh</th> *@
                 <th scope="col">Id</th>
                 <th scope="col">Tên Sản Phẩm</th>
                 <th scope="col">Giá</th>
@@ -79,17 +79,22 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.HinhAnh))
+                   @*  <td>
+                        @if (item.HinhAnhList != null && item.HinhAnhList.Any())
                         {
-                            <img src="@Url.Content(item.HinhAnh)" alt="Image" style="width: 100px; height: auto;" />
+                            foreach (var hinhAnh in item.HinhAnhList)
+                            {
+                                <img src="@hinhAnh" alt="Image" style="width: 100px; height: auto; margin-right: 5px;" />
+                            }
                         }
                         else
                         {
                             <span>No Image</span>
                         }
-                    </td>
-                    <td scope="row">@item.Id_SanPham</td>                    <td>@item.TenSanPham</td>
+                    </td> *@
+
+                    <td scope="row">@item.Id_SanPham</td>                  
+                    <td>@item.TenSanPham</td>
                     <td>@item.Gia.ToString("#,##0 VNĐ")</td>
                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                     <td>

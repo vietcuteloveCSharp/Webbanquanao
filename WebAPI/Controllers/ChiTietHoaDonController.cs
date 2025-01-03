@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
             _chiTietHoaDonService = chiTietHoaDonService;
             _configuration = configuration;
         }
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
-        [HttpPost]
+        [HttpPost("{id}")]
         public async Task<IActionResult> Update(int id ,ChiTietHoaDonDTO chiTietHoaDonDTO)
         {
             try

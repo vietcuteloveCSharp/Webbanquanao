@@ -9,9 +9,8 @@ namespace DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int SoLuong { get; set; }
-        public string Gia { get; set; }
+        public decimal Gia { get; set; }
         public bool TrangThai { get; set; } = true;
-
 
         [ForeignKey("HoaDon")]
         public int Id_HoaDon { get; set; }

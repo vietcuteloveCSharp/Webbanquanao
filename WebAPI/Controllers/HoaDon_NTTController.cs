@@ -1,5 +1,6 @@
 ﻿using DTO.NTTuyen.HoaDons;
 using Microsoft.AspNetCore.Mvc;
+using Service.NTTuyenServices.IServices;
 using Service.NTTuyenServices.Services;
 
 namespace WebAPI.Controllers
@@ -8,9 +9,9 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class HoaDon_NTTController : Controller
     {
-        private readonly HoaDonService _hoaDonService;
+        private readonly IHoaDonService _hoaDonService;
         private IConfiguration configuration;
-        public HoaDon_NTTController(HoaDonService hoaDonService, IConfiguration _configuration)
+        public HoaDon_NTTController(IHoaDonService hoaDonService, IConfiguration _configuration)
         {
             _hoaDonService = hoaDonService;
             configuration = _configuration;

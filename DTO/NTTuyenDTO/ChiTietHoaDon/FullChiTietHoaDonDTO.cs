@@ -12,9 +12,10 @@ namespace DTO.NTTuyen.ChiTietHoaDon
         
         public int Id { get; set; }
         public int SoLuong { get; set; }
-        public string Gia { get; set; }
+        public decimal Gia { get; set; }
         public bool TrangThai { get; set; } = true;
         public int Id_HoaDon { get; set; }
         public int Id_ChiTietSanPham { get; set; }
+
     }
 }

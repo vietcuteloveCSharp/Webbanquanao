@@ -1,4 +1,4 @@
-﻿@model WebView.NghiaDTO.MaGiamGiaDTO
+@model WebView.NghiaDTO.MaGiamGiaDTO
 
 @{
     ViewData["Title"] = "Tạo mã giảm giá mới";
@@ -7,87 +7,124 @@
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create" method="post">
-   @*  <div class="form-group">
-        <label for="LoaiGiamGia">Loại giảm giá</label>
-        <select class="form-control" id="LoaiGiamGia" name="LoaiGiamGia">
-            <option value="0">Coupon</option>
-            <option value="1">Voucher</option>
+    @* Tên mã *@
+    <div class="form-group">
+        <label asp-for="Ten"></label>
+        <input asp-for="Ten" class="form-control" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+
+    </div>
+
+    @* Loại giảm giá *@
+    <div class="form-group">
+        <label asp-for="LoaiGiamGia"></label>
+        <select asp-for="LoaiGiamGia" class="form-control" id="LoaiGiamGia">
+            <option value="0">Coupon (Giảm theo %)</option>
+            <option value="1">Voucher (Giảm cố định)</option>
         </select>
-    </div> *@
-
-    <div class="form-group">
-        <label for="Ten">Tên mã</label>
-        <input type="text" class="form-control" id="Ten" name="Ten" />
+        <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
     </div>
-    
     <div class="form-group">
-        <label for="DieuKienGiamGia">Điều kiện giảm giá</label>
-        <input type="text" class="form-control" id="DieuKienGiamGia" name="DieuKienGiamGia" typing-price" />
+        <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
+        <input asp-for="DieuKienGiamGia" class="form-control typing-price" />
+        <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
     </div>
+    @* Trường dành riêng cho Coupon *@
+    <div id="coupon-fields" style="display: none;">
+       
 
-    <div class="form-group">
-        <label for="GiaTriGiam">Giá trị giảm (%)</label>
-        <input type="text" class="form-control" id="GiaTriGiam" name="GiaTriGiam" />
-    </div>
+        <div class="form-group">
+            <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
+            <input asp-for="GiaTriGiam" class="form-control" />
+            <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label for="MenhGia">Mệnh giá</label>
-        <input type="text" class="form-control" id="MenhGia" name="MenhGia" typing-price" />
-    </div>
-
-    <div class="form-group">
-        <label for="NoiDung">Nội dung</label>
-        <textarea class="form-control" id="NoiDung" name="NoiDung"></textarea>
+        <div class="form-group">
+            <label asp-for="GiaTriToiDa">Giá trị tối đa (VNĐ)</label>
+            <input asp-for="GiaTriToiDa" class="form-control typing-price" />
+            <span asp-validation-for="GiaTriToiDa" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="GiaTriToiDa">Giá trị tối đa</label>
-        <input type="text" class="form-control" id="GiaTriToiDa" name="GiaTriToiDa" typing-price" />
+    @* Trường dành riêng cho Voucher *@
+    <div id="voucher-fields" style="display: none;">
+        <div class="form-group">
+            <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
+            <input asp-for="MenhGia" class="form-control typing-price" />
+            <span asp-validation-for="MenhGia" class="text-danger"></span>
+        </div>
     </div>
 
+    @* Nội dung *@
     <div class="form-group">
-        <label for="TrangThai">Trạng thái</label>
-        <select class="form-control" id="TrangThai" name="TrangThai">
+        <label asp-for="NoiDung"></label>
+        <textarea asp-for="NoiDung" class="form-control"></textarea>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+    </div>
+
+    @* Trạng thái *@
+    <div class="form-group">
+        <label asp-for="TrangThai"></label>
+        <select asp-for="TrangThai" class="form-control">
             <option value="0">Chưa phát hành</option>
             <option value="1">Đang phát hành</option>
             <option value="2">Kết thúc</option>
         </select>
-    </div>
-    <div class="form-group">
-        <label for="ThoiGianTao">Thời gian tạo</label>
-        <input type="datetime-local" class="form-control" id="ThoiGianTao" name="ThoiGianTao"
-               value="@Model.ThoiGianTao.ToString("yyyy-MM-ddTHH:mm:ss")" readonly />
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>
 
+    @* Thời gian kết thúc *@
     <div class="form-group">
-        <label for="ThoiGianKetThuc">Thời gian kết thúc</label>
-        <input type="datetime-local" class="form-control" id="ThoiGianKetThuc" name="ThoiGianKetThuc" />
+        <label asp-for="ThoiGianKetThuc"></label>
+        <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" />
+        <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
+    </div>
+
+    @* Thêm số lượng voucher *@
+    <div class="form-group">
+        <label asp-for="SoLuong">Số lượng</label>
+        <input asp-for="SoLuong" class="form-control" type="number" min="1" />
+        <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Tạo</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
-
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["error"]
+    </div>
+}
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["success"]
+    </div>
+}
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
-        $(".typing-price").on("input", function () {
-            // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
-            var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+        document.addEventListener("DOMContentLoaded", function () {
+            const loaiGiamGia = document.getElementById("LoaiGiamGia");
+            const couponFields = document.getElementById("coupon-fields");
+            const voucherFields = document.getElementById("voucher-fields");
 
-            // Chuyển đổi sang kiểu số
-            var numberValue = parseFloat(rawValue.replace(',', '.'));
-
-            // Nếu giá trị hợp lệ, hiển thị định dạng tiền tệ, nếu không thì hiển thị giá trị ban đầu
-            if (!isNaN(numberValue)) {
-                $("#price-convert").html(
-                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
-                );
-            } else {
-                $("#price-convert").html('');
+            function toggleFields() {
+                if (loaiGiamGia.value === "0") {
+                    couponFields.style.display = "block";
+                    voucherFields.style.display = "none";
+                } else if (loaiGiamGia.value === "1") {
+                    couponFields.style.display = "none";
+                    voucherFields.style.display = "block";
+                }
             }
+
+            // Gọi hàm khi tải trang
+            toggleFields();
+
+            // Sự kiện thay đổi
+            loaiGiamGia.addEventListener("change", toggleFields);
         });
     </script>
 }

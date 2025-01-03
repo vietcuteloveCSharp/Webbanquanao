@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using DAL.Entities;
 using DAL.Extensions;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
@@ -203,11 +204,15 @@ namespace WebView.Controllers
             var hoaDon = new HoaDon
             {
                 Id_KhachHang = khachHangId.Value,
-                TongTien = tongTien.ToString("#,##0 VNĐ"),
+                TongTien = tongTien, // Gán giá trị kiểu decimal
                 NgayTao = DateTime.Now,
-                //TrangThai = 1, // Đơn hàng mới đặt, trạng thái là 1 (Chờ xử lý)
+                TrangThai = (ETrangThaiHD)1, // Đơn hàng mới đặt, trạng thái là 1 (Chờ xử lý)
                 Id_NhanVien = 1,
             };
+
+            // Định dạng chuỗi để hiển thị nếu cần
+            var tongTienHienThi = tongTien.ToString("#,##0 VNĐ");
+
 
             _context.HoaDons.Add(hoaDon);
             _context.SaveChanges();
@@ -220,7 +225,8 @@ namespace WebView.Controllers
                     Id_HoaDon = hoaDon.Id,
                     Id_ChiTietSanPham = item.Id_ChiTietSanPham,
                     SoLuong = item.SoLuong,
-                    Gia = item.ChiTietSanPham.SanPham.Gia.ToString("0.##") // hoặc ToString("#,##0.##") để định dạng số
+                    Gia = item.ChiTietSanPham.SanPham.Gia
+                    // hoặc ToString("#,##0.##") để định dạng số
                 };
 
                 _context.ChiTietHoaDons.Add(chiTietHoaDon);

@@ -201,12 +201,12 @@
                                         if (id == ms.Id)
                                         {
                                             <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id) checked>
-                                            <label for="color-@ms.Id" style="background-color: @ms.Ten" onclick="fetchProductDetails(@ms.Id)"></label>
+                                            <label for="color-@ms.Id" style="background-color: @ms.MaHex.Replace(" ","")" onclick="fetchProductDetails(@ms.Id)"></label>
                                         }
                                         else
                                         {
                                             <input type="radio" id="color-@ms.Id" name="color" value=@(ms.Id)>
-                                            <label for="color-@ms.Id" style="background-color: @ms.Ten"  onclick="fetchProductDetails(@ms.Id)"></label>
+                                            <label for="color-@ms.Id" style="background-color: @ms.MaHex.Replace(" "," ")" onclick="fetchProductDetails(@ms.Id)"></label>
                                         }
                                     
                                     }
@@ -342,7 +342,7 @@
                 async function fetchProductDetails(id_mausac) {
                     try {
                         // Gửi yêu cầu GET đến API
-                        const response = await fetch(`https://localhost:7043/BanHangOnline/ChiTietSanPham/GetSessionSanPhamChiTiet?id=${id_mausac}`);
+            const response = await fetch(`https://localhost:7043/BanHangOnline/ChiTietSanPham/GetSessionSanPhamChiTiet?id=${id_mausac}`);
             
                         // Kiểm tra nếu API trả về lỗi
                         if (!response.ok) {
@@ -390,7 +390,7 @@
 
                 try {
                     // Gửi yêu cầu POST đến API
-                    const response = await fetch('https://localhost:7043/BanHangOnline/ChiTietSanPham/PostSanPhamVaoGioHang', {
+            const response = await fetch('https://localhost:7043/BanHangOnline/ChiTietSanPham/PostSanPhamVaoGioHang', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json', // Định nghĩa kiểu dữ liệu JSON

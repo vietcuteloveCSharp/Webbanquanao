@@ -9,7 +9,8 @@ namespace DAL.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string TongTien { get; set; }
+        public decimal TongTien { get; set; } // tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
+        public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXuLy;
 

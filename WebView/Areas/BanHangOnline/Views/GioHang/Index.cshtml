@@ -1,6 +1,22 @@
-﻿@{
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Giỏ hàng";
+    var resp = ViewData["SpGioHang"] as List<GioHangResp>;
 }
+<script src="https://cdn.jsdelivr.net/npm/tinycolor2@1.4.2/tinycolor.min.js"></script>
+<script>
+    // Hàm chuyển đổi tên màu thành mã hex
+    function getHexColor(colorName) {
+        const color = tinycolor(colorName);
+
+        // Kiểm tra màu có hợp lệ không
+        if (color.isValid()) {
+            return color.toHexString(); // Trả về mã hex dạng chuỗi, ví dụ: "#ff0000"
+        } else {
+            return "Invalid color name";
+        }
+    }
+</script>
 <style>
     .cart-item {
         display: flex;
@@ -51,7 +67,7 @@
 <div class="container my-4 mt-4">
     <div class="row">
         <div class="col-8 bg-light">
-            <h4>GIỎ HÀNG <span class="text-danger soluongsp">(1 sản phẩm)</span></h4>
+            <h4>GIỎ HÀNG <span class="text-danger soluongsp">(@resp.Count sản phẩm)</span></h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -63,42 +79,51 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @if (resp != null && resp.Count > 0)
+                    {
+                        foreach (var item in resp)
+                        {
+                          
                     <tr class="mt-2 mb-2">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                     style="width: 100px;" alt="product" class="img-thumbnail me-3">
+                                        <img src="@item.SanPham.ListHinHAnh.FirstOrDefault().Url"
+                                             style="width: 100px;" alt="hình ảnh @item.SanPham.Ten" class="img-thumbnail me-3">
                             </div>
                         </td>
                         <td>
                             <div class=" align-items-center">
-                                <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
-                                <p class="mb-1 text-muted">Mã SP: 40000795</p>
-                                <p class="mb-1">Kích thước: <span id="current-size">Size L</span></p>
-                                <p class="mb-1">Màu sắc: <span id="current-color">Trắng</span></p>
-                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#modal-sp1">
-                                    Chọn
-                                    phân loại
+                                <h6>@item.SanPham.Ten</h6>
+                                @* <p class="mb-1 text-muted">Mã SP: @item.IdChiTietSanPham</p> *@
+                                <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps?.FirstOrDefault(x=> x.Id == item.IdKichThuoc)?.Ten</span></p>
+                                <p class="mb-1">Màu sắc: <span>@item.MauSacResps?.FirstOrDefault(x=> x.Id == item.IdMauSac)?.Ten</span></p>
+                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" onclick="GetMauSac(@item.Id)"
+                                        data-bs-target="#modal-giohang-@item.Id">
+                                    Chọn phân loại
                                 </button>
                             </div>
                         </td>
                         <td>
                             <div class="text-start">
-                                <p class="text-danger fw-bold mb-1" id="price1">244.300đ</p>
-                                <p class="text-decoration-line-through mb-1">349.000đ</p>
+                                @if(item.SanPham.GiaBanDau == 0){
+                                    <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>
+                                }else{
+                                     <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>
+                                     <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau đ</p>
+                                }
+                                
                             </div>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-sm btn-outline-danger me-2" id="btn-decrease-1"
-                                        onclick="updateQuantity(1,-1)">
+                                <button class="btn btn-sm btn-outline-danger me-2" id="btn-decrease-@item.Id"
+                                        onclick="updateQuantity(@item.Id,-1)">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <input type="number" id="quantity1" class="form-control text-center" value="1"
+                                <input type="number" id="quantity@(item.Id)" class="form-control text-center" value="@item.SoLuong"
                                        style="width: 80px;" readonly>
-                                <button class="btn btn-sm btn-outline-primary ms-2" id="btn-increase-1"
-                                        onclick="updateQuantity(1,1)">
+                                <button class="btn btn-sm btn-outline-primary ms-2" id="btn-increase-@item.Id"
+                                        onclick="updateQuantity(@item.Id,1)">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -106,16 +131,23 @@
                         <td class="position-relative">
                             <div class="d-flex flex-column align-items-end">
                                 <p class="fw-bold mb-0 text-end position-absolute top-0 end-0 total-price"
-                                   id="total-price-1">
-                                    244,300đ
+                                   id="total-price-@item.Id">
+                                    @(item.SoLuong * item.SanPham.GiaBan)đ
                                 </p>
                                 <button class="btn btn-link text-danger position-absolute bottom-0 end-0"
-                                        onclick="confirmDelete(this)">
+                                        onclick="confirmDelete(@item.Id)">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
+
+                        }
+                    }
+                    else
+                    {
+                        
+                    }
                 </tbody>
             </table>
         </div>
@@ -126,13 +158,13 @@
                     <span>Tổng giá trị đơn hàng</span>
                     <div id="order-total">244.300đ</div>
                 </div>
-                <form id="paymentForm" action="thanh-toan" method="GET">
+                <form id="paymentForm" action="/banhangonline/thanhtoan/index" method="GET">
                     <button type="submit" class="btn submit-btn w-100 py-2">
                         TIẾP TỤC THANH TOÁN →
                     </button>
                 </form>
                 <p class="mt-3 text-muted">
-                    Dùng mã giảm giá của <strong>TokyoLife</strong> trong bước tiếp theo
+                    Dùng mã giảm giá của <strong>CANMAN</strong> trong bước tiếp theo
                 </p>
             </div>
         </div>
@@ -141,108 +173,263 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="modal-sp1" tabindex="-1" aria-hidden="true">
+ @if (resp != null && resp.Count > 0)
+{
+foreach (var item in resp)
+    {
+        
+<div class="modal fade" id="modal-giohang-@item.Id"  tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="/thay-doi-phan-loai" method="post">
                 <h5 class="modal-title">Chọn phân loại</h5>
                 <hr>
                 <div>
+                    <input type="text" value=@item.SanPham.Id hidden/>
                     <h6>Màu sắc:</h6>
-                    <div class="form-check d-flex align-items-center mb-2">
-                        <input class="form-check-input me-2" type="radio" name="mausac" id="mausac1" value="mausac1"
-                               checked>
-                        <label class="form-check-label" for="mausac1">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                 alt="color" style="width: 50px;height: 50px;" class="me-2 rounded-circle">
-                            Màu đen
-                        </label>
-                    </div>
-                    <div class="form-check d-flex align-items-center mb-2">
-                        <input class="form-check-input me-2" type="radio" name="mausac" id="mausac2"
-                               value="mausac2">
-                        <label class="form-check-label" for="mausac2">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-1-u.webp"
-                                 alt="color" style="width: 50px;height: 50px;" class="me-2 rounded-circle">
-                            Màu Trắng
-                        </label>
+                    <div id="mausac-@item.Id">
+                                @if (item.MauSacResps.Count >= 0)
+                                {
+                                    @foreach (var ms in item.MauSacResps)
+                                    {
+                                        if (ms.Id == item.IdMauSac)
+                                        {
+                                        <div class="form-check d-flex align-items-center mb-2" >
+                                            <input class="form-check-input me-2" type="radio" name="mausac@(item.Id)" onclick="GetKichThuoc(@item.Id, @ms.Id)" id="mausac-input-@item.Id-@(ms.Id)"
+                                                   value="@ms.Id" checked>
+                                            <label class="form-check-label d-flex align-items-center" for="mausac-input-@item.Id-@(ms.Id)">
+                                                <div class="me-2 rounded-circle color-model" style="width: 50px;height: 50px;background-color:getHexColor('@ms.Ten')"></div>
+                                                <span>@ms.Ten</span>
+                                            </label>
+                                        </div>
+                                        continue;
+                                        }
+                                    else
+                                    {
+                                        <div class="form-check d-flex align-items-center mb-2">
+                                            <input class="form-check-input me-2" type="radio" name="mausac@(item.Id)" onclick="GetKichThuoc(@item.Id, @ms.Id)" id="mausac-input-@item.Id-@(ms.Id)"
+                                                   value="@ms.Id">
+                                            <label class="form-check-label d-flex align-items-center" for="mausac-input-@item.Id-@(ms.Id)">
+                                                <div class="me-4 rounded-circle color-model" style="width: 50px;height: 50px;background-color:getHexColor('@ms.Ten')"></div>
+                                                <span>@ms.Ten</span>
+                                            </label>
+                                        </div>
+                                    }
+                                    }
+                                }
                     </div>
                 </div>
                 <hr>
                 <div>
                     <h6>Kích thước:</h6>
-                    <div class="form-check d-flex align-items-center mb-2">
-                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc1"
-                               value="kicthuoc1" checked>
-                        <label class="form-check-label" for="kicthuoc1">
-                            Size S
-                        </label>
-                    </div>
-                    <div class="form-check d-flex align-items-center mb-2">
-                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc2"
-                               value="kicthuoc2">
-                        <label class="form-check-label" for="kicthuoc2">
-                            Size M
-                        </label>
-                    </div>
-                    <div class="form-check d-flex align-items-center mb-2">
-                        <input class="form-check-input me-2" type="radio" name="kichthuoc" id="kicthuoc3"
-                               value="kicthuoc3">
-                        <label class="form-check-label" for="kicthuoc3">
-                            Size L
-                        </label>
+                    <div id="kichthuoc-@item.Id">
+                            @if (item.MauSacResps.Count >= 0)
+                            {
+                                @foreach (var kt in item.KichThuocResps)
+                                {
+                                    if (kt.Id == item.IdKichThuoc)
+                                    {
+                                        <div class="form-check d-flex align-items-center mb-2">
+                                            <input class="form-check-input me-2" type="radio" name="kichthuoc@(item.Id)" id="kicthuoc-input-@item.Id-@(kt.Id)"
+                                                   value="@kt.Id" checked>
+                                            <label class="form-check-label" for="kicthuoc-input-@item.Id-@(kt.Id)">
+                                                Size @kt.Ten
+                                            </label>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-check d-flex align-items-center mb-2">
+                                            <input class="form-check-input me-2" type="radio" name="kichthuoc@(item.Id)" id="kicthuoc-input-@item.Id-@(kt.Id)"
+                                                   value="@kt.Id">
+                                            <label class="form-check-label" for="kicthuoc-input-@item.Id-@(kt.Id)">
+                                                Size @kt.Ten
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            }
                     </div>
                 </div>
                 <hr>
                 <div class="text-end">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Trở lại</button>
-                    <button class="btn btn-primary" onclick="changeType()">Xác nhận</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Trở lại</button>
+                    <button class="btn btn-primary" onclick="changeType(@item.Id)">Xác nhận</button>
                 </div>
-            </form>
         </div>
     </div>
 </div>
+    }
+}
 
 <script defer>
     // const price = 244300;
     const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
     function updateQuantity(index, change) {
-        const price = parseInt(document.getElementById(`price${index}`).innerHTML.replaceAll('đ', '').replaceAll(',', '').replaceAll('.', '').trim());
+        const price = parseInt(document.getElementById(`price${index}`).innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '.').trim());
 
         const quantity = document.getElementById(`quantity${index}`);
-        let newQuantity = parseInt(quantity.value) + change;
-        if (newQuantity < 1) return;
-        quantity.value = newQuantity;
-
-        $(`#btn-decrease-${index}`).prop("disabled", newQuantity === 1);
-
-        // Update total price
-        $(`#total-price-${index}`).text(formatCurrency(newQuantity * price));
-        updateDonHang()
         // Call API
-        console.log(`Call API: update-so-luong, quantity=${newQuantity}`);
+        $.ajax({
+            url: '/banhangonline/giohang/GetThayDoiSoLuongGioHang',
+            method: 'GET',
+            data: {
+                idGioHang: index,
+                isTang: change === 1 ? true: false
+            },
+            success: function (response) {
+                console.log('Success:', response.status);
+                if(response.status ==200){
+                    let newQuantity = parseInt(quantity.value) + change;
+                    if (newQuantity < 1) return;
+                    quantity.value = newQuantity;
+
+                    $(`#btn-decrease-${index}`).prop("disabled", newQuantity === 1);
+
+                    // Update total price
+                    $(`#total-price-${index}`).text(formatCurrency(newQuantity * price));
+                    updateDonHang()
+
+                }else{
+                    console.log(response.message);
+                }
+                // Xử lý kết quả trả về
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+
     }
     function updateDonHang() {
         let allTotalPrice = document.querySelectorAll(".total-price");
         let totalPriceSubmit = 0;
         allTotalPrice.forEach(ele => {
-            console.log(ele);
-            let priceTotal = parseInt(ele.innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '').trim());
+            let priceTotal = parseInt(ele.innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '.').trim());
             totalPriceSubmit += priceTotal;
         });
+        totalPriceSubmit = totalPriceSubmit.toString().replaceAll('.', ',');
         $(`#order-total`).text(formatCurrency(totalPriceSubmit));
     }
     updateDonHang();
-    function confirmDelete(obj) {
+    function confirmDelete(index) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
             console.log("Call API: xoa-san-phan-khoi-gio-hang");
-            console.log(obj.value);
+           // Call API
+            $.ajax({
+                url: '/banhangonline/giohang/GetXoaSanPhamKhoiGioHang',
+                method: 'GET',
+                data: {
+                    idGioHang: parseInt(index)
+                },
+                success: function (response) {
+                    console.log('Success:', response.status);
+                    if(response.status ==200){
+                        console.log(response.message);
+                        updateDonHang();
+                        location.reload();
+                    }else{
+                        console.log(response.message);
+                    }
+                    // Xử lý kết quả trả về
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
         }
     }
+      function GetKichThuoc(idGioHang, idMauSac) {
+            // Call API
+            $.ajax({
+                url: '/banhangonline/giohang/GetKichThuocSanPhamTrongGioHang',
+                method: 'GET',
+                data: {
+                    idGioHang: parseInt(idGioHang),
+                    idMs: parseInt(idMauSac)
+                },
+                success: function (response) {
+                    console.log('Success:', response);
+                    if (response != null) {
+                        console.log(response);
+                        const parentElement = document.getElementById(`kichthuoc-${idGioHang}`);
+                        parentElement.innerHTML = '';
+                        // Tạo thẻ <div> mới với nội dung mong muốn
+                        response.forEach(item => {
+                            const newElement = document.createElement('div');
+                            newElement.className = 'form-check d-flex align-items-center mb-2';
 
-    function changeType() {
-        console.log("Call API: thay-doi-phan-loai");
-        $("#selectModal").modal("hide");
+                            // Thêm nội dung HTML vào thẻ <div> mới
+                            newElement.innerHTML = `
+                             <input class="form-check-input me-2" type="radio" name="kichthuoc${idGioHang}" id="kicthuoc-input-${idGioHang}-${item.id}" value="${item.id}" >
+                             <label class="form-check-label" for="kicthuoc-input-${idGioHang}-${item.id}">
+                                 Size ${item.ten}
+                             </label>
+                         `;
+
+                            // Thêm thẻ <div> mới vào phần tử cha
+                            parentElement.appendChild(newElement);
+                        });
+
+                    } else {
+                        console.log(response);
+                    }
+                    // Xử lý kết quả trả về
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    function changeType(idGioHang) {
+                 // Call API
+                 const checkedRadioMS = document.querySelector(`input[type="radio"][name="mausac${idGioHang}"]:checked`);
+                 const checkedRadioKT = document.querySelector(`input[type="radio"][name="kichthuoc${idGioHang}"]:checked`);
+
+                if (!checkedRadioMS) {
+                   console.log("Không có màu sắc nào được chọn.");
+                   alter("Không có màu sắc nào được chọn.");
+                } 
+                 if (!checkedRadioKT) {
+                   console.log("Không có kích thước nào được chọn.");
+                   alter("Không có kích thước nào được chọn.");
+                } 
+            $.ajax({
+                url: '/banhangonline/giohang/PostThayDoiPhanLoaiSanPhamTromgGioHang',
+                type: 'POST',
+                headers:  JSON.stringify({
+                    "Content-Type": "application/json"
+                }),
+                data:{
+                    IdGioHang:parseInt(idGioHang),
+                    IdMS:parseInt(checkedRadioMS.value),
+                    IdKT:parseInt(checkedRadioKT.value),
+                },
+                success: function (response) {
+                    console.log('Success:', response);
+                    if (response.status == 200) {
+                        console.log(response);
+                        alter(response.message);
+                        
+
+                    } else {
+                        console.log(response);
+                    }
+                    // Xử lý kết quả trả về
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+            location.reload();
     }
+    function GetMauSac(index) {
+        const ms = document.querySelectorAll(`#mausac-${index} label`);
+        console.log(ms);
+        for (let i = 0; i < ms.length; i++) {
+            let spanTen = ms[i].children[1].innerText.replaceAll(' ', '').trim().toString();
+            ms[i].children[0].style.backgroundColor = getHexColor(spanTen);
+        }
+    }
+    
 </script>

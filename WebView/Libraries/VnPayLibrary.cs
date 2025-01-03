@@ -1,9 +1,9 @@
-﻿using System.Net.Sockets;
+﻿using System.Globalization;
 using System.Net;
-using WebView.Models.Vnpay;
-using System.Text;
+using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Globalization;
+using System.Text;
+using WebView.Models.Vnpay;
 
 namespace WebView.Libraries
 {
@@ -140,6 +140,7 @@ namespace WebView.Libraries
 
             return hash.ToString();
         }
+
         private string GetResponseData()
         {
             var data = new StringBuilder();

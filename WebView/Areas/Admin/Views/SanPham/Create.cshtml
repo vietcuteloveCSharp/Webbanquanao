@@ -74,10 +74,9 @@
 
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
     <div class="form-group">
-        <label for="Image">Hình Ảnh</label>
-        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" />
+        <label for="ImageUrl">Link ảnh</label>
+        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
     </div>
-
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
 </form>
 
@@ -86,7 +85,13 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
+    <script>
+       // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
+        document.getElementById("ImageOption").addEventListener("change", function () {
+            const selectedOption = this.value;
+            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
+        });
+    </script>
     <script>
         $(".typing-price").on("input", function () {
             // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
