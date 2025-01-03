@@ -129,7 +129,8 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.NgayTao, f => DateTime.Now.AddDays(-5))
                 .RuleFor(x => x.NgayBatDau, f => f.Date.PastOffset(-4, DateTimeOffset.Now).DateTime)
                 .RuleFor(x => x.NgayKetThuc, f => f.Date.SoonOffset(7, DateTimeOffset.Now).DateTime)
-                .RuleFor(x => x.TrangThai, f => f.Random.Bool());
+                .RuleFor(x => x.TrangThai, (f, km) => f.Random.Int(0, 1));
+
 
             var khuyenMais = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(khuyenMaiFaker, i))

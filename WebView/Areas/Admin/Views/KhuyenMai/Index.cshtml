@@ -3,11 +3,47 @@
 @{
     ViewData["Title"] = "Danh Sách Mã Giảm Giá";
 }
-<h2>@ViewData["Title"]</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+<h2>@ViewData["Title"]</h2>
+<style>
+    .badge {
+        font-size: 0.85em;
+        margin-right: 5px; /* Thêm khoảng cách giữa các thẻ */
+    }
+
+        .badge.bg-primary {
+            background-color: #007bff; /* Màu xanh dương */
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d; /* Màu xám */
+        }
+
+        .badge.bg-success {
+            background-color: #28a745; /* Màu xanh lá */
+        }
+
+        .badge.bg-danger {
+            background-color: #dc3545; /* Màu đỏ */
+        }
+
+</style>
 <div class="mb-3 text-right">
     <a asp-action="Create" asp-controller="KhuyenMai" class="btn btn-success">
-        <i class="fa fa-plus"></i> Thêm khuyễn mại
+        <i class="fa fa-plus"></i> Thêm khuyến mại
     </a>
 </div>
 
@@ -18,12 +54,12 @@
                 <th scope="col">Id</th>
                 <th scope="col">Tên</th>
                 <th scope="col">Điều kiện (VND)</th>
-                <th scope="col">giảm giá (%)</th>
+                <th scope="col">Giảm giá (%)</th>
                 <th scope="col">Thời gian bắt đầu</th>
                 <th scope="col">Thời gian kết thúc</th>
                 <th scope="col">Trạng thái</th>
+                <th scope="col">Danh mục</th>
                 <th scope="col">Hành động</th>
-              
             </tr>
         </thead>
         <tbody>
@@ -34,12 +70,40 @@
                     <td>@item.Ten</td>
                     <td>@item.DieuKienGiamGia.ToString("N0")</td>
                     <td>@item.GiaTriGiam.ToString("N0")</td>
+                    <td>@item.NgayBatDau.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@item.NgayKetThuc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+
+
                     <td>
-                        @item.NgayBatDau.ToString("dd/MM/yyyy")
+                        @if (item.TrangThai == 0)
+                        {
+                            <span class="badge bg-secondary">Ngưng khuyến mại</span>
+                        }
+                        else if (item.TrangThai == 1)
+                        {
+                            <span class="badge bg-success">Đang khuyến mại</span>
+                        }
+                        else if (item.TrangThai == 2)
+                        {
+                            <span class="badge bg-danger">Kết thúc</span>
+                        }
                     </td>
-                    <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
-                  
-                    <td>@(item.TrangThai ? "Ngưng khuyến mại" : "Đang khuyến mại")</td>
+
+                    <td>
+                        <!-- Hiển thị danh mục dưới dạng thẻ -->
+                        @if (item.chiTietKhuyenMaiDTOs != null && item.chiTietKhuyenMaiDTOs.Any())
+                        {
+                            @foreach (var ct in item.chiTietKhuyenMaiDTOs)
+                            {
+                                <span class="badge bg-primary">@ct.DanhMucDTO.TenDanhMuc</span>
+                                @if (!item.chiTietKhuyenMaiDTOs.LastOrDefault().Equals(ct))
+                                {
+                                    @: &nbsp; <!-- Thêm khoảng trắng giữa các thẻ -->
+                                }
+                            }
+                        }
+                    </td>
+
                     <td>
                         <a asp-action="Edit" asp-route-Id="@item.Id" class="btn btn-sm btn-warning">
                             <i class="fa fa-edit"></i> Sửa

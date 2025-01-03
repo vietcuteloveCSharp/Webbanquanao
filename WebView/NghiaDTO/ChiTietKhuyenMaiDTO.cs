@@ -8,9 +8,7 @@ namespace WebView.NghiaDTO
         public int Id { get; set; }
 
   
-        [ForeignKey("KhuyenMai")]
         public int? Id_KhuyenMai { get; set; } = null;
-        [ForeignKey("DanhMuc")]
         public int? Id_DanhMuc { get; set; } 
 
         public virtual KhuyenMaiDTO KhuyenMaiDTO { get; set; }
