@@ -81,6 +81,7 @@ namespace WebView.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SanPhamDTO sanPhamDTO, List<string>? ImageUrls)
         {
+
             if (ModelState.IsValid)
             {
                 using var transaction = await _context.Database.BeginTransactionAsync();
@@ -94,6 +95,7 @@ namespace WebView.Areas.Admin.Controllers
                     {
                         ModelState.AddModelError("Ten", "Tên sản phẩm đã tồn tại.");
                         PopulateDropDownLists(sanPhamDTO);
+                        ViewBag.ImageUrls = ImageUrls;
                         return View(sanPhamDTO);
                     }
 
@@ -165,7 +167,7 @@ namespace WebView.Areas.Admin.Controllers
                         PopulateDropDownLists(sanPhamDTO);
                         return View(sanPhamDTO);
                     }
-
+                    ModelState.Clear();
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -182,6 +184,7 @@ namespace WebView.Areas.Admin.Controllers
             // Nếu có lỗi trong ModelState hoặc không hợp lệ, trả về view với dữ liệu hiện tại
             TempData["error"] = "Có lỗi xảy ra khi thêm sản phẩm.";
             PopulateDropDownLists(sanPhamDTO);
+            ViewBag.ImageUrls = ImageUrls; // Gửi lại danh sách ImageUrls cho view
             return View(sanPhamDTO);
         }
 

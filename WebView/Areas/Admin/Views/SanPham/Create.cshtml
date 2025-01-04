@@ -74,12 +74,25 @@
     <div class="form-group">
         <label for="ImageUrls">Link Ảnh</label>
         <div id="imageUrlsContainer">
-            <div class="image-url-item">
-                <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
-            </div>
+            @if (ViewBag.ImageUrls != null)
+            {
+                foreach (var url in ViewBag.ImageUrls as List<string>)
+                {
+                    <div class="image-url-item">
+                        <input type="text" class="form-control mb-2" name="ImageUrls" value="@url" placeholder="Nhập link ảnh từ mạng" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="image-url-item">
+                    <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                </div>
+            }
         </div>
         <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
     </div>
+
 
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
 </form>
