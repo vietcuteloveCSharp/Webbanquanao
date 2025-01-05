@@ -32,6 +32,23 @@ namespace WebAPI.Controllers
                 });
             }
         }
+        [HttpGet("hoadon/{id}")]
+        public async Task<IActionResult> GetByHoaDonId(int id) {
+            try
+            {
+                var result = await _chiTietHoaDonService.GetByHoaDonId(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Có lỗi xảy ra khi lấy dữ liệu",
+                    Error = ex.Message
+                });
+            }
+
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

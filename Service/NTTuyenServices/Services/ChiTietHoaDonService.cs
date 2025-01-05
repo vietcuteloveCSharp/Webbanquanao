@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DAL.Context;
 using DAL.Entities;
 using DTO.NTTuyen.ChiTietHoaDon;
@@ -35,14 +36,47 @@ namespace Service.NTTuyenServices.Services
 
         public async Task<List<FullChiTietHoaDonDTO>> GetAll()
         {
-            var value = _context.ChiTietHoaDons.ToListAsync();
+            var value =await  _context.ChiTietHoaDons.ToListAsync();
             return _mapper.Map<List<FullChiTietHoaDonDTO>>(value);
         }
 
         public async Task<ChiTietHoaDonDTO> GetById(int id)
         {
-           var value = _context.ChiTietHoaDons.FindAsync(id);
-            return _mapper.Map<ChiTietHoaDonDTO>(value);
+          if (id == null)
+                {
+                        throw new ArgumentException("id không được để trống");  
+                }
+          else
+            {
+                var hd = await _context.ChiTietHoaDons.FindAsync(id);
+                if (hd == null)
+                {
+                    throw new NullReferenceException("Chi tiết hóa đơn không tồn tại");
+                }
+                else
+                {
+                    return _mapper.Map<ChiTietHoaDonDTO>(hd);
+                }
+            }
+        }
+        public  async Task<List<ChiTietHoaDonDTO>> GetByHoaDonId(int id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentException("id không được để trống");
+            }
+            else
+            {
+                var hd = await _context.ChiTietHoaDons.Where(hd => hd.Id_HoaDon == id).ProjectTo<ChiTietHoaDonDTO>(_mapper.ConfigurationProvider).ToListAsync();
+                if (hd == null)
+                {
+                    throw new NullReferenceException("Chi tiết hóa đơn không tồn tại");
+                }
+                else
+                {
+                    return _mapper.Map<List<ChiTietHoaDonDTO>>(hd);
+                }
+            }
         }
 
         public async Task<ChiTietHoaDonDTO> Update(int id, ChiTietHoaDonDTO obj)
@@ -53,7 +87,7 @@ namespace Service.NTTuyenServices.Services
             }
             else
             {
-                var hd = _context.HoaDons.FindAsync(id);
+                var hd =await _context.ChiTietHoaDons.FindAsync(id);
                 if (hd == null)
                 {
                     throw new NullReferenceException("Hóa đơn không tồn tại");

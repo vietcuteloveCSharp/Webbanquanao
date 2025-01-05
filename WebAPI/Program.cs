@@ -69,6 +69,7 @@ namespace WebAPI
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
             builder.Services.AddScoped<IHoaDonService, HoaDonService>();
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
+            builder.Services.AddScoped<IChiTietSanPhamServices, ChiTietSanPhamServices>();
 
             // Cấu hình JWT
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");

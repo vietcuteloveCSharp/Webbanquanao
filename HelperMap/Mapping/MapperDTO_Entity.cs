@@ -1,25 +1,18 @@
 ﻿using AutoMapper;
 using DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DTO.VuvietanhDTO.Mausacs;
+using DTO.NTTuyen.ChiTietHoaDon;
+using DTO.NTTuyen.HoaDons;
+using DTO.NTTuyenDTO.ChiTietSanPhams;
 using DTO.VuvietanhDTO.Chucvus;
-using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Cuahangs;
-using DTO.VuvietanhDTO.NhanViens;
 using DTO.VuvietanhDTO.Danhmucs;
+using DTO.VuvietanhDTO.Giohangs;
+using DTO.VuvietanhDTO.KhachHangs;
+using DTO.VuvietanhDTO.Kichthuocs;
+using DTO.VuvietanhDTO.Mausacs;
+using DTO.VuvietanhDTO.NhanViens;
 using DTO.VuvietanhDTO.Sanphams;
 using DTO.VuvietanhDTO.Thuonghieus;
-using DTO.VuvietanhDTO.Kichthuocs;
-using DTO.VuvietanhDTO.Giohangs;
-using Microsoft.EntityFrameworkCore;
-using Service.VuVietAnhService.IRepository.IThuonghieu;
-using Service.VuVietAnhService.IRepository.IDanhmuc;
-using DTO.NTTuyen.HoaDons;
-using System.Formats.Tar;
 
 
 
@@ -194,8 +187,36 @@ namespace HelperMap.Mapping
                 .ForMember(dto => dto.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien))
                 .ForMember(dto => dto.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang));
             #endregion
-
-
+            #region Map ChiTietHoaDon
+            CreateMap<ChiTietHoaDonDTO, ChiTietHoaDon>()
+                .ForMember(dto => dto.Id_HoaDon, opt => opt.MapFrom(src => src.Id_HoaDon))
+                .ForMember(dto => dto.SoLuong, opt => opt.MapFrom(src => src.SoLuong))
+                .ForMember(dto => dto.Gia, opt => opt.MapFrom(src => src.Gia))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai));
+            CreateMap<FullChiTietHoaDonDTO, ChiTietHoaDon>()
+                .ForMember(dto => dto.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dto => dto.Id_HoaDon, opt => opt.MapFrom(src => src.Id_HoaDon))
+                .ForMember(dto => dto.SoLuong, opt => opt.MapFrom(src => src.SoLuong))
+                .ForMember(dto => dto.Gia, opt => opt.MapFrom(src => src.Gia))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai));
+            #endregion
+            #region Map ChiTietSanPham
+            CreateMap<ChiTietSanPhamDTO, ChiTietSanPham>()
+                .ForMember(dto => dto.SoLuong, opt => opt.MapFrom(src => src.SoLuong))
+                .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dto => dto.Id_SanPham, opt => opt.MapFrom(src => src.Id_SanPham))
+                .ForMember(dto => dto.Id_MauSac, opt => opt.MapFrom(src => src.Id_MauSac))
+                .ForMember(dto => dto.Id_KichThuoc, opt => opt.MapFrom(src => src.Id_KichThuoc));
+            CreateMap<FullChiTietSanPhamDTO, ChiTietSanPham>()
+                .ForMember(dto => dto.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dto => dto.SoLuong, opt => opt.MapFrom(src => src.SoLuong))
+                .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dto => dto.Id_SanPham, opt => opt.MapFrom(src => src.Id_SanPham))
+                .ForMember(dto => dto.Id_MauSac, opt => opt.MapFrom(src => src.Id_MauSac))
+                .ForMember(dto => dto.Id_KichThuoc, opt => opt.MapFrom(src => src.Id_KichThuoc));
+            #endregion
         }
     }
 }
