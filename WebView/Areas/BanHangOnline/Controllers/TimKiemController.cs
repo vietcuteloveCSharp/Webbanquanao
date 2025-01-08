@@ -45,11 +45,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var lstIdDanhMuc = lstSp.Select(x => x.Id_DanhMuc).Distinct().ToList();
             // list chi tiết khuyến mại
             DateTime timeNow = DateTime.Now;
-            var lstChiTietKhuyenMai = await _context.ChiTietKhuyenMais.Include(x => x.KhuyenMai).Where(x => lstIdDanhMuc.Contains((int)x.Id_DanhMuc)).Where(x => x.KhuyenMai.TrangThai == true).Where(x => x.KhuyenMai.NgayBatDau.CompareTo(timeNow) <= 0).Where(x => !(x.KhuyenMai.NgayKetThuc != null) || timeNow <= x.KhuyenMai.NgayKetThuc).Include(x => x.KhuyenMai.ChiTietKhuyenMais).ToListAsync();
+            var lstChiTietKhuyenMai = await _context.ChiTietKhuyenMais.Include(x => x.KhuyenMai).Where(x => lstIdDanhMuc.Contains((int)x.Id_DanhMuc)).Where(x => x.KhuyenMai.TrangThai == 1).Where(x => x.KhuyenMai.NgayBatDau.CompareTo(timeNow) <= 0).Where(x => !(x.KhuyenMai.NgayKetThuc != null) || timeNow <= x.KhuyenMai.NgayKetThuc).Include(x => x.KhuyenMai.chiTietKhuyenMais).ToListAsync();
             // thực hiện lọc khuyến mại theo lstIdDanhMuc
-            // kiểm tra 1 danh mục chỉ được ở trong 1 đợt khuyến mại duy nhất. Nếu có 2 khuyến mại đang hoạt động đều có 1 danh mục thì
-            // ưu tiên: cái tạo sau cùng
-
             var listChiTietKMMoi = new List<ChiTietKhuyenMai>();
             // lọc list chi tiết khuyến mại theo cái tạo mới nhất
             if (lstChiTietKhuyenMai != null && lstChiTietKhuyenMai.Count >= 1)
@@ -64,7 +61,6 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
                 }
             }
-
             // list SanPhamTimKiemResp
             foreach (var iddm in lstIdDanhMuc)
             {

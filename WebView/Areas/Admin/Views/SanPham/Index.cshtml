@@ -84,9 +84,9 @@
                     <td>@item.Gia.ToString("#,##0 VNĐ")</td>
                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                     <td>
-                        @if (!string.IsNullOrEmpty(item.TenMauSac))
+                        @if (!string.IsNullOrEmpty(item.MaHex))
                         {
-                            @foreach (var color in item.TenMauSac.Split(","))
+                            @foreach (var color in item.MaHex.Split(","))
                             {
                                 // Kiểm tra nếu mã màu là hợp lệ
                                 var hexColor = color.Trim();

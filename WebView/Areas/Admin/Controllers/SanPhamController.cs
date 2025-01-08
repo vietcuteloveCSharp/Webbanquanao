@@ -42,7 +42,7 @@ namespace WebView.Areas.Admin.Controllers
                     TenThuongHieu = group.First().SanPham.ThuongHieu?.Ten,  // Lấy tên thương hiệu
                     SoLuong = group.Sum(ct => ct.SoLuong),  // Tổng số lượng của sản phẩm
                                                             // Gộp các màu sắc và kích thước
-                    TenMauSac = string.Join(", ", group.Select(ct => ct.MauSac.Ten).Distinct()), // Gộp tên màu sắc
+                    MaHex = string.Join(", ", group.Select(ct => ct.MauSac.MaHex).Distinct()), // Gộp tên màu sắc
                     TenKichThuoc = string.Join(", ", group.Select(ct => ct.KichThuoc.Ten).Distinct()), // Gộp tên kích thước
                                                                                                        // Lấy danh sách hình ảnh từ bảng HinhAnhs
                     HinhAnhList = _context.HinhAnhs
@@ -98,6 +98,7 @@ namespace WebView.Areas.Admin.Controllers
                         ViewBag.ImageUrls = ImageUrls;
                         return View(sanPhamDTO);
                     }
+                    ModelState.Clear();
 
                     // Lưu sản phẩm chính vào bảng SanPham
                     var sanPham = new SanPham
@@ -319,6 +320,7 @@ namespace WebView.Areas.Admin.Controllers
                     PopulateDropDownLists(model);
                     return View(model);
                 }
+
 
                 // Cập nhật hoặc thêm mới chi tiết sản phẩm
                 if (model.ChiTietSanPhams != null)
