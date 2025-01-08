@@ -1,61 +1,91 @@
 ﻿@model WebView.NghiaDTO.KhuyenMaiDTO
 
 @{
-    ViewData["Title"] = "Tạo mã giảm giá mới";
+    ViewData["Title"] = "Thêm Khuyến Mại";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create" method="post">
- 
+    <div class="mb-3">
+        <label for="Ten" class="form-label">Tên Khuyến Mại</label>
+        <input asp-for="Ten" class="form-control" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+    </div>
+
+
+    <div class="mb-3">
+        <label for="MoTa" class="form-label">Mô Tả</label>
+        <textarea asp-for="MoTa" class="form-control"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="GiaTriGiam" class="form-label">Giá Trị Giảm</label>
+        <input asp-for="GiaTriGiam" class="form-control" />
+        <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="DieuKienGiamGia" class="form-label">Điều Kiện Giảm Giá</label>
+        <input asp-for="DieuKienGiamGia" class="form-control" />
+        <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="NgayBatDau" class="form-label">Ngày Bắt Đầu</label>
+        <input asp-for="NgayBatDau" type="datetime-local" class="form-control" />
+        <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="NgayKetThuc" class="form-label">Ngày Kết Thúc</label>
+        <input asp-for="NgayKetThuc" type="datetime-local" class="form-control" />
+        <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TrangThai"></label>
+        <select asp-for="TrangThai" class="form-control">
+            <option value="0">Ngưng khuyến mãi</option>
+            <option value="1">Đang khuyến mãi</option>
+            <option value="2">Kết thúc</option>
+        </select>
+    </div>
+
+    @if (ViewBag.DanhMucs != null && ViewBag.DanhMucs.Count > 0)
+    {
+        <div class="form-group">
+            <label>Danh mục áp dụng</label>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Chọn</th>
+                        <th>Tên danh mục</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var danhMuc in ViewBag.DanhMucs as List<SelectListItem>)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="Id_DanhMuc" value="@danhMuc.Value" />
+                            </td>
+                            <td>@danhMuc.Text</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+
     <button type="submit" class="btn btn-primary">Tạo</button>
-    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 </form>
-@if (TempData["error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["error"]
-    </div>
-}
-@if (TempData["success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["success"]
-    </div>
-}
+
 @section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const loaiGiamGia = document.getElementById("LoaiGiamGia");
-            const couponFields = document.getElementById("coupon-fields");
-            const voucherFields = document.getElementById("voucher-fields");
-
-            function toggleFields() {
-                if (loaiGiamGia.value === "0") {
-                    couponFields.style.display = "block";
-                    voucherFields.style.display = "none";
-                } else if (loaiGiamGia.value === "1") {
-                    couponFields.style.display = "none";
-                    voucherFields.style.display = "block";
-                }
-            }
-
-            // Gọi hàm khi tải trang
-            toggleFields();
-
-            // Sự kiện thay đổi
-            loaiGiamGia.addEventListener("change", toggleFields);
-        });
-        document.addEventListener("DOMContentLoaded", function () {
-            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
-
-            typingPriceFields.forEach(function (field) {
-                field.addEventListener("input", function () {
-                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
-                });
-            });
-        });
-
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

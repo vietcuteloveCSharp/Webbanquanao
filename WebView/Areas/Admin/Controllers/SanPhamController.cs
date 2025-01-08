@@ -44,8 +44,8 @@ namespace WebView.Areas.Admin.Controllers
                                                             // Gộp các màu sắc và kích thước
                     TenMauSac = string.Join(", ", group.Select(ct => ct.MauSac.Ten).Distinct()), // Gộp tên màu sắc
                     TenKichThuoc = string.Join(", ", group.Select(ct => ct.KichThuoc.Ten).Distinct()), // Gộp tên kích thước
-                      // Lấy danh sách hình ảnh từ bảng HinhAnhs
-            HinhAnhList = _context.HinhAnhs
+                                                                                                       // Lấy danh sách hình ảnh từ bảng HinhAnhs
+                    HinhAnhList = _context.HinhAnhs
                 .Where(ha => ha.Id_SanPham == group.Key) // Lọc hình ảnh theo Id_SanPham
                 .Select(ha => ha.Url) // Chỉ lấy cột đường dẫn hình ảnh
                 .ToList()
@@ -79,13 +79,26 @@ namespace WebView.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SanPhamDTO sanPhamDTO, string? ImageUrl)
+        public async Task<IActionResult> Create(SanPhamDTO sanPhamDTO, List<string>? ImageUrls)
         {
+
             if (ModelState.IsValid)
             {
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
+                    // Kiểm tra tên sản phẩm có bị trùng hay không
+                    var existingProduct = await _context.SanPhams
+                        .FirstOrDefaultAsync(sp => sp.Ten.ToLower() == sanPhamDTO.Ten.ToLower());
+
+                    if (existingProduct != null)
+                    {
+                        ModelState.AddModelError("Ten", "Tên sản phẩm đã tồn tại.");
+                        PopulateDropDownLists(sanPhamDTO);
+                        ViewBag.ImageUrls = ImageUrls;
+                        return View(sanPhamDTO);
+                    }
+
                     // Lưu sản phẩm chính vào bảng SanPham
                     var sanPham = new SanPham
                     {
@@ -100,37 +113,61 @@ namespace WebView.Areas.Admin.Controllers
                     _context.SanPhams.Add(sanPham);
                     await _context.SaveChangesAsync();
 
-                    // Xử lý ảnh từ URL
-                    if (!string.IsNullOrEmpty(ImageUrl) &&
-                        Uri.TryCreate(ImageUrl, UriKind.Absolute, out Uri? uriResult) &&
-                        (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                    // Xử lý nhiều ảnh từ URL
+                    if (ImageUrls != null && ImageUrls.Any())
                     {
-                        _context.HinhAnhs.Add(new HinhAnh
+                        foreach (var imageUrl in ImageUrls)
                         {
-                            Id_SanPham = sanPham.Id,
-                            Url = ImageUrl,
-                            ImageSourceType = 1 // Ảnh từ URL
-                        });
-                    }
-
-
-                    // Lưu danh sách ChiTietSanPham
-                    foreach (var chiTiet in sanPhamDTO.ChiTietSanPhams)
-                    {
-                        if (chiTiet.Id_MauSac > 0 && chiTiet.Id_KichThuoc > 0 && chiTiet.SoLuong > 0)
-                        {
-                            _context.ChiTietSanPhams.Add(new ChiTietSanPham
+                            if (!string.IsNullOrEmpty(imageUrl) &&
+                                Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri? uriResult) &&
+                                (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
                             {
-                                Id_SanPham = sanPham.Id,
-                                Id_MauSac = chiTiet.Id_MauSac,
-                                Id_KichThuoc = chiTiet.Id_KichThuoc,
-                                SoLuong = chiTiet.SoLuong,
-                                TrangThai = chiTiet.TrangThai ?? true,
-                                NgayTao = DateTime.Now
-                            });
+                                _context.HinhAnhs.Add(new HinhAnh
+                                {
+                                    Id_SanPham = sanPham.Id,
+                                    Url = imageUrl,
+                                    ImageSourceType = 1 // Ảnh từ URL
+                                });
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ImageUrls", $"URL '{imageUrl}' không hợp lệ.");
+                            }
                         }
                     }
 
+                    // Lưu danh sách ChiTietSanPham
+                    if (sanPhamDTO.ChiTietSanPhams != null && sanPhamDTO.ChiTietSanPhams.Any())
+                    {
+                        foreach (var chiTiet in sanPhamDTO.ChiTietSanPhams)
+                        {
+                            if (chiTiet.Id_MauSac > 0 && chiTiet.Id_KichThuoc > 0 && chiTiet.SoLuong > 0)
+                            {
+                                _context.ChiTietSanPhams.Add(new ChiTietSanPham
+                                {
+                                    Id_SanPham = sanPham.Id,
+                                    Id_MauSac = chiTiet.Id_MauSac,
+                                    Id_KichThuoc = chiTiet.Id_KichThuoc,
+                                    SoLuong = chiTiet.SoLuong,
+                                    TrangThai = chiTiet.TrangThai ?? true,
+                                    NgayTao = DateTime.Now
+                                });
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ChiTietSanPhams", "Thông tin chi tiết sản phẩm không hợp lệ.");
+                            }
+                        }
+                    }
+
+                    if (!ModelState.IsValid)
+                    {
+                        // Nếu có lỗi trong ModelState, rollback và trả lại view
+                        await transaction.RollbackAsync();
+                        PopulateDropDownLists(sanPhamDTO);
+                        return View(sanPhamDTO);
+                    }
+                    ModelState.Clear();
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -144,11 +181,13 @@ namespace WebView.Areas.Admin.Controllers
                 }
             }
 
-            // Nếu có lỗi, trả về view với dữ liệu hiện tại
+            // Nếu có lỗi trong ModelState hoặc không hợp lệ, trả về view với dữ liệu hiện tại
             TempData["error"] = "Có lỗi xảy ra khi thêm sản phẩm.";
             PopulateDropDownLists(sanPhamDTO);
+            ViewBag.ImageUrls = ImageUrls; // Gửi lại danh sách ImageUrls cho view
             return View(sanPhamDTO);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -186,7 +225,7 @@ namespace WebView.Areas.Admin.Controllers
                 }).ToList()
             };
 
-          
+
             PopulateDropDownLists(sanPhamDTO);
             return View(sanPhamDTO);
         }
@@ -206,7 +245,7 @@ namespace WebView.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SanPhamDTO model, string? ImageUrl, List<int> DeletedImageIds)
+        public async Task<IActionResult> Edit(SanPhamDTO model, List<string> ImageUrls, List<int> DeletedImageIds)
         {
             if (!ModelState.IsValid)
             {
@@ -234,24 +273,51 @@ namespace WebView.Areas.Admin.Controllers
                 sanPham.NgayTao = model.NgayTao;
                 sanPham.Id_ThuongHieu = model.Id_ThuongHieu;
                 sanPham.Id_DanhMuc = model.Id_DanhMuc;
+
+                // Xóa ảnh theo danh sách DeletedImageIds
                 if (DeletedImageIds != null && DeletedImageIds.Any())
                 {
-                    sanPham.HinhAnhs = sanPham.HinhAnhs
-                        .Where(ha => !DeletedImageIds.Contains(ha.Id))
-                        .ToList();
+                    var imagesToDelete = sanPham.HinhAnhs.Where(ha => DeletedImageIds.Contains(ha.Id)).ToList();
+                    _context.HinhAnhs.RemoveRange(imagesToDelete);
                 }
 
-
-                // Thêm hình ảnh từ URL nếu có
-                if (!string.IsNullOrEmpty(ImageUrl) && Uri.TryCreate(ImageUrl, UriKind.Absolute, out Uri? uriResult) &&
-                    (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                // Thêm các hình ảnh mới từ danh sách URL
+                if (ImageUrls != null && ImageUrls.Any())
                 {
-                    sanPham.HinhAnhs.Add(new HinhAnh
+                    foreach (var imageUrl in ImageUrls)
                     {
-                        Id_SanPham = sanPham.Id,
-                        Url = ImageUrl,
-                        ImageSourceType = 1 // 1 có thể là loại URL
-                    });
+                        if (!string.IsNullOrEmpty(imageUrl) && Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri? uriResult) &&
+                            (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                        {
+                            // Kiểm tra xem ảnh đã tồn tại
+                            if (sanPham.HinhAnhs.Any(ha => ha.Url == imageUrl))
+                            {
+                                ModelState.AddModelError("ImageUrls", $"Hình ảnh với URL '{imageUrl}' đã tồn tại.");
+                                continue;
+                            }
+
+                            // Thêm ảnh mới nếu không trùng
+                            sanPham.HinhAnhs.Add(new HinhAnh
+                            {
+                                Id_SanPham = sanPham.Id,
+                                Url = imageUrl,
+                                ImageSourceType = 1 // Ảnh từ URL
+                            });
+                        }
+                        else
+                        {
+                            // URL không hợp lệ
+                            ModelState.AddModelError("ImageUrls", $"URL '{imageUrl}' không hợp lệ.");
+                        }
+                    }
+                }
+
+                // Kiểm tra nếu có lỗi trong ModelState
+                if (!ModelState.IsValid)
+                {
+                    TempData["error"] = "Có lỗi xảy ra khi cập nhật sản phẩm.";
+                    PopulateDropDownLists(model);
+                    return View(model);
                 }
 
                 // Cập nhật hoặc thêm mới chi tiết sản phẩm
@@ -264,11 +330,13 @@ namespace WebView.Areas.Admin.Controllers
 
                         if (existingDetail != null)
                         {
+                            // Cập nhật số lượng và trạng thái
                             existingDetail.SoLuong = chiTiet.SoLuong;
                             existingDetail.TrangThai = chiTiet.TrangThai ?? true;
                         }
                         else
                         {
+                            // Thêm mới chi tiết sản phẩm
                             sanPham.ChiTietSanPhams.Add(new ChiTietSanPham
                             {
                                 Id_SanPham = sanPham.Id,
@@ -287,6 +355,12 @@ namespace WebView.Areas.Admin.Controllers
                 TempData["success"] = "Cập nhật sản phẩm thành công!";
                 return RedirectToAction("Index");
             }
+            catch (DbUpdateException dbEx)
+            {
+                TempData["error"] = "Đã xảy ra lỗi khi cập nhật sản phẩm: " + dbEx.Message;
+                PopulateDropDownLists(model);
+                return View(model);
+            }
             catch (Exception ex)
             {
                 TempData["error"] = "Đã xảy ra lỗi khi cập nhật sản phẩm: " + ex.Message;
@@ -294,6 +368,7 @@ namespace WebView.Areas.Admin.Controllers
                 return View(model);
             }
         }
+
 
         // Tách xử lý hình ảnh URL
         private void HandleImageUrl(SanPham sanPham, string imageUrl)
@@ -477,7 +552,7 @@ namespace WebView.Areas.Admin.Controllers
             return RedirectToAction("AddQuantity", "SanPham", new { Id = productQuantityDTO.Id_SanPham });
         }
 
-      
+
 
     }
 }
