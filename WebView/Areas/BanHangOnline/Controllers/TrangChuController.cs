@@ -49,12 +49,13 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     SoLuong = x?.SoLuong,
                     Ten = x?.Ten,
                     Id_DanhMuc = x?.Id_DanhMuc,
-                    ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == x.Id).Select(a => new HinhAnhResp
+                    ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == x.Id)?.Select(a => new HinhAnhResp
                     {
                         Id = a?.Id,
                         Url = a?.Url,
                         Id_SanPham = a?.Id_SanPham,
-                        ImageData = a?.ImageData
+                        ImageData = a?.ImageData,
+                        ImageSourceType = a.ImageSourceType,
                     }).ToList()
                 }).ToList();
                 var DanhMucResp = new DanhMucResp
