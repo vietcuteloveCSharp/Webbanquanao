@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using DAL.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Entities
+namespace WebView.NghiaDTO
 {
-    public class KhuyenMai
+    public class KhuyenMaiDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required(ErrorMessage = "Tên khuyến mại không được để trống.")]
         public string Ten { get; set; } = string.Empty;
@@ -17,10 +16,10 @@ namespace DAL.Entities
         [Range(0, 100, ErrorMessage = "Loại khuyến mại phải trong khoảng từ 0 đến 100.")]
         public int LoaiKhuyenMai { get; set; } // theo % 
 
-        [Range(0, double.MaxValue, ErrorMessage = "Giá trị giảm phải lớn hơn hoặc bằng 0.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Giá trị giảm phải lớn hơn 0.")]
         public decimal GiaTriGiam { get; set; } // % giảm
 
-        [Range(0, double.MaxValue, ErrorMessage = "Điều kiện giảm giá phải lớn hơn hoặc bằng 0.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Điều kiện giảm giá phải lớn hơn 0.")]
         public decimal DieuKienGiamGia { get; set; } // điều kiện giảm sản phẩm 
 
         [Required(ErrorMessage = "Ngày tạo không được để trống.")]
@@ -36,8 +35,8 @@ namespace DAL.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime NgayKetThuc { get; set; }
         public int TrangThai { get; set; } // 0 - ngừng khuyến mại || 1 - đang khuyến mại || 2- Kết thúc
-
-
-        public List<ChiTietKhuyenMai> chiTietKhuyenMais { get; set; } = new();
+                                           //public int Id_DanhMuc { get; set; }
+        public List<ChiTietKhuyenMaiDTO> chiTietKhuyenMaiDTOs { get; set; } = new();
+        public List<SelectListItem> DanhMucs { get; set; }
     }
 }

@@ -49,12 +49,13 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     SoLuong = x?.SoLuong,
                     Ten = x?.Ten,
                     Id_DanhMuc = x?.Id_DanhMuc,
-                    ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == x.Id).Select(a => new HinhAnhResp
+                    ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == x.Id)?.Select(a => new HinhAnhResp
                     {
                         Id = a?.Id,
                         Url = a?.Url,
                         Id_SanPham = a?.Id_SanPham,
-                        ImageData = a?.ImageData
+                        ImageData = a?.ImageData,
+                        ImageSourceType = a.ImageSourceType,
                     }).ToList()
                 }).ToList();
                 var DanhMucResp = new DanhMucResp
@@ -73,33 +74,28 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
         private List<DanhMuc> Random5DM(List<DanhMuc> param)
         {
-            if (param != null || param.Count > 0)
+            if (param == null || param.Count == 0)
             {
-                int count = 0;
-                int length = param.Count;
-                List<int> arrRandom = new List<int>();
-                List<DanhMuc> resp = new List<DanhMuc>();
-                do
-                {
-                    count++;
-                    Random random = new Random();
-
-                    int randomNumber = random.Next(0, length);
-                    if (arrRandom.Count >= 0 && arrRandom.Any(x => x == randomNumber))
-                    {
-                        count--;
-                        continue;
-                    }
-                    resp.Add(param[randomNumber]);
-                    arrRandom.Add(randomNumber);
-                    if (count == 5)
-                    {
-                        return resp;
-                    }
-                }
-                while (true);
+                return null;
             }
-            return null;
+
+            int maxCount = Math.Min(5, param.Count); // Xử lý trường hợp danh sách có ít hơn 5 phần tử
+            List<int> usedIndices = new List<int>();
+            List<DanhMuc> selectedItems = new List<DanhMuc>();
+            Random random = new Random();
+
+            while (selectedItems.Count < maxCount)
+            {
+                int randomIndex = random.Next(0, param.Count); // Tạo chỉ số ngẫu nhiên
+                if (!usedIndices.Contains(randomIndex)) // Đảm bảo chỉ số không trùng lặp
+                {
+                    usedIndices.Add(randomIndex);
+                    selectedItems.Add(param[randomIndex]);
+                }
+            }
+
+            return selectedItems;
         }
+
     }
 }

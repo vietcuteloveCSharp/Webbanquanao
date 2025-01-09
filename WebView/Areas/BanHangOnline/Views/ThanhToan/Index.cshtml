@@ -1,7 +1,10 @@
-﻿@{
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Thanh toán";
+    var resp = ViewData["SpThanhToan"] as ThanhToanResp;
 }
 <div class="container mt-5">
+    
     <div class="row">
 
         <!-- Địa chỉ giao hàng -->
@@ -9,9 +12,9 @@
             <h5>Địa chỉ giao hàng</h5>
             <div>
                 <p>
-                    <strong>Họ và tên:</strong> Hoang &nbsp; <strong>SDT:</strong> 0981642651
+                    <strong>Họ và tên:</strong> @resp.KhachHangModel.Ten  &nbsp; <strong>SDT:</strong> @resp.KhachHangModel.Sdt
                     <strong>Email:</strong>
-                    nhuhoang@gmail.com
+                    @resp.KhachHangModel.Email
                 </p>
                 <div>
 
@@ -49,46 +52,38 @@
                         <div class="invalid-feedback">Vui lòng chọn phường / xã.</div>
                     </div>
 
-                    <!-- Địa chỉ -->
-                    <div class="mb-3">
-                        <label for="address" class="form-label">
-                            <i class="fas fa-location-arrow"></i> Địa chỉ:
-                        </label>
-                        <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ của bạn">
-                        <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể.</div>
-                    </div>
-
-                    <!-- Ghi chú -->
-                    <div class="mb-3">
-                        <label for="note" class="form-label">
-                            <i class="fas fa-pencil-alt"></i> Ghi chú:
-                        </label>
-                        <textarea id="note" class="form-control" rows="3"
-                                  placeholder="Nhập ghi chú của bạn"></textarea>
-                    </div>
                 </div>
             </div>
             <hr>
             <!-- Phương thức thanh toán -->
             <h5>Phương thức thanh toán</h5>
             <div>
-                <div>
-                    <input type="radio" name="payment_method" id="vnpay" value="vnpay" checked>
-                    <label for="vnpay">Thẻ ATM/Visa/Master/JCB/QR Pay qua VNPAY-QR</label>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" checked>
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="">
+                    <label for="vnpay">Thẻ ATM qua VNPAY</label>
+                </div>
+            </div>
+            <hr>
+            <!-- Phương thức giao hàng -->
+            <h5>Phương thức giao hàng</h5>
+            <div>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="ship_method" id="ptgh" value="giaohangnhanh" checked>
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;" alt="">
+                    <label for="ptgh">Giao hàng nhanh GHN</label>
                 </div>
             </div>
         </div>
 
         <!-- Đơn hàng -->
         <div class="col-md-4">
-            <form id="shipping-form" class="needs-validation" novalidate>
                 <h5>Đơn hàng</h5>
                 <div>
                     <label for="discount-code">Mã phiếu giảm giá</label>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="discount-code"
-                               placeholder="Nhập mã phiếu giảm giá">
-                        <button class="btn btn-danger" id="apply-discount">Áp dụng</button>
+                        <input type="text" class="form-control" id="discount-code" placeholder="Mã phiếu giảm giá" disabled>
+                        <button class="btn btn-danger d-none" id="delete-discount">Xóa</button>
                     </div>
                     <a href="#" id="my-vouchers" class="text-decoration-underline" data-bs-toggle="modal"
                        data-bs-target="#voucherModal">
@@ -96,11 +91,14 @@
                     </a>
                 </div>
                 <hr>
+            <form id="shipping-form" method="POST" action="/BanHangOnline/ThanhToan/CreatePaymentUrlVnpay" class="needs-validation">
                 <div>
-                    <p><strong>Tạm tính:</strong> <span id="subtotal">244.300 ₫</span></p>
-                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 ₫</span></p>
-                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 ₫</span></p>
-                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">274,300 ₫</span></p>
+                    <input type="hidden" name="PhiVanChuyen" value=0 id="phivanchuyen-order" hidden />
+                    <input type="hidden" name="IdMaGiamGia" value=0 id="idmagiamgia-order" hidden />
+                    <p><strong>Tạm tính:</strong> <span id="subtotal">0 vn₫</span></p>
+                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vn₫</span></p>
+                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vn₫</span></p>
+                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">0 vn₫</span></p>
                     <button class="btn btn-danger w-100">Đặt hàng</button>
                 </div>
             </form>
@@ -121,78 +119,52 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="mt-2 mb-2">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
-                        </div>
-                    </td>
-                    <td>
-                        <div class=" align-items-center">
-                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
-                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
-                            <p class="mb-1">Kích thước: <span>Size L</span></p>
-                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="text-start">
-                            <p class="text-danger fw-bold mb-1">244.300đ</p>
-                            <p class="text-decoration-line-through mb-1">349.000đ</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <p class="fw-bold mb-0 text-start amount">
-                                1
-                            </p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column align-items-start">
-                            <p class="fw-bold mb-0 text-start total-price">
-                                244,300đ
-                            </p>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="mt-2 mb-2">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                                 style="width: 100px;" alt="product" class="img-thumbnail me-3">
-                        </div>
-                    </td>
-                    <td>
-                        <div class=" align-items-center">
-                            <h6>Áo thun UNISEX trang trí TOKYO ngực trái</h6>
-                            <p class="mb-1 text-muted">Mã SP: 40000795</p>
-                            <p class="mb-1">Kích thước: <span>Size L</span></p>
-                            <p class="mb-1">Màu sắc: <span>Trắng</span></p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="text-start">
-                            <p class="text-danger fw-bold mb-1">244.300đ</p>
-                            <p class="text-decoration-line-through mb-1">349.000đ</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <p class="fw-bold mb-0 text-start amount">
-                                1
-                            </p>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column align-items-start">
-                            <p class="fw-bold mb-0 text-start total-price">
-                                244,300đ
-                            </p>
-                        </div>
-                    </td>
-                </tr>
+                @if (resp.GioHang != null && resp.GioHang.Count > 0)
+                {
+                    foreach (var item in resp.GioHang)
+                    {
+                        <tr class="mt-2 mb-2">
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <img src="@item.SanPham.ListHinHAnh.FirstOrDefault().Url"
+                                         style="width: 100px;" alt="hinh anh @item.SanPham?.Ten" class="img-thumbnail me-3">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="align-items-center">
+                                    <h6>@item.SanPham?.Ten</h6>
+                                    @* <p class="mb-1 text-muted">Mã SP: 40000795</p> *@
+                                    <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps.FirstOrDefault().Ten</span></p>
+                                    <p class="mb-1">Màu sắc: <span>@item.MauSacResps.FirstOrDefault().Ten</span></p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-start">
+                                    <p class="text-danger fw-bold mb-1">@item.SanPham.GiaBan vn₫</p>
+                                    @if (item.SanPham.GiaBanDau > 0)
+                                    {
+                                        <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau vn₫</p>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <p class="fw-bold mb-0 text-start amount">
+                                        @item.SoLuong
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-start">
+                                    <p class="fw-bold mb-0 text-start total-price">
+                                        @(item.SoLuong * item.SanPham.GiaBan) vn₫
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    
+                }
             </tbody>
         </table>
     </div>
@@ -200,16 +172,38 @@
 
 <!-- Modal Phiếu Giảm Giá -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="max-width:1200px">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Phiếu giảm giá của tôi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <input type="text" class="form-control mb-3" id="search-voucher"
-                       placeholder="Nhập mã phiếu giảm giá">
-                <button class="btn btn-danger w-100" id="search-discount">Tìm kiếm</button>
+            <div class="modal-body ">
+                <div class="d-flex gap-3 mb-3 ">
+                    <input type="text" class="form-control " style="padding:12px" id="search-voucher" value=""
+                           placeholder="Nhập mã phiếu giảm giá">
+                    <button class="btn btn-danger w-25" id="search-discount">Tìm kiếm</button>
+                </div>
+                <div class="">
+                    <table class="table" id="table-discount">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Mã code</th>
+                                <th scope="col">Loại code</th>
+                                <th scope="col">Mệnh giá(vnd)</th>
+                                <th scope="col">Phần trăm giảm(%)</th>
+                                <th scope="col">Điều kiện giảm(vnd)</th>
+                                <th scope="col">Giảm tối đa(vnd)</th>
+                                <th scope="col">Thời hạn</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          
+                        </tbody>
+                    </table>
+                 </div>
             </div>
         </div>
     </div>
@@ -230,7 +224,7 @@
     const totalAmount = document.getElementById('total-amount');
 
     function changeVndToNumber(params) {
-        let total = Math.round(params.replaceAll(',', '').replaceAll('.', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
+        let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
     }
 
@@ -241,7 +235,7 @@
         let phivanchuyen = changeVndToNumber(feeResult.innerText.trim());
         let discountamount = changeVndToNumber(discountAmount.innerText.trim());
 
-        let total = tamTinh + phivanchuyen + discountamount;
+        let total = tamTinh + phivanchuyen - discountamount;
         totalAmount.innerText = `${formatCurrency(total)}`;
     }
     function tamTinhTotal() {
@@ -253,55 +247,142 @@
         subtotal.innerText = `${formatCurrency(total)}`;
     }
 
-    tamTinhTotal()
+    tamTinhTotal();
     totalThanhToan();
+    sessionStorage.removeItem("ListGiamGia");
+    function GetMaGiamGia() {
+        let keyword = document.getElementById('search-voucher').value;
+        keyword = keyword == null ? null : keyword;
+        const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
+        // Tìm đối tượng giảm giá có `ten` chứa ký tự biến keyword
 
-    document.getElementById('apply-discount').addEventListener('click', function () {
-        const discountCode = document.getElementById('discount-code').value;
-        if (!discountCode) {
-            alert('Vui lòng nhập mã giảm giá');
-            return;
-        }
-        // Call API kiểm tra mã giảm giá
-        fetch('check-ma-giam-gia', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: discountCode })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.valid) {
-                    document.getElementById('discount-amount').textContent = `-${data.discountAmount}đ`;
-                    alert('Áp dụng mã giảm giá thành công!');
-                } else {
-                    alert('Mã giảm giá không hợp lệ!');
-                }
+        if (getSessionGiamGia != null && getSessionGiamGia.some(item => item.ten != null && item.ten.toLowerCase().includes(keyword.toLowerCase()))) {
+            console.log(getSessionGiamGia);
+            // lấy các mã giảm giá theo tên nhập vào
+            const result = getSessionGiamGia.filter(item => item.ten != null && item.ten.toLowerCase().includes(keyword.toLowerCase()));
+            
+            // lấy đối tượng giảm giá
+            const tbody = document.querySelector("#table-discount tbody");
+            tbody.innerHTML = "";
+
+            result.forEach((discount, index) => {
+                // Tạo một hàng mới
+                const newRow = document.createElement("tr");
+                let giatrigiam = discount.loaiGiamGia == "0" ? discount.giaTriGiam : "0";
+                let giatritoida = discount.loaiGiamGia == "0" ? discount.giaTriToiDa : "0";
+                let menhgia = discount.loaiGiamGia == "0" ? "0" : discount.menhGia ;
+                newRow.innerHTML = `
+                                <th scope="row">${index + 1}</th>
+                                <td>${discount.ten}</td>
+                                <td>${discount.loaiGiamGia == 0 ? "Coupon" : "Voucher"}</td>
+                                <td>${menhgia} vnd</td>
+                                <td>${giatrigiam} %</td>
+                                <td>${discount.dieuKienGiamGia} vnd</td>
+                                <td>${giatritoida} vnd</td>
+                                <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
+                                <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
+                            `;
+                // console.log(newRow);
+                // Thêm hàng mới vào cuối table
+                tbody.appendChild(newRow);
             });
-    });
+        } else if (getSessionGiamGia == null) {
 
+            // Call API tìm mã giảm giá
+            fetch(`https://localhost:7043/banhangonline/thanhtoan/GetDanhSachPhieuGiamGia?tenPhieu=${keyword}`, {
+                method: 'GET',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(resp => {
+                    console.log(resp.data);
+                    const tbody = document.querySelector("#table-discount tbody");
+                    tbody.innerHTML = "";
+                    if (resp.data != null && resp.data != "") {
+
+                        resp.data.forEach((discount, index) => {
+                            let giatrigiam = discount.loaiGiamGia == "0" ? discount.giaTriGiam : "0";
+                            let giatritoida = discount.loaiGiamGia == "0" ? discount.giaTriToiDa : "0";
+                            let menhgia = discount.loaiGiamGia == "0" ? "0" : discount.menhGia;
+                            // Tạo một hàng mới
+                            const newRow = document.createElement("tr");
+                            newRow.innerHTML = `
+                                    <th scope="row">${index + 1}</th>
+                                    <td>${discount.ten}</td>
+                                    <td>${discount.loaiGiamGia == 0 ? "Coupon" : "Voucher"}</td>
+                                    <td>${menhgia} vnd</td>
+                                    <td>${giatrigiam} %</td>
+                                    <td>${discount.dieuKienGiamGia} vnd</td>
+                                    <td>${giatritoida} vnd</td>
+                                    <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
+                                    <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
+                                    `;
+
+                            // Thêm hàng mới vào cuối table
+                            tbody.appendChild(newRow);
+                            sessionStorage.removeItem("ListGiamGia");
+                            sessionStorage.setItem("ListGiamGia", JSON.stringify(resp.data));
+                        });
+                        // lưu vào trong session
+                    } else {
+                        const newRow = document.createElement("div");
+                        newRow.innerHTML = "Hiện không có phiếu giảm giá nào."
+                        tbody.appendChild(newRow);
+                    }
+                });
+
+        } else {
+            const tbody = document.querySelector("#table-discount tbody");
+            tbody.innerHTML = "";
+            const newRow = document.createElement("div");
+            newRow.innerHTML = "Hiện không có phiếu giảm giá nào."
+            tbody.appendChild(newRow);
+        }
+    }
     document.getElementById('search-discount').addEventListener('click', function () {
-        const voucher = document.getElementById('search-voucher').value;
-        if (!voucher) {
-            alert('Vui lòng nhập mã phiếu giảm giá để tìm kiếm!');
-            return;
-        }
-        // Call API tìm mã giảm giá
-        fetch('check-ma-giam-gia', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: voucher })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.valid) {
-                    alert(`Mã giảm giá "${voucher}" hợp lệ: Giảm ${data.discountAmount}đ`);
-                } else {
-                    alert('Không có mã giảm giá hợp lệ.');
-                }
-            });
+        GetMaGiamGia();
+    });
+    document.getElementById('delete-discount').addEventListener('click', function () {
+        document.getElementById("discount-code").value = "";
+        document.getElementById("idmagiamgia-order").value = 0;
+        document.getElementById('delete-discount').style = "display: none !important;";
+        discountAmount.innerText = `- 0 vnd`;
+        totalThanhToan();
     });
 
+    GetMaGiamGia();
 
+    function ThemPhieuGiamGia(idPhieuGiamGia) {
+        alert("Thêm thành công phiếu giảm giá: " + idPhieuGiamGia);
+        const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
+        const result = getSessionGiamGia.filter(item => item.id == idPhieuGiamGia);
+        console.log(result);
+        var total = changeVndToNumber(subtotal.innerText.trim());
+        var maGiamGia = result[0];
+        //  0 - coupon || 1 - voucher
+        let discountAmountNumber = 0;
+        if (maGiamGia.loaiGiamGia == 0){
+            let numberDisc = parseFloat(maGiamGia.giaTriGiam);
+            let maxDisc = parseFloat(maGiamGia.giaTriToiDa);
+            discountAmountNumber = numberDisc * total / 100;
+            if (discountAmountNumber > maxDisc) {
+                discountAmountNumber = maxDisc;
+            }
+        }else{
+            discountAmountNumber = maGiamGia.menhGia;
+        }
+        discountAmountNumber = Math.round(discountAmountNumber);
+        discountAmount.innerText = `- ${discountAmountNumber} vnd`;
+
+        document.getElementById("idmagiamgia-order").value = maGiamGia.id;
+        document.getElementById('delete-discount').style = "display: block !important;";
+        document.getElementById("discount-code").value = maGiamGia.ten;
+        totalThanhToan();
+    }
 
     // Hàm lấy danh sách tỉnh
     async function loadProvinces() {
@@ -360,7 +441,7 @@
         wardSelect.disabled = true;
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
         districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
-        feeResult.textContent = '0đ';
+        feeResult.textContent = '0 vnđ';
         const provinceId = provinceSelect.value;
         if (provinceSelect.value) {
             loadDistricts(provinceId)
@@ -370,7 +451,6 @@
     districtSelect.addEventListener('change', () => {
         wardSelect.disabled = true;
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
-        feeResult.textContent = '0đ';
         const districtId = districtSelect.value;
         if (districtId) loadWards(districtId);
     });
@@ -381,7 +461,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-        const address = document.getElementById('address').value;
+       
 
 
         const requestData = {
@@ -417,8 +497,11 @@
         const data = await response.json();
         let numberRan = Math.random() * 0.09;
         let totalFee = Math.round(data.data.total * numberRan);
+        document.getElementById("phivanchuyen-order").value = totalFee;
         feeResult.textContent = `${formatCurrency(totalFee)}`;
-        totalThanhToan();
+
+        document.getElementById("phivanchuyen-order").value = totalFee;
+            totalThanhToan();
     });
 
     // Tải danh sách tỉnh khi trang được load
