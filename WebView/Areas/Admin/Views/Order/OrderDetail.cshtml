@@ -1,0 +1,98 @@
+﻿@using static WebView.Areas.Admin.ViewModels.ViewHoaDon
+@model HoaDonView
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin | OrderDetail</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thông Tin Đơn Hàng</h1>
+
+    <form asp-action="UpdateOrder" method="post">
+        <div class="form-group">
+            <label for="orderID">Mã hóa đơn:</label>
+            <input type="number" id="orderID" name="Id" class="form-control" value="@Model.Id" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="TongTien">Tổng tiền:</label>
+            <input type="text" id="TongTien" name="TongTien" class="form-control" value="@Model.TongTien" readonly>
+        </div>
+        <div class="form-group">
+            <label for="PhiVanChuyen">Phí vận chuyển:</label>
+            <input type="text" id="PhiVanChuyen" name="PhiVanChuyen" class="form-control" value="@Model.PhiVanChuyen" readonly>
+        </div>
+        <div class="form-group">
+            <label for="NgayTao">Ngày tạo:</label>
+            <input type="datetime" id="NgayTao" name="NgayTao" class="form-control" value="@Model.NgayTao" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="KhachHangs.Ten">Tên:</label>
+            <input type="text" id="KhachHangs.Ten" name="KhachHangs.Ten" class="form-control" value="@Model.KhachHangs.Ten" readonly>
+        </div>
+        <div class="form-group">
+            <label for="KhachHangs.Sdt">Số điện thoại:</label>
+            <input type="text" id="KhachHangs.Sdt" name="KhachHangs.Sdt" class="form-control" value="@Model.KhachHangs.Sdt">
+        </div>
+        <div class="form-group">
+            <table>
+                <tr>
+                    <td>Tên Sản Phẩm</td>
+                    <td>Số Lượng</td>
+                </tr>
+                @foreach (var sp in Model.SanPhams)
+                {
+                    <tr>
+                        <td><p>@sp.Ten</p></td>
+                        <td>
+                            <input type="number" id="SanPhams[@sp.Id].SoLuong" name="SanPhams[@sp.Id].SoLuong" value="@sp.SoLuong" />
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="form-group">
+            @* ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
+            HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+            HuyDon = 7,            // Đơn hàng bị hủy
+            // Trạng thái dành riêng cho bán online
+            ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+            ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+            DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+            DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
+            HoanHang = 6,          // Đơn hàng đã được hoàn trả
+            DaThanhToan = 8 *@
+            <label for="TrangThai">Trạng thái:</label>
+            <select id="TrangThai" name="TrangThai" class="form-control" >
+                <option value="0">Chờ xác nhận</option>
+                <option value="2">Chờ thanh toán</option>
+                <option value="8">Đã thanh toán</option>
+                <option value="1">Đã xác nhận</option>
+                <option value="3">Đang vận chuyển</option>
+                <option value="4">Đang vận chuyển COD</option>
+                <option value="5">Hoàn thành đơn</option>
+                <option value="6">Hoàn đơn</option>
+                <option value="7">Hủy đơn</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </form>
+</body>
+</html>

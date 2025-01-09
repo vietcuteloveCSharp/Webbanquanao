@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Service.NTTuyenServices.IServices
 {
-    public interface  IHoaDonService
+    public interface  IHoaDon2Service
     {
         Task<List<FullHoaDonDTO>> GetAll();
         Task<HoaDonDTO> GetById(int id);

@@ -1,8 +1,8 @@
 ﻿@using DTO.NTTuyen.HoaDons
 @using DTO.VuvietanhDTO.KhachHangs
+@using Enum.EnumVVA
 @using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model List<HoaDonView>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,16 +52,6 @@
             <th>Tổng Tiền</th>
             <th>Trạng thái</th>
         </tr>
-
-
-        @*   public int Id { get; set; }
-        public decimal TongTien { get; set; }
-        public decimal PhiVanChuyen { get; set; }
-        public DateTime NgayTao { get; set; }
-        public int TrangThai { get; set; }
-        public KhachHangView KhachHangs { get; set; } // Danh sách khách hàng
-        public List<SanPhamView> SanPhams { get; set; } // Danh sách sản phẩm*@
-
         @foreach (var hoaDon in Model)
         {
             <tr>
@@ -85,21 +75,26 @@
                         }
                     </table>
                 </td>
-                <td>@hoaDon.NgayTao</td>
+                <td>@hoaDon.NgayTao</td>    
                @*  <td>@hoaDon.DiaChiGiaoHang</td> Layas địa chỉ đơn hàng*@
-                <td>@hoaDon.TongTien</td>
+               <td>Địa chỉ giao hàng</td>
+               <td>@hoaDon.TongTien</td>
                 <td>
-                    @hoaDon.TrangThai
+                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang giao hàng").Replace("DangVanChuyenCOD", "Đang giao hàng COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
                 </td>
-                <td>
-                    <a href="@Url.Action("ConfirmOrder", "Order", new { id = hoaDon.Id })">Chuyển trạng thái</a></td>
+               <td>
+                    <p>@hoaDon.Id</p>
+                    <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
+
+                    <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
+               </td>
             </tr>
         }
     </table>
 </body>
 <script>
     function filterOrders() {
-        var orderID = document.getElementById('orderID').value.toLowerCase();
+        var orderID = document.getElementById('orderID').value.toLowerCase(); 
         var orderStatus = document.getElementById('orderStatus').value;
         var table = document.querySelector('table');
         var rows = table.getElementsByTagName('tr');

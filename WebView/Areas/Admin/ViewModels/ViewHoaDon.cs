@@ -1,4 +1,7 @@
-﻿namespace WebView.Areas.Admin.ViewModels
+﻿using Enum.EnumVVA;
+using System.ComponentModel.DataAnnotations;
+
+namespace WebView.Areas.Admin.ViewModels
 {
     public class ViewHoaDon
     {
@@ -15,9 +18,9 @@
             public string Ten { get; set; }
             public int SoLuong { get; set; }
         }
-
         public class HoaDonView
         {
+
             public int Id { get; set; }
             public decimal TongTien { get; set; }
             public decimal PhiVanChuyen { get; set; }

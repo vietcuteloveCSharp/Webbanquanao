@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace Service.NTTuyenServices.Services
 {
-    public class HoaDonService : IHoaDonService
+    public class HoaDon2Service : IHoaDon2Service
     {
         private readonly WebBanQuanAoDbContext _context;
         private IMapper _mapper;
         private readonly IAuthenService _authenService;
 
-        public HoaDonService(WebBanQuanAoDbContext context, IMapper mapper ,IAuthenService authenService)
+        public HoaDon2Service(WebBanQuanAoDbContext context, IMapper mapper ,IAuthenService authenService)
         {
             _context = context;
             _mapper = mapper;
@@ -95,24 +95,12 @@ namespace Service.NTTuyenServices.Services
 
             public async Task<HoaDonDTO> Update(int id, HoaDonDTO obj)
             {
-                if (id == null)
-                {
-                    throw new ArgumentNullException("id không được để trống");
-                }
-                else
-                {
-                    var hd = _context.HoaDons.FindAsync(id);
-                    if (hd == null)
-                    {
-                        throw new NullReferenceException("Hóa đơn không tồn tại");
-                    }
-                    else
-                    {
-                        var newHD = _mapper.Map(hd, obj);
-                        await _context.SaveChangesAsync();
-                        return _mapper.Map<HoaDonDTO>(newHD);
-                    }
-                }
+                
+                var hd = await _context.HoaDons.FindAsync(id);
+                var newHD = _mapper.Map(obj, hd);
+                await _context.SaveChangesAsync();
+                return _mapper.Map<HoaDonDTO>(newHD);
+            
             }
     }
 

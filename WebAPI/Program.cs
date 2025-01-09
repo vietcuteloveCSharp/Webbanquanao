@@ -16,6 +16,8 @@ using Service.VuVietAnhService.IRepository.IKichthuoc;
 using Service.VuVietAnhService.IRepository.IMausac;
 using Service.VuVietAnhService.IRepository.ISanpham;
 using Service.VuVietAnhService.IRepository.IThuonghieu;
+using Service.VuVietAnhService.IRepository.IHoadon;
+using Service.VuVietAnhService.Repository.Hoadon;
 using Service.VuVietAnhService.Repository.Account;
 using Service.VuVietAnhService.Repository.AccountKhachhang;
 using Service.VuVietAnhService.Repository.Authentication;
@@ -67,7 +69,11 @@ namespace WebAPI
             builder.Services.AddScoped<IKichthuocService, Kichthuocservice>();
             builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
-            builder.Services.AddScoped<IHoaDonService, HoaDonService>();
+            //HoaDon VuVietAnh
+           
+            builder.Services.AddScoped<IHoadonService, HoadonService>();
+            ///HoaDon NTTuyen
+            builder.Services.AddScoped<IHoaDon2Service, HoaDon2Service>();
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
             builder.Services.AddScoped<IChiTietSanPhamServices, ChiTietSanPhamServices>();
 

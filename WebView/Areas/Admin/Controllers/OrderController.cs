@@ -3,8 +3,10 @@ using DTO.NTTuyen.HoaDons;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Sanphams;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
 
 namespace WebView.Areas.Admin.Controllers
@@ -14,12 +16,14 @@ namespace WebView.Areas.Admin.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private List<HoaDonView> listHoaDonView;
         //private string apiBaseUrl = System.Configuration.ConfigurationManager.AppSettings["BaseApiAddress"];
         private string ApiUri = "https://localhost:7169/api";
         public OrderController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            this.listHoaDonView = new List<HoaDonView>();
         }
         [HttpGet("/HoaDon_NTT")]
         public async Task<List<FullHoaDonDTO>> GetListHoaDon()
@@ -126,10 +130,46 @@ namespace WebView.Areas.Admin.Controllers
             return result;
         }
 
-        public async Task<IActionResult> Index()///Phương thức trả về cho view một list viewmodel của hóa đơn
+        /// <summary>
+        /// function change order status 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns> RedirectoAction</returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ChangeOrderStatus(int id, int status)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiUri);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HoaDonDTO hoaDonDTO = new HoaDonDTO();
+                hoaDonDTO.TrangThai = status;
+
+                var response = await client.PutAsJsonAsync($"/api/HoaDon_NTT/{id}", hoaDonDTO);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                return View("Error");
+            }
+        }
+        public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
+        {
+            return await ChangeOrderStatus(hoadonView.Id, hoadonView.TrangThai);
+        }
+
+        
+
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            return await ChangeOrderStatus(id, 7);
+        }
+        public async Task<List<HoaDonView>> LoadData()  
         {
             List<FullHoaDonDTO> listHoaDon = await GetListHoaDon();
-            List<HoaDonView> listHoaDonView = new List<HoaDonView>();
             foreach (var hd in listHoaDon)
             {
 
@@ -141,27 +181,27 @@ namespace WebView.Areas.Admin.Controllers
                     Ten = khachhang.Ten,
                     Sdt = khachhang.Sdt
                 };
-               
+
 
                 // Khai báo thuộc tính sản phẩm trong HoaDonView (Sanpham là một list các đối tượng SanPhamview)
-                List<SanPhamView> lstsanphamview=new List<SanPhamView>();
+                List<SanPhamView> lstsanphamview = new List<SanPhamView>();
 
-                    // Lấy các chi tiết hóa đơn theo id hóa đơn
-                     List<ChiTietHoaDonDTO> listChiTietHoaDon = await GetChiTietHoaDonByHoaDonId(hd.Id);
-                    // hoàn thiện các thuộc tính SanPham trong HoaDonView
-                    foreach (var cthd in listChiTietHoaDon)
+                // Lấy các chi tiết hóa đơn theo id hóa đơn
+                List<ChiTietHoaDonDTO> listChiTietHoaDon = await GetChiTietHoaDonByHoaDonId(hd.Id);
+                // hoàn thiện các thuộc tính SanPham trong HoaDonView
+                foreach (var cthd in listChiTietHoaDon)
+                {
+                    //Lấy ra những chi tiết sản phẩm trong hóa đơn dựa vào chi tiết hóa đơn
+                    ChiTietSanPhamDTO chiTietSanPham = await GetChiTietSanPhamById(cthd.Id_ChiTietSanPham);
+                    // Lấy ra sản phẩm dựa vào id sản phẩm trong chi tiết sản phẩm
+                    SanPhamDTO sanpham = await GetSanPhamById(chiTietSanPham.Id_SanPham);
+                    // Bổ sung các thuộc tính của thuộc tính SanPham trong HoaDonView
+                    lstsanphamview.Add(new SanPhamView
                     {
-                        //Lấy ra những chi tiết sản phẩm trong hóa đơn dựa vào chi tiết hóa đơn
-                         ChiTietSanPhamDTO chiTietSanPham = await GetChiTietSanPhamById(cthd.Id_ChiTietSanPham);
-                        // Lấy ra sản phẩm dựa vào id sản phẩm trong chi tiết sản phẩm
-                         SanPhamDTO sanpham = await GetSanPhamById(chiTietSanPham.Id_SanPham);
-                        // Bổ sung các thuộc tính của thuộc tính SanPham trong HoaDonView
-                        lstsanphamview.Add(new SanPhamView
-                        {
-                            Ten = sanpham.Ten,
-                            SoLuong = cthd.SoLuong
-                        });
-                    }   
+                        Ten = sanpham.Ten,
+                        SoLuong = cthd.SoLuong
+                    });
+                }
                 listHoaDonView.Add(new HoaDonView
                 {
                     Id = hd.Id,
@@ -175,7 +215,22 @@ namespace WebView.Areas.Admin.Controllers
                 });
 
             }
+            return listHoaDonView;
+        }
+        ///Phương thức trả về cho view một list viewmodel của hóa đơn
+        public async Task<IActionResult> Index()
+        {
+            listHoaDonView = await LoadData();
             return View(listHoaDonView);
+        }
+        
+        public async Task<IActionResult> OrderDetail(int id)
+        {
+            listHoaDonView = await LoadData();
+            HoaDonView viewDetail = new HoaDonView();
+            viewDetail = listHoaDonView.FirstOrDefault(x => x.Id == id);
+            return View(viewDetail);
+            
         }
     }
 }
