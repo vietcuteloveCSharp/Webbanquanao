@@ -10,196 +10,6 @@
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
         <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
-    </div>
-
-    <div class="form-group">
-        <label for="Gia">Giá</label>
-        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
-    </div>
-    <div id="price-convert"></div>
-    <div class="form-group">
-        <label for="NgayTao">Ngày Tạo</label>
-        <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
-    </div>
-
-    <div class="form-group">
-        <label for="Id_ThuongHieu">Thương Hiệu</label>
-        <select class="form-control" asp-for="Id_ThuongHieu" asp-items="ViewBag.ThuongHieus"></select>
-    </div>
-
-    <div class="form-group">
-        <label for="Id_DanhMuc">Danh Mục</label>
-        <select class="form-control" asp-for="Id_DanhMuc" asp-items="ViewBag.DanhMucs"></select>
-    </div>
-
-    <!-- Nút Show để hiển thị các phần màu sắc và kích thước -->
-    <button type="button" class="btn btn-secondary" id="toggleChiTiet">Hiển Thị Màu & Kích Thước</button>
-
-    <div id="chiTietSanPhamContainer" style="display: none;">
-        @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
-        {
-            <div class="chiTietSanPham-item" id="chiTietSanPham-@i">
-                <div class="form-group">
-                    <label for="Id_MauSac">Màu Sắc</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
-                </div>
-
-                <div class="form-group">
-                    <label for="Id_KichThuoc">Kích Thước</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
-                </div>
-
-                <div class="form-group">
-                    <label for="SoLuong">Số Lượng</label>
-                    <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
-                </div>
-
-                <button type="button" class="btn btn-danger remove-item">Xóa</button>
-            </div>
-        }
-    </div>
-
-    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
-    <div>
-        <h4>Hình ảnh hiện tại</h4>
-        @foreach (var hinhAnh in Model.HinhAnhs)
-        {
-            <div style="display: inline-block; margin-right: 10px;">
-                <img src="@(hinhAnh.ImageSourceType == 0 ? hinhAnh.Url : (string.IsNullOrEmpty(hinhAnh.ImageData) ? hinhAnh.Id_SanPham : hinhAnh.ImageData))"
-                     alt="Hình ảnh sản phẩm"
-                     style="max-width: 200px; max-height: 200px;" />
-                <!-- Checkbox để xác định ảnh có bị xóa hay không -->
-                <label>
-                    <input type="checkbox" class="delete-image-checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
-                    Xóa
-                </label>
-            </div>
-        }
-    </div>
-
-    <div class="form-group">
-        <label for="ImageUrl">Link ảnh</label>
-        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Lưu</button>
-
-</form>
-
-<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script>
-    // Xử lý sự kiện checkbox "Xóa" được chọn
-    document.querySelectorAll('.delete-image-checkbox').forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            var imageUrlInput = document.getElementById('ImageUrl');
-            
-            // Nếu có checkbox được chọn, vô hiệu hóa ô nhập "Link ảnh"
-            if (this.checked) {
-                imageUrlInput.setAttribute('disabled', 'disabled');
-            } else {
-                imageUrlInput.removeAttribute('disabled'); // Bật lại ô nhập nếu checkbox không được chọn
-            }
-        });
-    });
-</script>
-
-    <script>
-        // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
-        document.getElementById("ImageOption").addEventListener("change", function () {
-            const selectedOption = this.value;
-            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
-        });
-        // Xử lý hiển thị ẩn màu sắc và kích thước khi nhấn nút
-        document.getElementById('toggleChiTiet').addEventListener('click', function () {
-            var chiTietContainer = document.getElementById('chiTietSanPhamContainer');
-            var isHidden = chiTietContainer.style.display === 'none';
-            chiTietContainer.style.display = isHidden ? 'block' : 'none';
-            this.textContent = isHidden ? 'Ẩn Màu & Kích Thước' : 'Hiển Thị Màu & Kích Thước';
-        });
-
-        // Thêm chi tiết sản phẩm mới
-        document.getElementById('addChiTiet').addEventListener('click', function () {
-            var container = document.getElementById('chiTietSanPhamContainer');
-            var index = container.getElementsByClassName('chiTietSanPham-item').length;
-
-            var newItem = document.createElement('div');
-            newItem.classList.add('chiTietSanPham-item');
-            newItem.innerHTML = `
-                        <div class="form-group">
-                            <label for="Id_MauSac">Màu Sắc</label>
-                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
-        @foreach (var item in ViewBag.MauSacs as SelectList)
-        {
-                                        <option value="@item.Value">@item.Text</option>
-        }
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="Id_KichThuoc">Kích Thước</label>
-                            <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
-        @foreach (var item in ViewBag.KichThuocs as SelectList)
-        {
-                                        <option value="@item.Value">@item.Text</option>
-        }
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="SoLuong">Số Lượng</label>
-                            <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
-                        </div>
-
-                        <button type="button" class="btn btn-danger remove-item">Xóa</button>
-                    `;
-            container.appendChild(newItem);
-        });
-
-        // Xóa chi tiết sản phẩm
-        document.addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('remove-item')) {
-                var item = e.target.closest('.chiTietSanPham-item');
-                item.remove();
-            }
-        });
-
-    
-    </script>
-    <script>
-        $(".typing-price").on("input", function () {
-            // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
-            var rawValue = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
-
-            // Chuyển đổi sang kiểu số
-            var numberValue = parseFloat(rawValue.replace(',', '.'));
-
-            // Nếu giá trị hợp lệ, hiển thị định dạng tiền tệ, nếu không thì hiển thị giá trị ban đầu
-            if (!isNaN(numberValue)) {
-                $("#price-convert").html(
-                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
-                );
-            } else {
-                $("#price-convert").html('');
-            }
-        });
-    </script>
-} *@
-@model WebView.NghiaDTO.SanPhamDTO
-@{
-    ViewData["Title"] = "Sửa Sản Phẩm";
-}
-
-<h1>@ViewData["Title"]</h1>
-
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="Ten">Tên Sản Phẩm</label>
-        <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
         <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
 
@@ -227,11 +37,11 @@
             <div class="chiTietSanPham-item">
                 <div class="form-group">
                     <label>Màu Sắc</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
                 </div>
                 <div class="form-group">
                     <label>Kích Thước</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
+                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
                 </div>
                 <div class="form-group">
                     <label>Số Lượng</label>
@@ -243,17 +53,25 @@
     </div>
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
 
+    <!-- Hình ảnh hiện tại -->
     <div>
         <h4>Hình ảnh hiện tại</h4>
-        @foreach (var hinhAnh in Model.HinhAnhs)
+        @if (Model.HinhAnhs != null && Model.HinhAnhs.Any())
         {
-            <div style="display: inline-block; margin-right: 10px;">
-                <img src="@hinhAnh.Url" alt="Hình ảnh sản phẩm" style="max-width: 200px; max-height: 200px;" />
-                <label>
-                    <input type="checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
-                    Xóa
-                </label>
-            </div>
+            @foreach (var hinhAnh in Model.HinhAnhs)
+            {
+                <div style="display: inline-block; margin-right: 10px;">
+                    <img src="@hinhAnh.Url" alt="Hình ảnh sản phẩm" style="max-width: 200px; max-height: 200px;" />
+                    <label>
+                        <input type="checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
+                        Xóa
+                    </label>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Không có hình ảnh nào.</p>
         }
     </div>
 
@@ -267,6 +85,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Lưu</button>
+
 </form>
 
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
@@ -352,5 +171,15 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".typing-price").on("input", function () {
+                var input = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(input);
+            });
+        });
+
     </script>
 }

@@ -61,6 +61,7 @@ namespace WebAPI.Controllers
             {
                 // Gọi service để cập nhật trạng thái
                 var result = await _hoaDonService.UpdateTrangThai(id, nextTrangThai);
+
                 // Trả về kết quả thành công
                 return Ok(new
                 {

@@ -12,8 +12,9 @@ namespace DAL.Entities
         public decimal TongTien { get; set; } = 0;// tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
         public decimal PhiVanChuyen { get; set; } = 0; // tiền phí vận chuyển
         public DateTime NgayTao { get; set; } = DateTime.Now;
+        public string? DiaChiGiaoHang { get; set; } = string.Empty;
         public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXuLy;
-            
+
         [ForeignKey("NhanVien")]
         public int? Id_NhanVien { get; set; }
         [ForeignKey("KhachHang")]

@@ -92,6 +92,7 @@
         <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
     </div>
 
+
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
 </form>
 
@@ -100,7 +101,34 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            $("#addImageUrl").click(function () {
+                const newInput = `
+                        <div class="image-url-item">
+                            <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                            <button type="button" class="btn btn-danger btn-sm remove-image-url">Xóa</button>
+                        </div>`;
+                $("#imageUrlsContainer").append(newInput);
+            });
 
+            $(document).on("click", ".remove-image-url", function () {
+                $(this).closest(".image-url-item").remove();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".typing-price").on("input", function () {
+                var input = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(input);
+            });
+        });
+
+    </script>
+
+  
     <script>
         $(".typing-price").on("input", function () {
             // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
