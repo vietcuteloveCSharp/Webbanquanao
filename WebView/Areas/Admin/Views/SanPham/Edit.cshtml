@@ -52,17 +52,25 @@
     </div>
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
 
+    <!-- Hình ảnh hiện tại -->
     <div>
         <h4>Hình ảnh hiện tại</h4>
-        @foreach (var hinhAnh in Model.HinhAnhs)
+        @if (Model.HinhAnhs != null && Model.HinhAnhs.Any())
         {
-            <div style="display: inline-block; margin-right: 10px;">
-                <img src="@hinhAnh.Url" alt="Hình ảnh sản phẩm" style="max-width: 200px; max-height: 200px;" />
-                <label>
-                    <input type="checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
-                    Xóa
-                </label>
-            </div>
+            @foreach (var hinhAnh in Model.HinhAnhs)
+            {
+                <div style="display: inline-block; margin-right: 10px;">
+                    <img src="@hinhAnh.Url" alt="Hình ảnh sản phẩm" style="max-width: 200px; max-height: 200px;" />
+                    <label>
+                        <input type="checkbox" name="DeletedImageIds" value="@hinhAnh.Id" />
+                        Xóa
+                    </label>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Không có hình ảnh nào.</p>
         }
     </div>
 
@@ -161,5 +169,15 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".typing-price").on("input", function () {
+                var input = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(input);
+            });
+        });
+
     </script>
 }
