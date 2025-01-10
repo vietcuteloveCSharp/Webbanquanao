@@ -71,6 +71,11 @@ namespace WebAPI
             builder.Services.AddScoped<IKichthuocService, Kichthuocservice>();
             builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
+
+            builder.Services.AddScoped<IHoaDon2Service, HoaDon2Service>();
+            builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
+            builder.Services.AddScoped<IChiTietSanPhamServices, ChiTietSanPhamServices>();
+            
             builder.Services.AddScoped<IHoadonService, HoadonService>();
             
             //cấu hình jwt

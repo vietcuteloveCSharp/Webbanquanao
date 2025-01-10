@@ -12,6 +12,7 @@ namespace DTO.NTTuyen.HoaDons
         public int Id { get; set; }
         public decimal TongTien { get; set; } // tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
         public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
+        public string? DiaChiGiaoHang { get; set; } = string.Empty;
         public DateTime NgayTao { get; set; }
         public int TrangThai { get; set; }
         public int Id_NhanVien { get; set; }

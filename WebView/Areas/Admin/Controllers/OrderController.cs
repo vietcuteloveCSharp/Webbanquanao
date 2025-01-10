@@ -175,6 +175,7 @@ namespace WebView.Areas.Admin.Controllers
                 TongTien = hoadonView.TongTien,
                 PhiVanChuyen = hoadonView.PhiVanChuyen,
                 NgayTao = hoadonView.NgayTao,
+                DiaChiGiaoHang = hoadonView.DiaChiGiaoHang,
                 TrangThai = hoadonView.TrangThai,
                 Id_KhachHang = hoadonView.KhachHangs.Id,
                 Id_NhanVien = 1
@@ -195,6 +196,7 @@ namespace WebView.Areas.Admin.Controllers
                 TongTien = hoadonView.TongTien,
                 PhiVanChuyen = hoadonView.PhiVanChuyen,
                 NgayTao = hoadonView.NgayTao,
+                DiaChiGiaoHang = hoadonView.DiaChiGiaoHang,
                 TrangThai = ETrangThaiHD.HuyDon.GetHashCode(),
                 Id_KhachHang = hoadonView.KhachHangs.Id,
                 Id_NhanVien = 1
@@ -244,6 +246,7 @@ namespace WebView.Areas.Admin.Controllers
                     Id = hd.Id,
                     TongTien = hd.TongTien,
                     PhiVanChuyen = hd.PhiVanChuyen,
+                    DiaChiGiaoHang = hd.DiaChiGiaoHang,
                     NgayTao = hd.NgayTao,
                     TrangThai = hd.TrangThai,
                     KhachHangs = khachHangView,

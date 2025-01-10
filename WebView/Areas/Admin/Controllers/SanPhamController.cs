@@ -300,14 +300,6 @@ namespace WebView.Areas.Admin.Controllers
 
             try
             {
-                TempData["error"] = "Có lỗi xảy ra khi cập nhật sản phẩm.";
-                PopulateDropDownLists(model);
-                return View(model);
-            }
-
-            try
-            {
-                // Lấy sản phẩm hiện tại từ cơ sở dữ liệu
                 var sanPham = await _context.SanPhams
                     .Include(sp => sp.ChiTietSanPhams)
                     .Include(sp => sp.HinhAnhs)

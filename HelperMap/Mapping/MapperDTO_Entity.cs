@@ -180,6 +180,7 @@ namespace HelperMap.Mapping
                 .ForMember(dto => dto.TongTien, opt => opt.MapFrom(src => src.TongTien))
                 .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
                 .ForMember(dto => dto.PhiVanChuyen, opt => opt.MapFrom(src => src.PhiVanChuyen))
+                .ForMember(dto => dto.DiaChiGiaoHang, opt => opt.MapFrom(src => src.DiaChiGiaoHang))
                 .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
                 .ForMember(dto => dto.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien))
                 .ForMember(dto => dto.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang));
@@ -187,6 +188,7 @@ namespace HelperMap.Mapping
                 .ForMember(dto => dto.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dto => dto.TongTien, opt => opt.MapFrom(src => src.TongTien))
                 .ForMember(dto => dto.PhiVanChuyen, opt => opt.MapFrom(src => src.PhiVanChuyen))
+                .ForMember(dto => dto.DiaChiGiaoHang, opt => opt.MapFrom(src => src.DiaChiGiaoHang))
                 .ForMember(dto => dto.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
                 .ForMember(dto => dto.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
                 .ForMember(dto => dto.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien))

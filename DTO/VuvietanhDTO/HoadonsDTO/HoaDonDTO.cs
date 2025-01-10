@@ -14,7 +14,7 @@ namespace DTO.VuvietanhDTO.HoadonsDTO
         public string TongTien { get; set; }
         public decimal PhiVanChuyen { get; set; } 
         public DateTime NgayTao { get; set; } = DateTime.Now;
-        public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
+       
         public ETrangThaiHD TrangThai { get; set; }= ETrangThaiHD.ChoXuLy;
 
       

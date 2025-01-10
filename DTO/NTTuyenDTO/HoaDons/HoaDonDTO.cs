@@ -13,7 +13,8 @@ namespace DTO.NTTuyen.HoaDons
 
         public decimal TongTien { get; set; } 
         public decimal PhiVanChuyen { get; set; } 
-        public DateTime NgayTao { get; set; } 
+        public DateTime NgayTao { get; set; }
+        public string? DiaChiGiaoHang { get; set; } = string.Empty;
         public int TrangThai { get; set; }
         [Required(ErrorMessage = "Id Nhân viên là bắt buộc")]
         public int Id_NhanVien { get; set; } = 1;
