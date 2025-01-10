@@ -11,6 +11,7 @@ using Service.VuVietAnhService.IRepository.IAuthentication;
 using Service.VuVietAnhService.IRepository.IChucvu;
 using Service.VuVietAnhService.IRepository.ICuahang;
 using Service.VuVietAnhService.IRepository.IDanhmuc;
+using Service.VuVietAnhService.IRepository.IHoadon;
 using Service.VuVietAnhService.IRepository.IKichthuoc;
 using Service.VuVietAnhService.IRepository.IMausac;
 using Service.VuVietAnhService.IRepository.ISanpham;
@@ -21,6 +22,7 @@ using Service.VuVietAnhService.Repository.Authentication;
 using Service.VuVietAnhService.Repository.Chucvu;
 using Service.VuVietAnhService.Repository.Cuahang;
 using Service.VuVietAnhService.Repository.Danhmuc;
+using Service.VuVietAnhService.Repository.Hoadon;
 using Service.VuVietAnhService.Repository.Kichthuoc;
 using Service.VuVietAnhService.Repository.Mausac;
 using Service.VuVietAnhService.Repository.Sanpham;
@@ -64,6 +66,7 @@ namespace WebAPI
             builder.Services.AddScoped<IKichthuocService, Kichthuocservice>();
             builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
+            builder.Services.AddScoped<IHoadonService, HoadonService>();
             
             //cấu hình jwt
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
