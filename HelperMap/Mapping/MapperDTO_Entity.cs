@@ -18,6 +18,7 @@ using DTO.VuvietanhDTO.Giohangs;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IThuonghieu;
 using Service.VuVietAnhService.IRepository.IDanhmuc;
+using DTO.VuvietanhDTO.HoadonsDTO;
 
 
 
@@ -175,8 +176,29 @@ namespace HelperMap.Mapping
                  .ForMember(dest => dest.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang))
                  .ForMember(dest => dest.Id_ChiTietSanPham, opt => opt.MapFrom(src => src.Id_ChiTietSanPham));
             #endregion
+            #region hoadon
+            CreateMap<FullHoaDonDTO, HoaDon>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TongTien, opt => opt.MapFrom(src => src.TongTien))
+                .ForMember(dest => dest.PhiVanChuyen, opt => opt.MapFrom(src => src.PhiVanChuyen))
+                .ForMember(dest => dest.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dest => dest.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dest => dest.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang))
+                .ForMember(dest => dest.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien));
+            CreateMap<UpdateTrangThaiDTO, HoaDon>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dest => dest.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien));
+            CreateMap<HoaDonDTO, HoaDon>()
+              .ForMember(dest => dest.TongTien, opt => opt.MapFrom(src => src.TongTien))
+                .ForMember(dest => dest.PhiVanChuyen, opt => opt.MapFrom(src => src.PhiVanChuyen))
+                .ForMember(dest => dest.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dest => dest.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dest => dest.Id_KhachHang, opt => opt.MapFrom(src => src.Id_KhachHang))
+                .ForMember(dest => dest.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien));
+            #endregion
 
-           
+
 
 
         }
