@@ -1,9 +1,10 @@
-﻿@model WebView.NghiaDTO.SanPhamDTO
+﻿@* @* @model WebView.NghiaDTO.SanPhamDTO
 @{
     ViewData["Title"] = "Sửa Sản Phẩm";
 }
 
 <h1>@ViewData["Title"]</h1>
+
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-group">
@@ -84,6 +85,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Lưu</button>
+
 </form>
 
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
@@ -181,3 +183,4 @@
 
     </script>
 }
+ *@

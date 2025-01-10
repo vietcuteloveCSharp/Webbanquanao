@@ -1,0 +1,120 @@
+﻿@using DTO.NTTuyen.HoaDons
+@using DTO.VuvietanhDTO.KhachHangs
+@using Enum.EnumVVA
+@using static WebView.Areas.Admin.ViewModels.ViewHoaDon
+@model List<HoaDonView>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Đơn Hàng</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Tìm kiếm</h2>
+    <form id="searchForm">
+        <label for="orderID">Mã hóa đơn:</label>
+        <input type="text" id="orderID" name="orderID">
+        <label for="orderStatus">Trạng thái:</label>
+        <select id="orderStatus" name="orderStatus">
+            <option value="">Tất cả</option>
+            <option value="processing">Đang xử lý</option>
+            <option value="shipped">Đã giao hàng</option>
+            <option value="delivered">Đã nhận hàng</option>
+            <option value="cancelled">Đã hủy</option>
+        </select>
+        <button type="button" onclick="filterOrders()">Tìm kiếm</button>
+    </form>
+
+    <h1>Thông Tin Đơn Hàng</h1>
+    <table>
+        <tr>
+            <th>Thông tin khách hàng</th>
+            <th>Thông tin đơn hàng</th>
+            <th>Thời Gian</th>
+            <th>Địa chỉ Giao Hàng</th>
+            <th>Tổng Tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+        @foreach (var hoaDon in Model)
+        {
+            <tr>
+                <td>
+                    <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
+                    <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
+                </td>
+                <td>
+                    <p>Mã đơn hàng: @hoaDon.Id</p>
+                    <table border="none">
+                        <tr>
+                            <th>Sản Phẩm</th>
+                            <th>Số Lượng</th>
+                        </tr>
+                        @foreach (var sp in hoaDon.SanPhams)
+                        {
+                            <tr>
+                                <td>@sp.Ten</td>
+                                <td>@sp.SoLuong</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td>@hoaDon.NgayTao</td>    
+
+               <td>@hoaDon.DiaChiGiaoHang</td>
+
+               <td>@hoaDon.TongTien</td>
+                <td>
+                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang giao hàng").Replace("DangVanChuyenCOD", "Đang giao hàng COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
+                </td>
+               <td>
+                    
+                    <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
+
+                    <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
+               </td>
+            </tr>
+        }
+    </table>
+</body>
+<script>
+    function filterOrders() {
+        var orderID = document.getElementById('orderID').value.toLowerCase(); 
+        var orderStatus = document.getElementById('orderStatus').value;
+        var table = document.querySelector('table');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 1; i < rows.length; i++) {
+            var orderIDCell = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+            var statusCell = rows[i].getElementsByTagName('td')[5].innerText;
+            var showRow = true;
+
+            if (orderID && !orderIDCell.includes(orderID)) {
+                showRow = false;
+            }
+
+            if (orderStatus && statusCell !== orderStatus) {
+                showRow = false;
+            }
+
+            rows[i].style.display = showRow ? '' : 'none';
+        }
+    }
+</script>
+</html>

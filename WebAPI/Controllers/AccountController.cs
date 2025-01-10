@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
                     Message = "Có lỗi xảy ra khi đăng ký tài khoản.",
                     Error = ex.Message
                 });
-            }
+            }   
 
         }
        
