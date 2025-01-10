@@ -16,7 +16,6 @@ namespace DTO.VuvietanhDTO.HoadonsDTO
         public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
         public ETrangThaiHD TrangThai { get; set; }= ETrangThaiHD.ChoXuLy;
         public int Id_NhanVien { get; set; }
-    
         public int Id_KhachHang { get; set; }
     }
 }

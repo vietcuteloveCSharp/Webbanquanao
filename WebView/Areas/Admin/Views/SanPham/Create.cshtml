@@ -10,16 +10,14 @@
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
         <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
+        <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="Gia">Giá</label>
-        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
+        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" value="1" required />
+        <span asp-validation-for="Gia" class="text-danger"></span>
     </div>
     <div id="price-convert"></div>
-    <div class="form-group">
-        <label for="NgayTao">Ngày Tạo</label>
-        <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
-    </div>
 
     <div class="form-group">
         <label for="Id_ThuongHieu">Thương Hiệu</label>
@@ -52,7 +50,6 @@
                     }
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="Id_KichThuoc">Kích Thước</label>
                 <select class="form-control" name="chiTietSanPhams[INDEX].Id_KichThuoc">
@@ -65,7 +62,7 @@
 
             <div class="form-group">
                 <label for="SoLuong">Số Lượng</label>
-                <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="0" />
+                <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="1" />
             </div>
 
             <button type="button" class="btn btn-danger remove-item">Xóa</button>
@@ -74,9 +71,27 @@
 
     <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
     <div class="form-group">
-        <label for="ImageUrl">Link ảnh</label>
-        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
+        <label for="ImageUrls">Link Ảnh</label>
+        <div id="imageUrlsContainer">
+            @if (ViewBag.ImageUrls != null)
+            {
+                foreach (var url in ViewBag.ImageUrls as List<string>)
+                {
+                    <div class="image-url-item">
+                        <input type="text" class="form-control mb-2" name="ImageUrls" value="@url" placeholder="Nhập link ảnh từ mạng" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="image-url-item">
+                    <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                </div>
+            }
+        </div>
+        <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
     </div>
+
     <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
 </form>
 
@@ -85,13 +100,7 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-       // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
-        document.getElementById("ImageOption").addEventListener("change", function () {
-            const selectedOption = this.value;
-            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
-        });
-    </script>
+
     <script>
         $(".typing-price").on("input", function () {
             // Lấy giá trị từ input và bỏ tất cả ký tự không phải số

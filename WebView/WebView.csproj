@@ -38,4 +38,8 @@
 	  <ProjectReference Include="..\Responses\Responses.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\images\" />
+	</ItemGroup>
+
 </Project>

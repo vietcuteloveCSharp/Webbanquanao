@@ -76,14 +76,15 @@
                     </table>
                 </td>
                 <td>@hoaDon.NgayTao</td>    
-               @*  <td>@hoaDon.DiaChiGiaoHang</td> Layas địa chỉ đơn hàng*@
+
                <td>Địa chỉ giao hàng</td>
+
                <td>@hoaDon.TongTien</td>
                 <td>
                     @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang giao hàng").Replace("DangVanChuyenCOD", "Đang giao hàng COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
                 </td>
                <td>
-                    <p>@hoaDon.Id</p>
+                    
                     <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
 
                     <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>

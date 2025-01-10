@@ -34,19 +34,16 @@ namespace WebView.Areas.Admin.Controllers
 
             // Gọi API đăng nhập để lấy JWT
             var response = await _apiService.PostAsync(apiUrl, loginRequest, string.Empty);
-
             if (response.IsSuccessStatusCode)
             {
                 var jsonData = await response.Content.ReadAsStringAsync();
                 var loginResponse = JsonConvert.DeserializeObject<ResponseText>(jsonData);
-
                 if (loginResponse.Success)
                 {
                     // Lưu token JWT vào session 
                     HttpContext.Session.SetString("JWTToken", loginResponse.Token);
-
                     // Xử lý thành công, có thể chuyển hướng hoặc trả về dữ liệu
-                    return Redirect("/Admin/SanPham/Index");
+                    return RedirectToAction("Index", "SanPham");
                     // Chuyển hướng tới trang sản phẩm admin
                 }
                 // Xử lý khi đăng nhập thất bại
@@ -54,7 +51,7 @@ namespace WebView.Areas.Admin.Controllers
                 return View();
             }
             ModelState.AddModelError(string.Empty, "Error logging in");
-            return View();
+            return RedirectToAction("Index", "Order");
         }
 
     }

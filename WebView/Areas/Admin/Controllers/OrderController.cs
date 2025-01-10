@@ -130,42 +130,78 @@ namespace WebView.Areas.Admin.Controllers
             return result;
         }
 
-        /// <summary>
-        /// function change order status 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="status"></param>
-        /// <returns> RedirectoAction</returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ChangeOrderStatus(int id, int status)
+        [HttpPost("{id}")]
+        public async Task<IActionResult> ChangeOrderStatus(int id, HoaDonDTO hoaDonDTO)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(ApiUri);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HoaDonDTO hoaDonDTO = new HoaDonDTO();
-                hoaDonDTO.TrangThai = status;
-
-                var response = await client.PutAsJsonAsync($"/api/HoaDon_NTT/{id}", hoaDonDTO);
-                if (response.IsSuccessStatusCode)
+                using (HttpClient client = new HttpClient())
                 {
-                    return RedirectToAction("Index");
+                    client.BaseAddress = new Uri(ApiUri);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var response = await client.PutAsJsonAsync($"/api/HoaDon_NTT/{id}", hoaDonDTO);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return StatusCode((int)response.StatusCode, new
+                        {
+                            Message = "Có lỗi xảy ra khi cập nhật dữ liệu",
+                            Error = response.ReasonPhrase
+                        });
+                    }
                 }
-                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Message = "Có lỗi xảy ra khi cập nhật dữ liệu",
+                    Error = ex.Message
+                });
             }
         }
+        
         public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
         {
-            return await ChangeOrderStatus(hoadonView.Id, hoadonView.TrangThai);
+            
+            
+            HoaDonDTO hoaDonDTO = new HoaDonDTO
+            {
+                TongTien = hoadonView.TongTien,
+                PhiVanChuyen = hoadonView.PhiVanChuyen,
+                NgayTao = hoadonView.NgayTao,
+                TrangThai = hoadonView.TrangThai,
+                Id_KhachHang = hoadonView.KhachHangs.Id,
+                Id_NhanVien = 1
+            };
+            
+            await ChangeOrderStatus(hoadonView.Id, hoaDonDTO);
+            return RedirectToAction("Index");
         }
 
         
 
         public async Task<IActionResult> CancelOrder(int id)
         {
-            return await ChangeOrderStatus(id, 7);
+            listHoaDonView = await LoadData();
+            HoaDonView hoadonView = listHoaDonView.FirstOrDefault(x => x.Id == id);
+            HoaDonDTO hoaDonDTO = new HoaDonDTO()
+            {
+                TongTien = hoadonView.TongTien,
+                PhiVanChuyen = hoadonView.PhiVanChuyen,
+                NgayTao = hoadonView.NgayTao,
+                TrangThai = ETrangThaiHD.HuyDon.GetHashCode(),
+                Id_KhachHang = hoadonView.KhachHangs.Id,
+                Id_NhanVien = 1
+               
+            };
+             await ChangeOrderStatus(hoadonView.Id, hoaDonDTO );
+            return RedirectToAction("Index");
         }
         public async Task<List<HoaDonView>> LoadData()  
         {
@@ -177,7 +213,8 @@ namespace WebView.Areas.Admin.Controllers
                 KhachhangDTO khachhang = await GetKhachHangById(hd.Id_KhachHang);
                 // Hoàn thiện thuộc tính khách hàng trong HoaDonView
                 KhachHangView khachHangView = new KhachHangView
-                {
+                {   
+                    Id= hd.Id_KhachHang,
                     Ten = khachhang.Ten,
                     Sdt = khachhang.Sdt
                 };

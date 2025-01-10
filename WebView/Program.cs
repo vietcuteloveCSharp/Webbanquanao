@@ -59,10 +59,6 @@ app.MapAreaControllerRoute(
     name: "BanTaiQuay",
     areaName: "BanTaiQuay",
     pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
-app.MapAreaControllerRoute(
-    name: "Admin",
-    areaName: "Admin",
-    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}");
 app.MapControllerRoute(
     name: "Areas",
     pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");

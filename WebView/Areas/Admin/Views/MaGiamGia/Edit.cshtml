@@ -34,7 +34,7 @@
         </div>
         <div class="form-group">
             <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
-            <input asp-for="GiaTriGiam" class="form-control" />
+            <input asp-for="GiaTriGiam" class="form-control typing-price" />
             <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
         </div>
     </div>
@@ -121,5 +121,15 @@
             // Sự kiện thay đổi
             loaiGiamGia.addEventListener("change", toggleFields);
         });
+        document.addEventListener("DOMContentLoaded", function () {
+            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
+
+            typingPriceFields.forEach(function (field) {
+                field.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
+                });
+            });
+        });
+
     </script>
 }

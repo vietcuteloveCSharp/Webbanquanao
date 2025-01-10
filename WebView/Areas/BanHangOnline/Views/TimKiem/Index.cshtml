@@ -1,5 +1,29 @@
-﻿@{
+﻿@using System.Text.Json
+@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
     ViewData["Title"] = "Tìm kiếm";
+    var dataJson = ViewData["ClientSessionData"] as string;
+    var resp = JsonSerializer.Deserialize<List<SanPhamTimKiemResp>>(dataJson);
+    var giaMin =(int)Math.Floor(resp?.Select(x => x.ChiTietSanPhams.SanPham.GiaBan)?.Min() ?? 0);
+    var giaMax = (int)Math.Ceiling(resp?.Select(x => x.ChiTietSanPhams.SanPham.GiaBan)?.Max() ?? 0);
+    var lstDanhMuc = resp?.Select(x => x.DanhMucs)?.DistinctBy(x => x.Id).ToList() ?? null;
+    var lstMauSac =   new List<MauSacResp>();
+    var lstKichThuoc = new List<KichThuocResp>();
+    if (resp != null && resp.Count >=1)
+    {
+        var lstms =  new List<MauSacResp>();
+        var lstkt = new List<KichThuocResp>();
+        foreach (var item in resp)
+        {
+            lstms.AddRange(item.ChiTietSanPhams.MauSacResps);
+            lstkt.AddRange(item.ChiTietSanPhams.KichThuocResps);
+        }
+
+        lstMauSac = lstms.DistinctBy(x=> x.Id).OrderBy(x => x.Ten).ToList();
+        lstKichThuoc = lstkt.DistinctBy(x => x.Id).OrderBy(x => x.Ten).ToList();
+    }
+    var keywordSearch = Context.Request.QueryString.Value.Replace("?str=", "") == "" ? null : $"{Context.Request.QueryString.Value.Replace("?str=", "")}";
+    var soLuongSp = resp?.Count ?? 0;
 }
 <style>
    
@@ -86,24 +110,30 @@
         color: rgb(85, 85, 85);
     }
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
 
 @* content *@
 <div class="content mt-5 mb-5">
     <div class="row">
+       @*  bộ tìm kiếm *@
         <div class="col-2" style="max-height: 800px; overflow: auto;">
-            <form action="#" method="get">
-                <input type="submit" class="btn btn-danger" value="Lọc sản phẩm">
+                <div>
+                    <input type="submit" class="btn btn-danger w-100" onclick="LocSanPham()" value="Lọc sản phẩm">
+                <input type="submit" class="btn btn-warning mt-3 w-100" onclick="ReloadPage()" value="Xóa các tiêu chí lọc">
+                </div>
+                 @if (resp != null && resp.Count > 1)
+                     {
                 <div class="mt-4 mb-2">
                     <h4>Khoảng giá</h4>
-                    <input type="range" class="form-range" min="0" max="1000000" value="1000000" name="khoangia"
-                           step="1" id="rangeInput">
+                    <input type="range" class="form-range" min="@giaMin" max="@giaMax" value="@giaMax" step="@((int)((giaMax - giaMin) / soLuongSp))" name="khoanggia" id="rangeInput">
                     <div class="d-flex justify-content-between">
-                        <span id="minRange">0</span>
+                        <span id="minRange">@giaMin</span>
                         <span><i class="fa-solid fa-arrow-right"></i></span>
-                        <span id="maxRange">1000000</span>
+                        <span id="maxRange">@giaMax</span>
                     </div>
+                    
                 </div>
+                    }
                 <div class="accordion mt-4" id="BoLocTimKiem">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingDanhMuc">
@@ -113,25 +143,33 @@
                                 Danh mục
                             </button>
                         </h2>
+                    @if (lstDanhMuc != null && lstDanhMuc.Count >= 1)
+                    {
+                        
                         <div id="collapseDanhMuc" class="accordion-collapse collapse "
                              aria-labelledby="headingDanhMuc">
                             <div class="accordion-body">
+                                @foreach (var item in lstDanhMuc)
+                                {
+                                    
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="danhmuc" id="danhmuc1"
-                                           value="Dm1">
-                                    <label class="form-check-label" for="danhmuc1">
-                                        Danh muc 1
+                                    <input class="form-check-input" type="checkbox" name="danhmuc" id="danhmuc-@item.Id"
+                                           value=@item.Id>
+                                        <label class="form-check-label" for="danhmuc-@item.Id">
+                                            @item.TenDanhMuc
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                }
+                               @*  <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="danhmuc" id="danhmuc2"
                                            value="Dm2">
                                     <label class="form-check-label" for="danhmuc2">
                                         Danh muc 2
                                     </label>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
+                    }
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingMauSac">
@@ -141,25 +179,30 @@
                                 Màu sắc
                             </button>
                         </h2>
+                    @if (lstMauSac != null && lstMauSac.Count >= 1)
+                    {
                         <div id="collapseMauSac" class="accordion-collapse collapse"
-                             aria-labelledby="headingMauSac">
+                        aria-labelledby="headingMauSac">
                             <div class="accordion-body">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="mausac" id="mausac1"
-                                           value="Ms1">
-                                    <label class="form-check-label" for="mausac1">
-                                        Màu trắng
-                                    </label>
-                                </div>
-                                <div class="form-check">
+                                @foreach (var item in lstMauSac)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mausac" id="mausac-@item.Id" value="@item.Id">
+                                        <label class="form-check-label" for="mausac-@item.Id">
+                                            @item.Ten
+                                        </label>
+                                    </div>
+                                }
+                               @*  <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="mausac" id="mausac2"
                                            value="Ms2">
                                     <label class="form-check-label" for="mausac2">
                                         Màu đen
                                     </label>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
+                    }
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingKichThuoc">
@@ -169,37 +212,43 @@
                                 Kích thước
                             </button>
                         </h2>
+                           @if (lstMauSac != null && lstMauSac.Count >= 1)
+                        {
                         <div id="collapseKichThuoc" class="accordion-collapse collapse"
-                             aria-labelledby="headingKichThuoc">
+                        aria-labelledby="headingKichThuoc">
                             <div class="accordion-body">
+                                @foreach (var item in lstKichThuoc)
+                                {
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="kichthuoc" id="kichthuoc1"
-                                           value="Kt1">
-                                    <label class="form-check-label" for="mausac1">
-                                        Size S
+                                    <input class="form-check-input" type="checkbox" name="kichthuoc" id="kichthuoc-@item.Id"
+                                    value="@item.Id">
+                                    <label class="form-check-label" for="kichthuoc-@item.Id">
+                                        Size @item.Ten
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                    
+                                }
+                               @*  <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="kichthuoc" id="kichthuoc2"
-                                           value="Kt2">
+                                    value="Kt2">
                                     <label class="form-check-label" for="mausac2">
                                         Size L
                                     </label>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
-                    </div>
+                        }
+                </div>
                 </div>
 
-            </form>
         </div>
-
+        @* danh sách sản phẩm *@
         <div class="col-10 " style="min-height: 500px;">
             <!-- Từ khóa tìm kiếm -->
             <div class="timkiem-keyword d-flex justify-content-start mt-3 mb-2">
                 <span class="tieude-timkiem">Kết quả tìm kiếm:</span>
-                <b class="keyword-timkiem">Áo khoác</b>
-                <span class="soluong-timkiem">128 sản phẩm</span>
+                <b class="keyword-timkiem">@keywordSearch</b>
+                <span class="soluong-timkiem">@soLuongSp sản phẩm</span>
             </div>
             <br>
             <div class="border border-1 border-bottom border-black"></div>
@@ -207,92 +256,59 @@
             <div class="timkiem-dropdown-sapxep mt-3 mb-3">
                 <div class="d-flex justify-content-start align-content-center">
                     <div class="me-4 align-content-center">
-                        <span style="font-size: 20px;font-weight: 400;">Sắp xếp theo</span>
+                        <span style="font-size: 18px;font-weight: 400;">Sắp xếp theo</span>
                     </div>
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdown-sapxep"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Mặc định
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown-sapxep">
-                            <li><a class="dropdown-item" href="#">Mặc định</a></li>
-                            <li><a class="dropdown-item" href="#">Mới nhất</a></li>
-                            <li><a class="dropdown-item" href="#">Giá từ thấp đến cao</a></li>
-                        </ul>
+                    <div >
+                        <select class="form-select" onchange="changeSelect()" aria-label="Default select example">
+                            <option value="0" selected>Giá từ thấp đến cao</option>
+                            <option value="1">Giá từ cao đến thấp</option>
+                            <option value="2">Tên (từ A đến Z)</option>
+                            <option value="3">Tên (từ Z đến A)</option>
+                        </select>
                     </div>
                 </div>
 
             </div>
             <!-- Phần danh sách sản phẩm -->
-            <div class="row ">
-                <div class="col-4 mt-2 mb-2">
-                    <div class="product-card">
-                        <a href="#">
-                            <img class="imgsub"
-                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
-                                 alt="Product 1">
-                        </a>
-                        <div class="d-flex flex-column justify-content-start">
-                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
-                            <p class="price">384.300 đ</p>
-                            <div class="d-flex justify-content-start">
-                                <p class="old-price">549.000 đ</p>
-                                <p class="discount">-30%</p>
+            <div class="row list-sp">
+                @if (resp != null && resp.Count >= 1)
+                {
+                    @foreach (var sp in resp)
+                    {
+                        <div class="col-3 mt-2 mb-2">
+                            <div class="product-card">
+                                <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.ChiTietSanPhams.SanPham.Id">
+                                    <img class="imgsub"
+                                    src="@sp.ChiTietSanPhams?.SanPham?.ListHinHAnh?.First()?.Url"
+                                    alt="Hình ảnh sản phẩm @sp.ChiTietSanPhams?.SanPham?.Ten">
+                                </a>
+                                <div class="d-flex flex-column justify-content-start">
+                                    <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.ChiTietSanPhams.SanPham.Id" class="product-item-name">@sp.ChiTietSanPhams?.SanPham?.Ten</a></h4>
+                                    <p class="price">@sp.ChiTietSanPhams?.SanPham?.GiaBan đ</p>
+                                    @if (sp.ChiTietSanPhams?.SanPham?.GiaBanDau != 0)
+                                    {
+                                    <div class="d-flex justify-content-start">
+                                        <p class="old-price">@sp.ChiTietSanPhams?.SanPham?.GiaBanDau đ</p>
+                                        <p class="discount">-@(100 - (sp.ChiTietSanPhams?.SanPham?.GiaBan / sp.ChiTietSanPhams?.SanPham?.GiaBanDau) * 100)%</p>
+                                    </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-4 mt-2 mb-2">
-                    <div class="product-card">
-                        <a href="#">
-                            <img class="imgsub"
-                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
-                                 alt="Product 1">
-                        </a>
-                        <div class="d-flex flex-column justify-content-start">
-                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
-                            <p class="price">384.300 đ</p>
-                            <div class="d-flex justify-content-start">
-                                <p class="old-price">549.000 đ</p>
-                                <p class="discount">-30%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 mt-2 mb-2">
-                    <div class="product-card">
-                        <a href="#">
-                            <img class="imgsub"
-                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
-                                 alt="Product 1">
-                        </a>
-                        <div class="d-flex flex-column justify-content-start">
-                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
-                            <p class="price">384.300 đ</p>
-                            <div class="d-flex justify-content-start">
-                                <p class="old-price">549.000 đ</p>
-                                <p class="discount">-30%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 mt-2 mb-2">
-                    <div class="product-card">
-                        <a href="#">
-                            <img class="imgsub"
-                                 src="https://canifa.com/img/500/750/resize/8/o/8ot24w026-sa026-thumb.webp"
-                                 alt="Product 1">
-                        </a>
-                        <div class="d-flex flex-column justify-content-start">
-                            <h4><a href="#" class="product-item-name">Áo ni active nam</a></h4>
-                            <p class="price">384.300 đ</p>
-                            <div class="d-flex justify-content-start">
-                                <p class="old-price">549.000 đ</p>
-                                <p class="discount">-30%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    }
+                }
+                else
+                {
+                    <div><h3 class="text-center text-danger">Không tìm thấy bất kỳ sản phẩm nào</h3></div>
+                }
+
+            </div>
+            <div>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                       
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -318,4 +334,158 @@
             rangeInput.value = min + 1; // Reset lại giá trị
         }
     });
+</script>
+<script>
+    // Lấy dữ liệu từ Razor View
+    const sessionData = "@(ViewData["ClientSessionData"])".replaceAll("&quot;", "\"");
+    const divListSp = document.querySelector('.list-sp');
+    // Lưu vào localStorage
+    localStorage.setItem("ClientSessionKey",sessionData);
+
+    // Lấy lại dữ liệu từ localStorage
+    const storedData = JSON.parse(localStorage.getItem("ClientSessionKey"));
+    console.log("Session Data:", storedData);
+    let cloneSessionData = storedData;
+    let sapXep = 0;
+
+
+    function reloadPagesize() {
+        let pageSize = Math.ceil(cloneSessionData.length / 12);
+        // Lấy phần tử có class "pagination"
+        let pagination = document.querySelector('.pagination');
+        pagination.innerHTML = "";
+        // Thêm thẻ li vào phần tử này
+        if (pageSize > 1) {
+            for (let i = 1; i <= pageSize; i++){
+                pagination.innerHTML += `
+                  <li class="page-item">
+                    <a class="page-link" onclick="CallPaginated(${i})">${i}</a>
+                  </li>
+                `;
+            }
+        }
+
+    }
+    // Hàm thực hiện lọc sản phẩm theo các tiêu chí
+    function LocSanPham(){
+        let newData=[];
+        cloneSessionData = storedData;
+        // Khoảng giá
+        var rangeInput = document.querySelector("input[type='range']");
+        // Lấy giá trị min và value hiện tại
+        let min = parseFloat(rangeInput.min);        // Giá trị nhỏ nhất (min)
+        let value = parseFloat(rangeInput.value) + 1;    // Giá trị hiện tại
+        rangeInput.max = value;
+        cloneSessionData.forEach(item => {
+            if (min <= item.ChiTietSanPhams.SanPham.GiaBan && item.ChiTietSanPhams.SanPham.GiaBan <= value) {
+                newData.push(item);
+            }
+        });
+        cloneSessionData = newData;
+        // Danh mục
+        let selectedInputsDm = document.querySelectorAll('input[name="danhmuc"]:checked');
+
+        // Hiển thị giá trị của các input đã chọn
+        if (selectedInputsDm.length >0){
+            newData = [];
+            selectedInputsDm.forEach(index => {
+                cloneSessionData.forEach(item => {
+                    if (index.value == item.DanhMucs.Id) {
+                        newData.push(item);
+                    }
+                });
+            });
+            cloneSessionData = newData;
+
+        }
+        // Màu sắc
+        let selectedInputsMs = document.querySelectorAll('input[name="mausac"]:checked');
+        if (selectedInputsMs.length > 0) {
+            newData = [];
+            // Hiển thị giá trị của các input đã chọn
+            selectedInputsMs.forEach(index => {
+                cloneSessionData.forEach(item => {
+                    if (item.ChiTietSanPhams.MauSacResps.find(x => x.Id == index.value)) {
+                        newData.push(item);
+                    }
+                });
+            });
+            cloneSessionData = newData;
+        }
+        // Kích thước
+        let selectedInputsKt = document.querySelectorAll('input[name="kichthuoc"]:checked');
+        if (selectedInputsKt.length > 0) {
+            newData = [];
+            // Hiển thị giá trị của các input đã chọn
+            selectedInputsKt.forEach(index => {
+                cloneSessionData.forEach(item => {
+                    if (item.ChiTietSanPhams.KichThuocResps.find(x => x.Id == index.value)) {
+                        newData.push(item);
+                    }
+                });
+            });
+            cloneSessionData = newData;
+        }
+        changeSelect();
+        reloadPagesize();
+    }
+    function changeSelect() {
+        CallPaginated(1);
+    }
+    // Hàm phân trang và sắp xếp
+    function paginateAndSort(data, page = 1, pageSize = 12) {
+        // Sắp xếp theo 'NgayTao' giảm dần
+        let sortedData;
+        sapXep = document.querySelector(".form-select").selectedIndex;
+        switch (sapXep) {
+            case 0:
+                sortedData = _.orderBy(data, ['ChiTietSanPhams.SanPham.GiaBan'], ['asc']);
+                break;
+            case 1:
+                sortedData = _.orderBy(data, ['ChiTietSanPhams.SanPham.GiaBan'], ['desc']);
+                break;
+            case 2:
+                sortedData = _.orderBy(data, ['ChiTietSanPhams.SanPham.Ten'], ['asc']);
+                break;
+            case 3:
+                sortedData = _.orderBy(data, ['ChiTietSanPhams.SanPham.Ten'], ['desc']);
+                break;
+        }
+        // Phân trang
+        const paginatedData = _.chunk(sortedData, pageSize);
+        // Trả về trang được yêu cầu (nếu không có, trả về mảng rỗng)
+        return paginatedData[page - 1] || [];
+    }
+    CallPaginated(1);
+
+   function CallPaginated(page){
+        var resultPage = paginateAndSort(cloneSessionData, page, 12);
+        document.getElementsByClassName('soluong-timkiem')[0].innerHTML = `${cloneSessionData.length} sản phẩm`;
+        divListSp.innerHTML = "";
+        for (let item of resultPage) {
+
+           var divNew = document.createElement('div');
+            divNew.classList.add('col-3', 'mt-2', 'mb-2');
+           divNew.innerHTML = `
+                   <div class="product-card">
+                       <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}">
+                       <img class="imgsub" src="${item.ChiTietSanPhams.SanPham.ListHinHAnh[0].Url}" alt="Hình ảnh sản phẩm ${item.ChiTietSanPhams.SanPham.Ten}">
+                       </a>
+                       <div class="d-flex flex-column justify-content-start">
+                          <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}" class="product-item-name">${item.ChiTietSanPhams.SanPham.Ten}</a></h4>
+                          <p class="price">${item.ChiTietSanPhams.SanPham.GiaBan} đ</p>
+                       </div>
+                    </div>
+           `;
+            divListSp.appendChild(divNew);
+        }
+       reloadPagesize();
+   }
+
+   // Hàm reload lại trang
+    function ReloadPage() {
+        if(storedData != cloneSessionData){
+            location.reload();
+        }
+    }
 </script>

@@ -129,7 +129,8 @@ namespace DAL.DataSeed
                 .RuleFor(x => x.NgayTao, f => DateTime.Now.AddDays(-5))
                 .RuleFor(x => x.NgayBatDau, f => f.Date.PastOffset(-4, DateTimeOffset.Now).DateTime)
                 .RuleFor(x => x.NgayKetThuc, f => f.Date.SoonOffset(7, DateTimeOffset.Now).DateTime)
-                .RuleFor(x => x.TrangThai, f => f.Random.Bool());
+                .RuleFor(x => x.TrangThai, (f, km) => f.Random.Int(0, 1));
+
 
             var khuyenMais = Enumerable.Range(1, amount)
                 .Select(i => SeedRow(khuyenMaiFaker, i))
@@ -164,10 +165,6 @@ namespace DAL.DataSeed
 
             var chiTietKhuyenMaiFaker = new Faker<ChiTietKhuyenMai>(locale: "vi")
                 .RuleFor(x => x.Id, f => dieuKienId++) // Each product will have an incrementing id.
-                .RuleFor(x => x.LoaiKhuyenMai, f => f.Random.Number(0, 1))
-                .RuleFor(x => x.GiaTriGiam, f => f.Commerce.Price(5, 80))
-                 .RuleFor(x => x.MenhGia, (f, _) => f.Random.Decimal(100000, 500000))
-                       .RuleFor(x => x.GiaTriToiDa, (f, _) => f.Random.Decimal(100000, 500000))
                 .RuleFor(x => x.Id_KhuyenMai, f => f.PickRandom(khuyenmais).Id)
                 .RuleFor(x => x.Id_DanhMuc, f => f.PickRandom(danhMucs).Id);
 

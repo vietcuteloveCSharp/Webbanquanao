@@ -11,12 +11,12 @@ namespace DTO.NTTuyen.HoaDons
     public class HoaDonDTO
     {
 
-        public decimal TongTien { get; set; } // tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
-        public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
+        public decimal TongTien { get; set; } 
+        public decimal PhiVanChuyen { get; set; } 
         public DateTime NgayTao { get; set; } 
         public int TrangThai { get; set; }
         [Required(ErrorMessage = "Id Nhân viên là bắt buộc")]
-        public int Id_NhanVien { get; set; }
+        public int Id_NhanVien { get; set; } = 1;
         [Required(ErrorMessage = "Id Khách hàng là bắt buộc")]
         public int Id_KhachHang { get; set; }
 

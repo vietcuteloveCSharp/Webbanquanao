@@ -39,7 +39,7 @@
         }
 
         .content {
-            padding: 0 147px;
+            padding: 0px 70px !important;
         }
         a {
             text-decoration: none;
@@ -85,11 +85,12 @@
             font-size: 14px;
             line-height: 40px;
             text-transform: uppercase;
+            text-wrap-mode: nowrap;
         }
 
         .search-bar {
             flex: 1;
-            max-width: 400px;
+            /* max-width: 400px; */
         }
 
         .icon-button {
@@ -117,10 +118,6 @@
             <!-- Navbar links and search -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                   @*  <li class="nav-item"><a class="nav-link" href="#">Nữ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Nam</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Bé gái</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Bé trai</a></li> *@
                     @if (lstdmt.Count > 0)
                     {
                         @foreach (var item in lstdmt)
@@ -132,11 +129,12 @@
                 </ul>
 
                 <!-- Search bar -->
-                <form class="d-flex search-bar">
-                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search">
-                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
-                </form>
-
+                <div>
+                    <form class="d-flex search-bar" method="get" action="/BanHangOnline/Timkiem/GetTimKiemSanPham">
+                        <input class="form-control me-2" type="text" placeholder="Tìm kiếm" name="str" aria-label="Search">
+                        <button class="btn btn-outline-primary" style="min-width:100px;" type="submit">Tìm kiếm</button>
+                    </form>
+                </div>
                 <!-- Icons -->
                 <div class="d-flex">
                     <a href="/BanHangOnline/DangNhapDangKy" class="icon-button">

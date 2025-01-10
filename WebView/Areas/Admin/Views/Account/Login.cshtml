@@ -47,7 +47,7 @@
 <div class="login-container ">
     <h2>Welcome back</h2>
     <p>Login to your account</p>
-    <form asp-route="~/Admin/Account/Login" method="post">
+    <form asp-action="Login" method="post">
         <div class="form-group">
             <label asp-for="TaiKhoan" >User name</label>
             <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="account name">
@@ -65,10 +65,6 @@
                 }
             </div>
         <div class="remember-forgot">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="rememberMe">
-                <label class="form-check-label" for="rememberMe">Remember me</label>
-            </div>
             <a href="#" class="forgot-password">Forgot password?</a>
         </div>
         <button type="submit" class="btn btn-primary btn-block"> Login</button>

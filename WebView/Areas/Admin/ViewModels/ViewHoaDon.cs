@@ -7,7 +7,7 @@ namespace WebView.Areas.Admin.ViewModels
     {
         public class KhachHangView
         {
-           
+            public int Id { get; set; }
             public string Ten { get; set; }
             public string Sdt { get; set; }
         }
