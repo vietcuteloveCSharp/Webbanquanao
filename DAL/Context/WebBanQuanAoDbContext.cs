@@ -70,7 +70,9 @@ namespace DAL.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=NGHIAFIN\\MSSQLSERVER1;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=False;Trusted_Connection = true;");
+
+            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=Final_project;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
         }
     }
 }

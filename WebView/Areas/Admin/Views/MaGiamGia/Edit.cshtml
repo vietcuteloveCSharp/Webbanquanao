@@ -48,6 +48,13 @@
         </div>
     </div>
 
+    @* Nội dung *@
+    <div class="form-group">
+        <label asp-for="NoiDung"></label>
+        <textarea asp-for="NoiDung" class="form-control"></textarea>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+    </div>
+
     @* Giá trị tối đa *@
     <div class="form-group">
         <label asp-for="GiaTriToiDa">Giá trị tối đa (VNĐ)</label>
@@ -64,6 +71,12 @@
             <option value="2">Kết thúc</option>
         </select>
         <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+
+    @* Thời gian tạo *@
+    <div class="form-group">
+        <label asp-for="ThoiGianTao"></label>
+        <input asp-for="ThoiGianTao" class="form-control" type="datetime-local" value="@Model.ThoiGianTao.ToString("yyyy-MM-ddTHH:mm")" readonly />
     </div>
 
     @* Thời gian kết thúc *@

@@ -13,7 +13,6 @@ namespace WebView.Controllers
         {
             _context = dbcontext;
         }
-
         public IActionResult Index()
         {
             return View();
