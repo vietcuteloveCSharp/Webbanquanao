@@ -1,4 +1,6 @@
-﻿using Enum.EnumVVA;
+﻿using DTO.VuvietanhDTO.Danhmucs;
+using DTO.VuvietanhDTO.HoadonsDTO;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Service.VuVietAnhService.IRepository.IHoadon;
 using Service.VuVietAnhService.Repository.Hoadon;
@@ -87,6 +89,23 @@ namespace WebAPI.Controllers
                     Message = "Có lỗi xảy ra trong quá trình xử lý.",
                     Error = ex.Message
                 });
+            }
+        }
+        [HttpGet("Get-All-HoaDon")]
+        public async Task<ActionResult<IEnumerable<FullHoaDonDTO>>> GetAllHoaDon()
+        {
+            try
+            {
+                var result = await _hoaDonService.GetAllHoaDon();
+                if (!result.Any())
+                    return NotFound(new { Message = "Không có dữ liệu hoá đơn." });
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                // Bắt tất cả các exception khác và trả về InternalServerError
+                return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
             }
         }
     }

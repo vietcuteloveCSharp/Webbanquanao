@@ -17,7 +17,6 @@ using Service.VuVietAnhService.IRepository.IKichthuoc;
 using Service.VuVietAnhService.IRepository.IMausac;
 using Service.VuVietAnhService.IRepository.ISanpham;
 using Service.VuVietAnhService.IRepository.IThuonghieu;
-using Service.VuVietAnhService.IRepository.IHoadon;
 using Service.VuVietAnhService.Repository.Hoadon;
 using Service.VuVietAnhService.Repository.Account;
 using Service.VuVietAnhService.Repository.AccountKhachhang;
@@ -25,7 +24,6 @@ using Service.VuVietAnhService.Repository.Authentication;
 using Service.VuVietAnhService.Repository.Chucvu;
 using Service.VuVietAnhService.Repository.Cuahang;
 using Service.VuVietAnhService.Repository.Danhmuc;
-using Service.VuVietAnhService.Repository.Hoadon;
 using Service.VuVietAnhService.Repository.Kichthuoc;
 using Service.VuVietAnhService.Repository.Mausac;
 using Service.VuVietAnhService.Repository.Sanpham;
@@ -59,6 +57,7 @@ namespace WebAPI
             // Đăng kí Automapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddAutoMapper(typeof(MapperDTO_Entity), typeof(MapperEntity_DTO));
+           
 
             // Đăng ký dịch vụ trong DI
             builder.Services.AddScoped<IAccountKHService, AccountKHService>();
@@ -72,9 +71,9 @@ namespace WebAPI
             builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
 
-            builder.Services.AddScoped<IHoaDon2Service, HoaDon2Service>();
+         
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
-            builder.Services.AddScoped<IChiTietSanPhamServices, ChiTietSanPhamServices>();
+            builder.Services.AddScoped<IChiTietSanPhamServices,     ChiTietSanPhamServices>();
             
             builder.Services.AddScoped<IHoadonService, HoadonService>();
             

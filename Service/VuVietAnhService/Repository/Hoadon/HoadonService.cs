@@ -2,6 +2,7 @@
 using DAL.Context;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using Enum.EnumVVA;
+using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IHoadon;
 using System;
 using System.Collections.Generic;
@@ -68,7 +69,11 @@ namespace Service.VuVietAnhService.Repository.Hoadon
                 // Chờ xử lý: Có thể chuyển sang "Hoàn thành đơn" hoặc "Chờ xác nhận"
                 ETrangThaiHD.ChoXuLy =>
                     next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.ChoXacNhan,
+                    next == ETrangThaiHD.ChoXacNhan ||
+                    next == ETrangThaiHD.DaThanhToan,
+                // Đã thanh toán: có thể chuyển sang "Hoàn thành đơn"
+                ETrangThaiHD.DaThanhToan =>
+                    next == ETrangThaiHD.HoanThanhDon,
 
                 // Chờ xác nhận: Có thể chuyển sang "Chờ thanh toán", "Đang vận chuyển COD" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoXacNhan =>
@@ -78,20 +83,21 @@ namespace Service.VuVietAnhService.Repository.Hoadon
 
                 // Chờ thanh toán: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoThanhToan =>
+                    next == ETrangThaiHD.DaThanhToan ||
                     next == ETrangThaiHD.DangVanChuyen ||
-                    next == ETrangThaiHD.DangVanChuyenCOD||
+                    next == ETrangThaiHD.DangVanChuyenCOD ||
                     next == ETrangThaiHD.HuyDon,
 
                 // Đang vận chuyển: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
                 ETrangThaiHD.DangVanChuyen =>
                     next == ETrangThaiHD.HoanThanhDon ||
                     next == ETrangThaiHD.HoanHang,
-                
+
                 // Đang vận chuyển COD: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
                 ETrangThaiHD.DangVanChuyenCOD =>
                     next == ETrangThaiHD.HoanThanhDon ||
                     next == ETrangThaiHD.HoanHang,
-                 
+
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
 
@@ -112,6 +118,13 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
         }
 
+        public async Task<IEnumerable<FullHoaDonDTO>> GetAllHoaDon()
+        {
+            var AllHoaDon = await _context.HoaDons.ToListAsync();
+            if (!AllHoaDon.Any()) return new List<FullHoaDonDTO>();
+            var AllHoaDonDTO = _mapper.Map<List<FullHoaDonDTO>>(AllHoaDon);
+            return AllHoaDonDTO;
+        }
     }
 }
 
