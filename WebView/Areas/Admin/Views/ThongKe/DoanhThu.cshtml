@@ -66,7 +66,7 @@
                 <label for="dayRange" class="font-weight-bold">Chọn số ngày</label>
                 <select id="dayRange" class="form-control">
                     <option value="">Không chọn</option>
-                    <option value="1">1 ngày trước</option>
+                    <option value="3">3 ngày trước</option>
                     <option value="7">7 ngày trước</option>
                     <option value="30">1 tháng trước</option>
                 </select>
@@ -81,20 +81,27 @@
     </form>
 </div>
 
+<div class="table-responsive">
+    <table id="sanpham-table" class="table table-bordered table-hover text-center">
+        <thead class="thead-dark">
+            <h2 class="text-center">Top 3 sản phẩm bán chạy nhất</h2>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Mã sản phẩm</th>
+                <th scope="col">Tên sản phẩm</th>
+                <th scope="col">Tổng số lượng</th>
+            </tr>
+        </thead>
+        <tbody id="sanpham-body">
+            <!-- Dữ liệu sản phẩm bán chạy sẽ được cập nhật tại đây -->
+        </tbody>
+    </table>
+</div>
 
 <div class="table-responsive">
     <table id="data-table" class="table table-bordered table-hover text-center">
-        <!-- Hiển thị tổng doanh thu -->
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <h4 class="text-success">
-                    Tổng doanh thu:
-                    <span id="totalRevenue" class="font-weight-bold">
-                        @Model.TotalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
-                    </span>
-                </h4>
-            </div>
-        </div>
+
+       
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
@@ -127,13 +134,24 @@
                 </tr>
             }
         </tbody>
+
     </table>
+    <!-- Hiển thị tổng doanh thu -->
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h4 class="text-success">
+                Tổng doanh thu:
+                <span id="totalRevenue" class="font-weight-bold">
+                    @Model.TotalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                </span>
+            </h4>
+        </div>
+    </div>
 </div>
 
 
 @section Scripts {
     <script>
-        // Lọc dữ liệu khi người dùng submit form
         $('#filterForm').submit(function (e) {
             e.preventDefault();
 
@@ -152,7 +170,6 @@
                 startDate = start.toISOString().split('T')[0];
             }
 
-            // Gửi yêu cầu Ajax đến Controller
             $.getJSON('/Admin/ThongKe/ThongKeDoanhThuTheoNgay', { startDate: startDate, endDate: endDate }, function (data) {
                 var tbody = $('#data-body');
                 tbody.empty(); // Xóa dữ liệu cũ
@@ -164,12 +181,13 @@
                     data.hoaDons.forEach(function (item) {
                         totalRevenue += item.total; // Cộng dồn doanh thu của các hóa đơn
 
+                        // Đảm bảo mỗi dòng có 4 cột
                         var row = `<tr>
-                                <td>${index}</td>
-                                <td>${item.id}</td>
-                                <td class="text-success font-weight-bold">${item.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                                <td>${new Date(item.ngayTao).toLocaleDateString('vi-VN')}</td>
-                            </tr>`;
+                            <td>${index}</td>
+                            <td>${item.id}</td>
+                            <td class="text-success font-weight-bold">${item.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                            <td>${new Date(item.ngayTao).toLocaleDateString('vi-VN')}</td>
+                        </tr>`;
                         tbody.append(row);
                         index++;
                     });
@@ -181,38 +199,67 @@
                     $('#totalRevenue').text('0 VND'); // Nếu không có dữ liệu
                 }
 
-                // Làm mới lại bảng DataTable với dữ liệu đã lọc
-                table.clear(); // Xóa bảng hiện tại
-                table.rows.add($(tbody).find('tr')); // Thêm các dòng mới vào bảng DataTable
+                // Làm mới lại bảng DataTable sau khi lọc
+                table.clear(); // Xóa dữ liệu cũ trong DataTable
+                table.rows.add(tbody.children()); // Thêm các dòng mới vào DataTable
                 table.draw(); // Vẽ lại bảng với dữ liệu đã cập nhật
+            });
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Lấy dữ liệu sản phẩm bán chạy ngay khi trang được tải
+            $.getJSON('/Admin/ThongKe/ThongKeSanPhamBanChay', function (data) {
+                var tbody = $('#sanpham-body');
+                tbody.empty(); // Xóa dữ liệu cũ
+
+                if (data.sanPhamBanChay.length > 0) {
+                    var index = 1;
+                    data.sanPhamBanChay.forEach(function (item) {
+                        var row = `<tr>
+                                    <td>${index}</td>
+                                    <td>${item.sanPhamId}</td>
+                                    <td>${item.tenSanPham}</td>
+                                    <td class="text-success font-weight-bold">${item.tongSoLuong}</td>
+                                </tr>`;
+                        tbody.append(row);
+                        index++;
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted">Không có dữ liệu sản phẩm.</td></tr>');
+                }
             }).fail(function () {
-                alert('Lỗi khi tải dữ liệu.');
+                alert('Lỗi khi tải dữ liệu sản phẩm bán chạy.');
             });
         });
     </script>
     <script>
-        // Khởi tạo DataTable
-        var table = $('#data-table').DataTable({
-            dom: 'Bfrtip', // Chỉ định vị trí hiển thị các nút
-            buttons: [
-                {
-                    extend: 'excelHtml5', // Chọn loại nút (Excel)
-                    text: 'Xuất Excel', // Tên nút
-                    className: 'btn btn-success', // Thêm lớp CSS để tạo kiểu cho nút
-                    exportOptions: {
-                        modifier: {
-                            // Xuất chỉ các dòng đang hiển thị (sau khi lọc hoặc tìm kiếm)
-                            page: 'current', // Xuất chỉ trang hiện tại
-                            search: 'current' // Xuất chỉ các dòng đang hiển thị (sau khi lọc)
+        // Khởi tạo DataTable chỉ một lần
+        var table;
+
+        $(document).ready(function () {
+            table = $('#data-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Xuất Excel',
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            modifier: {
+                                page: 'current',
+                                search: 'current'
+                            }
                         }
                     }
-                }
-            ],
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/Vietnamese.json' // Ngôn ngữ tiếng Việt
-            },
-            processing: true,  // Cho phép xử lý tải dữ liệu
-            serverSide: false,  // Tắt chế độ server-side nếu bạn không sử dụng phương thức này
+                ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/Vietnamese.json'
+                },
+                processing: true,
+                serverSide: false
+            });
         });
 
     </script>
