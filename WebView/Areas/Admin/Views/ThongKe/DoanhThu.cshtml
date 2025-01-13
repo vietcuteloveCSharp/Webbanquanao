@@ -1,0 +1,220 @@
+﻿@model WebView.NghiaDTO.DoanhThuViewModel
+
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<style>
+    .text-center {
+        text-align: center;
+    }
+
+    .text-primary {
+        color: #007bff;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .font-weight-bold {
+        font-weight: bold;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .table-responsive {
+        margin-top: 20px;
+    }
+
+    .card-body h4 {
+        margin-bottom: 0;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+</style>
+
+<h2 class="text-center text-primary mb-4">Thống kê doanh thu</h2>
+
+<!-- Form lọc theo ngày tháng -->
+<div class="mb-4">
+    <form id="filterForm">
+        <div class="form-row">
+            <!-- Ngày bắt đầu -->
+            <div class="col">
+                <label for="startDate" class="font-weight-bold">Ngày bắt đầu</label>
+                <input type="date" id="startDate" class="form-control">
+            </div>
+
+            <!-- Ngày kết thúc -->
+            <div class="col">
+                <label for="endDate" class="font-weight-bold">Ngày kết thúc</label>
+                <input type="date" id="endDate" class="form-control">
+            </div>
+
+            <!-- Lựa chọn số ngày -->
+            <div class="col">
+                <label for="dayRange" class="font-weight-bold">Chọn số ngày</label>
+                <select id="dayRange" class="form-control">
+                    <option value="">Không chọn</option>
+                    <option value="1">1 ngày trước</option>
+                    <option value="7">7 ngày trước</option>
+                    <option value="30">1 tháng trước</option>
+                </select>
+            </div>
+
+            <!-- Nút lọc -->
+            <div class="col">
+                <label class="font-weight-bold" style="visibility: hidden;">Lọc</label>
+                <button type="submit" class="btn btn-primary">Lọc</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="table-responsive">
+    <table id="data-table" class="table table-bordered table-hover text-center">
+        <!-- Hiển thị tổng doanh thu -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h4 class="text-success">
+                    Tổng doanh thu:
+                    <span id="totalRevenue" class="font-weight-bold">
+                        @Model.TotalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                    </span>
+                </h4>
+            </div>
+        </div>
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Mã hóa đơn</th>
+                <th scope="col">Thực thu</th>
+                <th scope="col">Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody id="data-body">
+            @if (Model.HoaDons.Any())
+            {
+                int index = 1;
+                foreach (var hoaDon in Model.HoaDons)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@hoaDon.Id</td>
+                        <td class="text-success font-weight-bold">
+                            @hoaDon.Total.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                        </td>
+                        <td>@hoaDon.NgayTao.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    index++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">Không có dữ liệu hóa đơn.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        // Lọc dữ liệu khi người dùng submit form
+        $('#filterForm').submit(function (e) {
+            e.preventDefault();
+
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var dayRange = $('#dayRange').val();
+
+            // Nếu chọn số ngày, tính toán ngày bắt đầu và ngày kết thúc
+            if (dayRange) {
+                var today = new Date();
+                endDate = today.toISOString().split('T')[0]; // Ngày hiện tại
+                var start = new Date();
+                start.setDate(today.getDate() - parseInt(dayRange)); // Lùi lại số ngày
+                start.setHours(0, 0, 0, 0); // Đảm bảo là bắt đầu từ đầu ngày
+
+                startDate = start.toISOString().split('T')[0];
+            }
+
+            // Gửi yêu cầu Ajax đến Controller
+            $.getJSON('/Admin/ThongKe/ThongKeDoanhThuTheoNgay', { startDate: startDate, endDate: endDate }, function (data) {
+                var tbody = $('#data-body');
+                tbody.empty(); // Xóa dữ liệu cũ
+
+                if (data.hoaDons.length > 0) {
+                    var index = 1;
+                    var totalRevenue = 0;
+
+                    data.hoaDons.forEach(function (item) {
+                        totalRevenue += item.total; // Cộng dồn doanh thu của các hóa đơn
+
+                        var row = `<tr>
+                                <td>${index}</td>
+                                <td>${item.id}</td>
+                                <td class="text-success font-weight-bold">${item.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                                <td>${new Date(item.ngayTao).toLocaleDateString('vi-VN')}</td>
+                            </tr>`;
+                        tbody.append(row);
+                        index++;
+                    });
+
+                    // Cập nhật tổng doanh thu
+                    $('#totalRevenue').text(totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted">Không có dữ liệu.</td></tr>');
+                    $('#totalRevenue').text('0 VND'); // Nếu không có dữ liệu
+                }
+
+                // Làm mới lại bảng DataTable với dữ liệu đã lọc
+                table.clear(); // Xóa bảng hiện tại
+                table.rows.add($(tbody).find('tr')); // Thêm các dòng mới vào bảng DataTable
+                table.draw(); // Vẽ lại bảng với dữ liệu đã cập nhật
+            }).fail(function () {
+                alert('Lỗi khi tải dữ liệu.');
+            });
+        });
+    </script>
+    <script>
+        // Khởi tạo DataTable
+        var table = $('#data-table').DataTable({
+            dom: 'Bfrtip', // Chỉ định vị trí hiển thị các nút
+            buttons: [
+                {
+                    extend: 'excelHtml5', // Chọn loại nút (Excel)
+                    text: 'Xuất Excel', // Tên nút
+                    className: 'btn btn-success', // Thêm lớp CSS để tạo kiểu cho nút
+                    exportOptions: {
+                        modifier: {
+                            // Xuất chỉ các dòng đang hiển thị (sau khi lọc hoặc tìm kiếm)
+                            page: 'current', // Xuất chỉ trang hiện tại
+                            search: 'current' // Xuất chỉ các dòng đang hiển thị (sau khi lọc)
+                        }
+                    }
+                }
+            ],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/Vietnamese.json' // Ngôn ngữ tiếng Việt
+            },
+            processing: true,  // Cho phép xử lý tải dữ liệu
+            serverSide: false,  // Tắt chế độ server-side nếu bạn không sử dụng phương thức này
+        });
+
+    </script>
+
+}
