@@ -13,7 +13,7 @@ namespace DAL.Entities
         public decimal PhiVanChuyen { get; set; } = 0; // tiền phí vận chuyển
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public string? DiaChiGiaoHang { get; set; } = string.Empty;
-        public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXuLy;
+        public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXacNhan;
 
         [ForeignKey("NhanVien")]
         public int? Id_NhanVien { get; set; }
