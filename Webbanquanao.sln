@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{E48FA469-EF64-4BEA-BD26-F1E40BE08C5B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A1AB3CE7-BD62-46C5-BEC5-A71B92E3AA07} = {A1AB3CE7-BD62-46C5-BEC5-A71B92E3AA07}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebView", "WebView\WebView.csproj", "{A1AB3CE7-BD62-46C5-BEC5-A71B92E3AA07}"
 EndProject
@@ -19,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Responses", "Responses\Resp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resquests", "Resquests\Resquests.csproj", "{AC227151-4D28-46EE-97FF-52EC313B2151}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enum", "Enum\Enum.csproj", "{EA29B37A-A0EE-413D-B72B-5BF2F36DEB4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enum", "Enum\Enum.csproj", "{EA29B37A-A0EE-413D-B72B-5BF2F36DEB4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

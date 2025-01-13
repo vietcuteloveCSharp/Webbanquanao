@@ -1,12 +1,17 @@
 ﻿using DTO.NTTuyen.ChiTietHoaDon;
 using DTO.NTTuyen.HoaDons;
+
+//using DTO.NTTuyen.HoaDons;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
+using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Sanphams;
 using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using WebView.Models;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
 
 namespace WebView.Areas.Admin.Controllers
@@ -18,22 +23,24 @@ namespace WebView.Areas.Admin.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private List<HoaDonView> listHoaDonView;
         //private string apiBaseUrl = System.Configuration.ConfigurationManager.AppSettings["BaseApiAddress"];
-        private string ApiUri = "https://localhost:7169/api";
+        private const  string ApiUri = "https://localhost:7169/api";
         public OrderController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
             this.listHoaDonView = new List<HoaDonView>();
         }
-        [HttpGet("/HoaDon_NTT")]
+        [HttpGet("/Hoadon/Get-All-HoaDon")]
         public async Task<List<FullHoaDonDTO>> GetListHoaDon()
         {
+
+        
 
             List<FullHoaDonDTO> result = new List<FullHoaDonDTO>();
 
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.GetAsync(ApiUri +"/Hoadon_NTT");
+                HttpResponseMessage response = await client.GetAsync(ApiUri + "/Hoadon/Get-All-HoaDon");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -129,82 +136,38 @@ namespace WebView.Areas.Admin.Controllers
             }
             return result;
         }
+        // ...
 
-        [HttpPost("{id}")]
-        public async Task<IActionResult> ChangeOrderStatus(int id, HoaDonDTO hoaDonDTO)
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(ApiUri);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    var response = await client.PutAsJsonAsync($"/api/HoaDon_NTT/{id}", hoaDonDTO);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return Ok();
-                    }
-                    else
-                    {
-                        return StatusCode((int)response.StatusCode, new
-                        {
-                            Message = "Có lỗi xảy ra khi cập nhật dữ liệu",
-                            Error = response.ReasonPhrase
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    Message = "Có lỗi xảy ra khi cập nhật dữ liệu",
-                    Error = ex.Message
-                });
-            }
-        }
-        
+        [HttpPost]
         public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
         {
-            
-            
-            HoaDonDTO hoaDonDTO = new HoaDonDTO
+            using (HttpClient client = new HttpClient())
             {
-                TongTien = hoadonView.TongTien,
-                PhiVanChuyen = hoadonView.PhiVanChuyen,
-                NgayTao = hoadonView.NgayTao,
-                DiaChiGiaoHang = hoadonView.DiaChiGiaoHang,
-                TrangThai = hoadonView.TrangThai,
-                Id_KhachHang = hoadonView.KhachHangs.Id,
-                Id_NhanVien = 1
-            };
-            
-            await ChangeOrderStatus(hoadonView.Id, hoaDonDTO);
-            return RedirectToAction("Index");
+                client.BaseAddress = new Uri(ApiUri);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await client.PutAsJsonAsync($"{ApiUri}/Hoadon/{hoadonView.Id}/update-trangthai-hoadon?nextTrangThai={hoadonView.TrangThai}", new { status = hoadonView.TrangThai });
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Cập nhật trạng thái đơn hàng thành công!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                   await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(response.StatusCode.ToString(), "Error");
+                }
+            }
+            return View(hoadonView);
         }
 
-        
 
-        public async Task<IActionResult> CancelOrder(int id)
-        {
-            listHoaDonView = await LoadData();
-            HoaDonView hoadonView = listHoaDonView.FirstOrDefault(x => x.Id == id);
-            HoaDonDTO hoaDonDTO = new HoaDonDTO()
-            {
-                TongTien = hoadonView.TongTien,
-                PhiVanChuyen = hoadonView.PhiVanChuyen,
-                NgayTao = hoadonView.NgayTao,
-                DiaChiGiaoHang = hoadonView.DiaChiGiaoHang,
-                TrangThai = ETrangThaiHD.HuyDon.GetHashCode(),
-                Id_KhachHang = hoadonView.KhachHangs.Id,
-                Id_NhanVien = 1
-               
-            };
-             await ChangeOrderStatus(hoadonView.Id, hoaDonDTO );
-            return RedirectToAction("Index");
-        }
+        //public async Task<IActionResult> CancelOrder(int id)
+        //{
+
+        //    return RedirectToAction("Index");
+        //}
         public async Task<List<HoaDonView>> LoadData()  
         {
             List<FullHoaDonDTO> listHoaDon = await GetListHoaDon();
@@ -261,9 +224,29 @@ namespace WebView.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             listHoaDonView = await LoadData();
-            return View(listHoaDonView);
+            return View(listHoaDonView);    
         }
-        
+        public async Task<IActionResult> SearchById(int id)
+        {
+            var listHoaDonView = await LoadData();
+            var viewDetail = listHoaDonView.FirstOrDefault(x => x.Id == id);
+
+            // Xử lý khi không tìm thấy hóa đơn
+            if (viewDetail == null)
+            {
+                ModelState.AddModelError("", "Không tìm thấy hóa đơn với ID này.");
+            }
+
+            // Tạo danh sách chứa thông tin hóa đơn tìm thấy
+            var list = new List<HoaDonView>();
+            if (viewDetail != null)
+            {
+                list.Add(viewDetail);
+            }
+
+            return View("Index", list);
+        }
+
         public async Task<IActionResult> OrderDetail(int id)
         {
             listHoaDonView = await LoadData();

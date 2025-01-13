@@ -28,20 +28,11 @@
 </head>
 <body>
     <h2>Tìm kiếm</h2>
-    <form id="searchForm">
+    <form >
         <label for="orderID">Mã hóa đơn:</label>
-        <input type="text" id="orderID" name="orderID">
-        <label for="orderStatus">Trạng thái:</label>
-        <select id="orderStatus" name="orderStatus">
-            <option value="">Tất cả</option>
-            <option value="processing">Đang xử lý</option>
-            <option value="shipped">Đã giao hàng</option>
-            <option value="delivered">Đã nhận hàng</option>
-            <option value="cancelled">Đã hủy</option>
-        </select>
-        <button type="button" onclick="filterOrders()">Tìm kiếm</button>
+        <input type="number" name="searchId" id="searchId" name="orderID">
+        <button type="button btn-primary" asp-action="SearchById" asp-route-Id="searchId">Tìm kiếm</button>
     </form>
-
     <h1>Thông Tin Đơn Hàng</h1>
     <table>
         <tr>
@@ -51,6 +42,7 @@
             <th>Địa chỉ Giao Hàng</th>
             <th>Tổng Tiền</th>
             <th>Trạng thái</th>
+            <th>Hành động</th>
         </tr>
         @foreach (var hoaDon in Model)
         {
@@ -81,7 +73,19 @@
 
                <td>@hoaDon.TongTien</td>
                 <td>
-                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang giao hàng").Replace("DangVanChuyenCOD", "Đang giao hàng COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
+                    @* // Trạng thái chung
+                ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
+                HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+                HuyDon = 7,            // Đơn hàng bị hủy
+
+                // Trạng thái dành riêng cho bán online
+                ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+                ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+                DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+                DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
+                HoanHang = 6,          // Đơn hàng đã được hoàn trả *@
+                    @* DaThanhToan = 8 *@
+                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang vận chuyển ").Replace("DangVanChuyenCOD", "Đang vận chuyển COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
                 </td>
                <td>
                     
@@ -93,28 +97,5 @@
         }
     </table>
 </body>
-<script>
-    function filterOrders() {
-        var orderID = document.getElementById('orderID').value.toLowerCase(); 
-        var orderStatus = document.getElementById('orderStatus').value;
-        var table = document.querySelector('table');
-        var rows = table.getElementsByTagName('tr');
 
-        for (var i = 1; i < rows.length; i++) {
-            var orderIDCell = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
-            var statusCell = rows[i].getElementsByTagName('td')[5].innerText;
-            var showRow = true;
-
-            if (orderID && !orderIDCell.includes(orderID)) {
-                showRow = false;
-            }
-
-            if (orderStatus && statusCell !== orderStatus) {
-                showRow = false;
-            }
-
-            rows[i].style.display = showRow ? '' : 'none';
-        }
-    }
-</script>
 </html>

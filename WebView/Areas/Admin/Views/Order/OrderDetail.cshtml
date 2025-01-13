@@ -23,13 +23,12 @@
 </head>
 <body>
     <h1>Thông Tin Đơn Hàng</h1>
-
+    
     <form asp-action="UpdateOrder" method="post">
         <div class="form-group">
             <label for="orderID">Mã hóa đơn:</label>
             <input type="number" id="orderID" name="Id" class="form-control" value="@Model.Id" readonly>
         </div>
-
         <div class="form-group">
             <label for="TongTien">Tổng tiền:</label>
             <input type="text" id="TongTien" name="TongTien" class="form-control" value="@Model.TongTien" readonly>
@@ -78,10 +77,22 @@
         <div class="form-group">
             <label for="@Model.TrangThai">Trạng thái:</label>
             <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                <option value="0">Chờ xác nhận</option>
+                @* // Trạng thái chung
+                ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
+                HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+                HuyDon = 7,            // Đơn hàng bị hủy
+
+                // Trạng thái dành riêng cho bán online
+                ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+                ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+                DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+                DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
+                HoanHang = 6,          // Đơn hàng đã được hoàn trả *@
+                @* DaThanhToan = 8 *@
+                <option value="0">Chờ xử lý </option>
+                <option value="1">Chờ xác nhận</option>
                 <option value="2">Chờ thanh toán</option>
                 <option value="8">Đã thanh toán</option>
-                <option value="1">Đã xác nhận</option>
                 <option value="3">Đang vận chuyển</option>
                 <option value="4">Đang vận chuyển COD</option>
                 <option value="5">Hoàn thành đơn</option>
@@ -92,5 +103,7 @@
         
         <button type="submit" class="btn btn-primary">Cập nhật</button>
     </form>
+   
+
 </body>
 </html>

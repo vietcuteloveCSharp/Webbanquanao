@@ -62,9 +62,9 @@ app.MapAreaControllerRoute(
 app.MapControllerRoute(
     name: "Areas",
     pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-app.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}");
+//app.MapControllerRoute(
+//               name: "default",
+//               pattern: "{controller=Home}/{action=Index}/{id?}");
 //Seedingdata
 //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
 //SeedData.SeedingData(context);
