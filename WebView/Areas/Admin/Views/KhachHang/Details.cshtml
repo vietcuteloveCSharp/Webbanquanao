@@ -1,0 +1,68 @@
+﻿@model WebView.NghiaDTO.KhachHangDTO
+
+<h2>Chi tiết khách hàng</h2>
+<style>
+    /* Sửa lại CSS cho badge */
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+</style>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <td>@Model.Id</td>
+    </tr>
+    <tr>
+        <th>Tài khoản</th>
+        <td>@Model.TaiKhoan</td>
+    </tr>
+    <tr>
+        <th>Mật khẩu</th>
+        <td>@Model.MatKhau</td>
+    </tr>
+    <tr>
+        <th>Tên</th>
+        <td>@Model.Ten</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Số điện thoại</th>
+        <td>@Model.Sdt</td>
+    </tr>
+    <tr>
+        <th>Ngày sinh</th>
+        <td>@Model.NgaySinh?.ToString("dd/MM/yyyy")</td>
+    </tr>
+   @*  <tr>
+        <th>Avatar</th>
+        <td><img src="@Model.Avatar" alt="Avatar" style="width:100px;height:auto;" /></td>
+    </tr> *@
+    <tr>
+        <th>Trạng thái</th>
+        <td>
+            @if (Model.TrangThai)
+            {
+                <span class="badge bg-success">Hoạt động</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Bị khóa</span>
+            }
+        </td>
+    </tr>
+</table>
+
+<a href="@Url.Action("Index")" class="btn btn-primary">Quay lại</a>
