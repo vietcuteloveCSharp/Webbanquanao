@@ -65,28 +65,28 @@ namespace Service.VuVietAnhService.Repository.Hoadon
                 $"Không thể chuyển trạng thái từ '{current}' sang '{next}'.");
             }
             var isValid = current switch
-            {   //bán online- COD
-                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận"
-                ETrangThaiHD.ChoXacNhan  =>
-                    next == ETrangThaiHD.DaXacNhan,
-                //bán online -tt
-                ETrangThaiHD.ChoThanhToan=> 
+            {
+                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" 
+                ETrangThaiHD.ChoXacNhan =>
+                    next == ETrangThaiHD.DaXacNhan ,
+                ETrangThaiHD.ChoThanhToan =>
                     next ==ETrangThaiHD.DaXacNhan||
-                    next==ETrangThaiHD.HoanThanhDon||
-                    next==ETrangThaiHD.HuyDon,
-
-                 // Đã xác nhận: có thể chuyển sang "Đang vận chuyển"
-                 ETrangThaiHD.DaXacNhan =>
+                    next ==ETrangThaiHD.HoanThanhDon||
+                    next ==ETrangThaiHD.HuyDon,
+                //Đã xác nhận: có thể chuyển sang "đang vận chuyển"
+                ETrangThaiHD.DaXacNhan =>
                     next == ETrangThaiHD.DangVanChuyen,
-                // Đang Vận chuyển: có thể chuyển sang "Hoàn thành" or "Huỷ đơn"
-                ETrangThaiHD.DangVanChuyen =>
-                    next == ETrangThaiHD.HoanThanhDon||
-                    next == ETrangThaiHD.HuyDon,
 
-               
+                // Đang vận chuyển: Có thể chuyển sang "Hoàn thành",  hoặc "Hủy đơn"
+                ETrangThaiHD.DangVanChuyen =>
+                    next == ETrangThaiHD.HoanThanhDon ||
+                    next == ETrangThaiHD.HuyDon ,
+                   
+
+         
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
-             
+
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
 
