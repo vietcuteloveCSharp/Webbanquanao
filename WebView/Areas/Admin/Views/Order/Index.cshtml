@@ -125,12 +125,13 @@
                     HuyDon = 6,            // Đơn hàng bị hủy *@
                    @*  <td>@hoaDon.TrangThai</td> *@
                     <td>
-                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DaXacNhan", "Đã Xác Nhận").Replace("DangVanChuyen", "Đang vận chuyển").Replace("HuyDon", "Hủy Đơn")
+                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DaXacNhan", "Đã Xác Nhận").Replace("DangVanChuyen", "Đang vận chuyển").Replace("HuyDon", "Hủy Đơn").Replace("HoanThanhDon", "Hoàn thành đơn")
                     </td>
                     <td>
                         <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
-                        @if (@Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai) != "HuyDon" || @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai) != "HoanThanhDon")
+                        @if (hoaDon.TrangThai != ETrangThaiHD.HoanThanhDon && hoaDon.TrangThai != ETrangThaiHD.HuyDon)
                         {
+                            <br />
                             <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
                         }
                         

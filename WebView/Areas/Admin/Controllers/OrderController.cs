@@ -115,7 +115,7 @@ namespace WebView.Areas.Admin.Controllers
         }
         // ...
 
-        [HttpPost("Update-Order")]
+        [HttpPost("UpdateOrder")]
         public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
         {
             using (HttpClient client = new HttpClient())
@@ -136,7 +136,7 @@ namespace WebView.Areas.Admin.Controllers
                     ModelState.AddModelError(response.StatusCode.ToString(), "Error");
                 }
             }
-            return View(hoadonView);
+            return View("OrderDetail",hoadonView);
         }
 
         [HttpPost("CancelOrder")]
