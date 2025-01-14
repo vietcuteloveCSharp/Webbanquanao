@@ -85,23 +85,7 @@ namespace WebView.Areas.Admin.Controllers
             }
             return result;
         }
-        [HttpGet("chitiethoadon/{id}")]
-        public async Task<ChiTietHoaDonDTO> GetChiTietHoaDonById(int id)
-        {
-            ChiTietHoaDonDTO result = new ChiTietHoaDonDTO();
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.GetAsync(ApiUri+"/Hoadon_NTT/"+ id);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ChiTietHoaDonDTO>(responseContent);
-                }
-            }
-            return result;
-        }
+        
         [HttpGet("chitietsanpham/{id}")]
         public async Task<ChiTietSanPhamDTO> GetChiTietSanPhamById(int id)
         {
