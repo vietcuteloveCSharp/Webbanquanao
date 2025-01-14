@@ -70,6 +70,32 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 IdSp = x.Id_SanPham,
                 IdMs = x.Id_MauSac
             }).Distinct().ToList();
+            // Tìm danh sách Khuyến mại với các sản phẩm trong giỏ hàng
+            var lstDanhMucTheoSanPhamGioHang = lstSp.Select(x => x.Id_DanhMuc).Distinct().ToList();
+            var timeNow = DateTime.Now;
+            var lstKhuyenMai = await _context.ChiTietKhuyenMais.Where(x => lstDanhMucTheoSanPhamGioHang.Contains((int)x.Id_DanhMuc))
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timeNow && timeNow <= x.KhuyenMai.NgayKetThuc).ToListAsync();
+            // tính giá bán và giá ban đầu cho các sản phẩm
+
+            var lstSpNew = new List<SanPhamResp>();
+            foreach (var item in lstSp)
+            {
+                var khuyenMai = lstKhuyenMai.FirstOrDefault(c => c.Id_DanhMuc == item.Id_DanhMuc).KhuyenMai;
+                var giaBan = item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                lstSpNew.Add(new SanPhamResp
+                {
+                    Id = item.Id,
+                    GiaBan = giaBan,
+                    GiaBanDau = Math.Round(item.Gia),
+                    MoTa = item.MoTa,
+                    SoLuong = item.SoLuong,
+                    Ten = item.Ten,
+                    ListHinHAnh = lstSpVoiHinhAnh.FirstOrDefault(b => b.IdSP == item.Id).ListHinHAnh,
+                    Id_DanhMuc = item.Id_DanhMuc,
+                });
+            }
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
 
             resp = lstGioHang.Select(x => new GioHangResp
@@ -91,16 +117,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     MaHex = x.MaHex,
                     Ten = x.Ten
                 }).Distinct().ToList(),
-                SanPham = lstSp.Where(a => a.Id == x.ChiTietSanPham.Id_SanPham).Select(a => new SanPhamResp
-                {
-                    Id = a.Id,
-                    GiaBan = a.Gia,
-                    GiaBanDau = 0,
-                    MoTa = a.MoTa,
-                    SoLuong = a.SoLuong,
-                    Ten = a.Ten,
-                    ListHinHAnh = lstSpVoiHinhAnh.FirstOrDefault(b => b.IdSP == a.Id).ListHinHAnh,
-                }).FirstOrDefault(),
+                SanPham = lstSpNew.Where(a => a.Id == x.ChiTietSanPham.Id_SanPham).FirstOrDefault(),
             }).ToList();
             ViewData["SpGioHang"] = resp;
             HttpContext.Session.Remove("SanPhamGioHang");

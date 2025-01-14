@@ -74,6 +74,30 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 IdSp = x.Id_SanPham,
                 IdMs = x.Id_MauSac
             }).Distinct().ToList();
+            // Lọc sản phẩm trong giỏ hàng có khuyến mại
+            var timenow = DateTime.Now;
+            var lstIdDm = lstSp.Select(x => x.Id_DanhMuc).Distinct().ToList();
+            var lstKhuyenMai = await _context.KhuyenMais.Where(x => x.TrangThai == 1)
+                .Where(x => x.NgayBatDau <= timenow && timenow <= x.NgayKetThuc)
+                .Include(x => x.chiTietKhuyenMais)
+                .Where(x => x.chiTietKhuyenMais.Any(a => lstIdDm.Contains((int)a.Id_DanhMuc))).ToListAsync();
+            var lstSpNew = new List<SanPhamResp>();
+            foreach (var item in lstSp)
+            {
+                var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.chiTietKhuyenMais.Any(a => a.Id_DanhMuc == item.Id_DanhMuc));
+                var giaBan = item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                lstSpNew.Add(new SanPhamResp
+                {
+                    Id = item.Id,
+                    GiaBan = giaBan,
+                    GiaBanDau = Math.Round(item.Gia),
+                    MoTa = item.MoTa,
+                    SoLuong = item.SoLuong,
+                    Ten = item.Ten,
+                    ListHinHAnh = lstSpVoiHinhAnh.FirstOrDefault(b => b.IdSP == item.Id).ListHinHAnh,
+                    Id_DanhMuc = item.Id_DanhMuc
+                });
+            }
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
 
             resp = new ThanhToanResp
@@ -97,16 +121,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         MaHex = x.MaHex,
                         Ten = x.Ten
                     }).Distinct().ToList(),
-                    SanPham = lstSp.Where(a => a.Id == x.ChiTietSanPham.Id_SanPham).Select(a => new SanPhamResp
-                    {
-                        Id = a.Id,
-                        GiaBan = a.Gia,
-                        GiaBanDau = 0,
-                        MoTa = a.MoTa,
-                        SoLuong = a.SoLuong,
-                        Ten = a.Ten,
-                        ListHinHAnh = lstSpVoiHinhAnh.FirstOrDefault(b => b.IdSP == a.Id).ListHinHAnh,
-                    }).FirstOrDefault()
+                    SanPham = lstSpNew.FirstOrDefault(a => a.Id == x.ChiTietSanPham.Id_SanPham)
                 }).ToList(),
                 KhachHangModel = new KhachHangResp
                 {
@@ -206,7 +221,9 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 TongTien = tongTienHoaDon,
                 TrangThai = Enum.EnumVVA.ETrangThaiHD.ChoThanhToan,
                 NgayTao = DateTime.Now,
-                PhiVanChuyen = req.PhiVanChuyen
+                PhiVanChuyen = req.PhiVanChuyen,
+                DiaChiGiaoHang = req.DiaChiGiaoHang,
+
             }).Entity;
             _context.SaveChanges();
             var requestVnPay = new PaymentInformationModel
@@ -295,16 +312,16 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 return View("ThanhToanThatBai");
             }
 
+            // Thay đổi số lượng của sản phẩm chi tiết
+            var hoaDon = await _context.HoaDons.Where(x => x.Id == sessionHoaDon.IdHoaDon && x.TrangThai == Enum.EnumVVA.ETrangThaiHD.ChoThanhToan).Include(x => x.ChiTietHoaDons).FirstOrDefaultAsync();
+            if (hoaDon == null)
+            {
+                ViewData["message"] = "Lỗi hệ thống";
+                return View("ThanhToanThatBai");
+            }
             // xác nhận thành công thanh toán
             if (response.VnPayResponseCode == "00")
             {
-                // Thay đổi số lượng của sản phẩm chi tiết
-                var hoaDon = await _context.HoaDons.Where(x => x.Id == sessionHoaDon.IdHoaDon && x.TrangThai == Enum.EnumVVA.ETrangThaiHD.ChoThanhToan).Include(x => x.ChiTietHoaDons).FirstOrDefaultAsync();
-                if (hoaDon == null)
-                {
-                    ViewData["message"] = "Lỗi hệ thống";
-                    return View("ThanhToanThatBai");
-                }
                 // thay đổi trạng thái của hóa đơn
                 hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaThanhToan;
                 _context.SaveChanges();
@@ -363,6 +380,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             }
             else
             {
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.HuyDon;
+                _context.SaveChanges();
                 string mess = "";
                 switch (response.VnPayResponseCode)
                 {
@@ -395,15 +414,16 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         break;
                     case "11":
                         mess = "Giao dịch không thành công do: Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.";
-
-                        return RedirectToAction("ThucHienThanhToanLai", mess);
+                        break;
+                    //return RedirectToAction("ThucHienThanhToanLai", mess);
                     case "75":
                         mess = "Ngân hàng thanh toán đang bảo trì.";
-                        return RedirectToAction("ThucHienThanhToanLai", mess);
+                        break;
+                    //return RedirectToAction("ThucHienThanhToanLai", mess);
                     case "79":
                         mess = "Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch";
-
-                        return RedirectToAction("ThucHienThanhToanLai", mess);
+                        break;
+                        //return RedirectToAction("ThucHienThanhToanLai", mess);
                 }
                 ViewData["message"] = mess;
                 return View("ThanhToanThatBai");
@@ -461,7 +481,23 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var isPhieuGiamGiaDaSuDung = await _context.ChiTietMaGiamGias.Where(x => lstIdPhieuGiamGia.Contains((int)x.Id_MaGiamGia) && x.Id_KhachHang == tk.Id).Select(x => (int)x.Id_MaGiamGia).ToListAsync();
             if (isPhieuGiamGiaDaSuDung != null && isPhieuGiamGiaDaSuDung.Count > 0)
             {
-                lstPhieuGiamGia = lstPhieuGiamGia.Where(x => !isPhieuGiamGiaDaSuDung.Contains(x.Id)).ToList();
+                lstPhieuGiamGia = lstPhieuGiamGia.Where(x => !isPhieuGiamGiaDaSuDung.Contains(x.Id))
+                    .Select(x => new MaGiamGia
+                    {
+                        Id = x.Id,
+                        DieuKienGiamGia = Math.Round(x.DieuKienGiamGia),
+                        GiaTriGiam = Math.Round((decimal)x.GiaTriGiam),
+                        GiaTriToiDa = Math.Round((decimal)x.GiaTriToiDa),
+                        MenhGia = Math.Round(x.MenhGia),
+                        LoaiGiamGia = x.LoaiGiamGia,
+                        NoiDung = x.NoiDung,
+                        SoLuong = x.SoLuong,
+                        SoLuongDaSuDung = x.SoLuongDaSuDung,
+                        Ten = x.Ten,
+                        ThoiGianKetThuc = x.ThoiGianKetThuc,
+                        ThoiGianTao = x.ThoiGianTao,
+                        TrangThai = x.TrangThai,
+                    }).ToList();
             }
 
             return Json(new { status = 200, data = lstPhieuGiamGia, message = "Thành công" });

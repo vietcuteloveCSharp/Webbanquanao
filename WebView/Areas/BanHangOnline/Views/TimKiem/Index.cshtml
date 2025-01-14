@@ -3,10 +3,15 @@
 @{
     ViewData["Title"] = "Tìm kiếm";
     var dataJson = ViewData["ClientSessionData"] as string;
-    var resp = JsonSerializer.Deserialize<List<SanPhamTimKiemResp>>(dataJson);
-    var giaMin =(int)Math.Floor(resp?.Select(x => x.ChiTietSanPhams.SanPham.GiaBan)?.Min() ?? 0);
-    var giaMax = (int)Math.Ceiling(resp?.Select(x => x.ChiTietSanPhams.SanPham.GiaBan)?.Max() ?? 0);
-    var lstDanhMuc = resp?.Select(x => x.DanhMucs)?.DistinctBy(x => x.Id).ToList() ?? null;
+    var resp =new List<SanPhamTimKiemResp>();
+    if (dataJson != null)
+    {
+        resp = JsonSerializer.Deserialize<List<SanPhamTimKiemResp>>(dataJson);
+
+    }
+    var giaMin =(int)Math.Floor(resp?.Select(x => x?.ChiTietSanPhams?.SanPham?.GiaBan)?.Min() ?? 0);
+    var giaMax = (int)Math.Ceiling(resp?.Select(x => x?.ChiTietSanPhams?.SanPham?.GiaBan)?.Max() ?? 0);
+    var lstDanhMuc = resp?.Select(x => x?.DanhMucs)?.DistinctBy(x => x?.Id).ToList() ?? null;
     var lstMauSac =   new List<MauSacResp>();
     var lstKichThuoc = new List<KichThuocResp>();
     if (resp != null && resp.Count >=1)
@@ -22,8 +27,9 @@
         lstMauSac = lstms.DistinctBy(x=> x.Id).OrderBy(x => x.Ten).ToList();
         lstKichThuoc = lstkt.DistinctBy(x => x.Id).OrderBy(x => x.Ten).ToList();
     }
-    var keywordSearch = Context.Request.QueryString.Value.Replace("?str=", "") == "" ? null : $"{Context.Request.QueryString.Value.Replace("?str=", "")}";
     var soLuongSp = resp?.Count ?? 0;
+
+    var keywordSearch = Context.Request.QueryString.Value.Replace("?str=", "") == "" ? null : $"{System.Web.HttpUtility.UrlDecode(Context.Request.QueryString.Value.Replace("?str=", "").Trim())}";
 }
 <style>
    
@@ -284,12 +290,12 @@
                                 </a>
                                 <div class="d-flex flex-column justify-content-start">
                                     <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.ChiTietSanPhams.SanPham.Id" class="product-item-name">@sp.ChiTietSanPhams?.SanPham?.Ten</a></h4>
-                                    <p class="price">@sp.ChiTietSanPhams?.SanPham?.GiaBan đ</p>
-                                    @if (sp.ChiTietSanPhams?.SanPham?.GiaBanDau != 0)
+                                    <p class="price">@sp.ChiTietSanPhams?.SanPham?.GiaBan vnd</p>
+                                    @if (sp.ChiTietSanPhams?.SanPham?.GiaBanDau != sp.ChiTietSanPhams?.SanPham?.GiaBan)
                                     {
                                     <div class="d-flex justify-content-start">
-                                        <p class="old-price">@sp.ChiTietSanPhams?.SanPham?.GiaBanDau đ</p>
-                                        <p class="discount">-@(100 - (sp.ChiTietSanPhams?.SanPham?.GiaBan / sp.ChiTietSanPhams?.SanPham?.GiaBanDau) * 100)%</p>
+                                        <p class="old-price">@sp.ChiTietSanPhams?.SanPham?.GiaBanDau vnd</p>
+                                        <p class="discount">-@(Math.Round((decimal) (100 - (sp.ChiTietSanPhams?.SanPham?.GiaBan / sp.ChiTietSanPhams?.SanPham?.GiaBanDau) * 100)))%</p>
                                     </div>
                                     }
                                 </div>
@@ -466,6 +472,24 @@
 
            var divNew = document.createElement('div');
             divNew.classList.add('col-3', 'mt-2', 'mb-2');
+            if(item.ChiTietSanPhams.SanPham.GiaBan != item.ChiTietSanPhams.SanPham.GiaBanDau){
+                divNew.innerHTML = `
+                   <div class="product-card">
+                       <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}">
+                       <img class="imgsub" src="${item.ChiTietSanPhams.SanPham.ListHinHAnh[0].Url}" alt="Hình ảnh sản phẩm ${item.ChiTietSanPhams.SanPham.Ten}">
+                       </a>
+                       <div class="d-flex flex-column justify-content-start">
+                          <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}" class="product-item-name">${item.ChiTietSanPhams.SanPham.Ten}</a></h4>
+                          <p class="price">${item.ChiTietSanPhams.SanPham.GiaBan} vnd</p>
+                           <div class="d-flex justify-content-start">
+                                            <p class="old-price">${item.ChiTietSanPhams.SanPham.GiaBanDau} vnd</p>
+                                        <p class="discount">-${(Math.round((100 - (item.ChiTietSanPhams?.SanPham?.GiaBan / item.ChiTietSanPhams?.SanPham?.GiaBanDau) * 100)))}%</p>
+                           </div>
+                       </div>
+                    </div>
+           `;
+            }else{
+            
            divNew.innerHTML = `
                    <div class="product-card">
                        <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}">
@@ -473,10 +497,12 @@
                        </a>
                        <div class="d-flex flex-column justify-content-start">
                           <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${item.ChiTietSanPhams.SanPham.Id}" class="product-item-name">${item.ChiTietSanPhams.SanPham.Ten}</a></h4>
-                          <p class="price">${item.ChiTietSanPhams.SanPham.GiaBan} đ</p>
+                          <p class="price">${item.ChiTietSanPhams.SanPham.GiaBan} vnd</p>
                        </div>
                     </div>
            `;
+            }
+
             divListSp.appendChild(divNew);
         }
        reloadPagesize();

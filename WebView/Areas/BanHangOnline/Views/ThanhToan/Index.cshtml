@@ -95,6 +95,7 @@
                 <div>
                     <input type="hidden" name="PhiVanChuyen" value=0 id="phivanchuyen-order" hidden />
                     <input type="hidden" name="IdMaGiamGia" value=0 id="idmagiamgia-order" hidden />
+                    <input type="hidden" name="DiaChiGiaoHang" value="" id="diachigiaohang-order" hidden />
                     <p><strong>Tạm tính:</strong> <span id="subtotal">0 vn₫</span></p>
                     <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vn₫</span></p>
                     <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vn₫</span></p>
@@ -223,6 +224,8 @@
     const discountAmount = document.getElementById('discount-amount');
     const totalAmount = document.getElementById('total-amount');
 
+    const diachigiaohangOrder = document.getElementById('diachigiaohang-order');
+
     function changeVndToNumber(params) {
         let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
@@ -264,7 +267,18 @@
             // lấy đối tượng giảm giá
             const tbody = document.querySelector("#table-discount tbody");
             tbody.innerHTML = "";
+            // Lấy thời gian hiện tại
+            const currentDate = new Date();
 
+            // Cộng thêm 1 năm
+            const futureDate = new Date(currentDate);
+            futureDate.setFullYear(currentDate.getFullYear() + 1);
+
+            // Định dạng ngày thành ddmmyyyy
+            const day = String(futureDate.getDate()).padStart(2, '0');
+            const month = String(futureDate.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0
+            const year = futureDate.getFullYear();
+            const formattedFutureDate = `${day}${month}${year}`;
             result.forEach((discount, index) => {
                 // Tạo một hàng mới
                 const newRow = document.createElement("tr");
@@ -279,7 +293,7 @@
                                 <td>${giatrigiam} %</td>
                                 <td>${discount.dieuKienGiamGia} vnd</td>
                                 <td>${giatritoida} vnd</td>
-                                <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
+                                    <td>${discount.thoiGianKetThuc == null ? formattedFutureDate : discount.thoiGianKetThuc}</td>
                                 <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
                             `;
                 // console.log(newRow);
@@ -443,6 +457,8 @@
         districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
         feeResult.textContent = '0 vnđ';
         const provinceId = provinceSelect.value;
+        // lấy giá trị text trong thẻ option được chọn
+        diachigiaohangOrder.value ="Thành phố: " + provinceSelect.options[provinceSelect.selectedIndex].innerHTML+ ", ";
         if (provinceSelect.value) {
             loadDistricts(provinceId)
         }
@@ -452,6 +468,7 @@
         wardSelect.disabled = true;
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
         const districtId = districtSelect.value;
+        diachigiaohangOrder.value += `Huyện: ${districtSelect.options[districtSelect.selectedIndex].innerHTML}, `;
         if (districtId) loadWards(districtId);
     });
 
@@ -461,9 +478,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-       
-
-
+        diachigiaohangOrder.value += `Xã: ${wardSelect.options[wardSelect.selectedIndex].innerHTML}.`;
         const requestData = {
             "service_type_id": 5,
             "from_district_id": 3440,
