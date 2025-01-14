@@ -4,7 +4,6 @@
 @using Enum.EnumVVA
 @using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model List<HoaDonView>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,11 +28,35 @@
 </head>
 <body>
     <h2>Tìm kiếm</h2>
-    <form asp-action="SearchById" method="get"> 
+    <form asp-action="SearchById" method="post"> 
         <label for="orderID">Mã hóa đơn:</label> 
         <input type="number" name="orderID" id="searchId" class="form-control" />
+        <br />
         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
         </form>
+    <h2>Lọc trạng thái</h2>
+    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+
+    // Trạng thái dành riêng cho bán online
+    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
+    HuyDon = 6,            // Đơn hàng bị hủy *@
+    <form asp-action="FilterByStatus" method="post">
+        <label for="FilterStatus">Trạng thái:</label>
+        <select id="FilterStatus" name="FilterStatus" class="form-control">
+            <option value="0" selected >Tất cả</option>
+            <option value="1">Chờ xác nhận </option>
+            <option value="2">Chờ thanh toán </option>
+            <option value="3">Đã xác nhận</option>
+            <option value="4">Đang vận chuyển </option>
+            <option value="5">Hoàn thành đơn</option>
+            <option value="6">Hủy đơn</option>
+        </select>
+        <br />
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </form>
     <h1>Thông Tin Đơn Hàng</h1>
     @if (!ViewData.ModelState.IsValid)
     {
@@ -92,14 +115,25 @@
                     <td>@hoaDon.DiaChiGiaoHang</td>
 
                     <td>@hoaDon.TongTien</td>
+                    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+
+                    // Trạng thái dành riêng cho bán online
+                    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+                    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+                    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+                    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
+                    HuyDon = 6,            // Đơn hàng bị hủy *@
+                   @*  <td>@hoaDon.TrangThai</td> *@
                     <td>
-                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang vận chuyển ").Replace("DangVanChuyenCOD", "Đang vận chuyển COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
+                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DaXacNhan", "Đã Xác Nhận").Replace("DangVanChuyen", "Đang vận chuyển").Replace("HuyDon", "Hủy Đơn")
                     </td>
                     <td>
-
                         <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
-
-                        <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
+                        @if (@Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai) != "HuyDon" || @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai) != "HoanThanhDon")
+                        {
+                            <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
+                        }
+                        
                     </td>
                 </tr>
             }

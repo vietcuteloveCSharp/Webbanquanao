@@ -1,8 +1,10 @@
-﻿using DTO.NTTuyen.ChiTietHoaDon;
+﻿using DAL.Entities;
+using DTO.NTTuyen.ChiTietHoaDon;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Sanphams;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -16,7 +18,6 @@ namespace WebView.Areas.Admin.Controllers
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private List<HoaDonView> listHoaDonView;
-        //private string apiBaseUrl = System.Configuration.ConfigurationManager.AppSettings["BaseApiAddress"];
         private const string ApiUri = "https://localhost:7169/api";
         public OrderController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
@@ -114,7 +115,7 @@ namespace WebView.Areas.Admin.Controllers
         }
         // ...
 
-        [HttpPost]
+        [HttpPost("Update-Order")]
         public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
         {
             using (HttpClient client = new HttpClient())
@@ -138,12 +139,30 @@ namespace WebView.Areas.Admin.Controllers
             return View(hoadonView);
         }
 
+        [HttpPost("CancelOrder")]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
 
-        //public async Task<IActionResult> CancelOrder(int id)
-        //{
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiUri);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        //    return RedirectToAction("Index");
-        //}
+                var response = await client.PutAsJsonAsync($"{ApiUri}/Hoadon/{id}/update-trangthai-hoadon?nextTrangThai={6}",6);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Hủy đơn hàng thành công!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(response.StatusCode.ToString(), "Lỗi Hủy");
+                }
+            }
+           return RedirectToAction("Index");
+        }
         public async Task<List<HoaDonView>> LoadData()  
         {
             List<FullHoaDonDTO> listHoaDon = await GetListHoaDon();
@@ -199,26 +218,41 @@ namespace WebView.Areas.Admin.Controllers
         ///Phương thức trả về cho view một list viewmodel của hóa đơn
         public async Task<IActionResult> Index()
         {
-            listHoaDonView = await LoadData();
+             listHoaDonView = await LoadData();
             if (listHoaDonView == null)
             {
-                
                 ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào");
                 return View();
             }
             return View(listHoaDonView);    
         }
+
+        public async Task<IActionResult> FilterByStatus(ETrangThaiHD filterorder)
+        {
+            listHoaDonView = await LoadData();
+            if (filterorder.GetHashCode()==0)
+            {
+                return View("Index", listHoaDonView);
+            }
+            else
+            {
+                var list = listHoaDonView.Where(x => x.TrangThai == filterorder).ToList();
+                if (list.Count == 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn có trạng thái này.");
+                }
+                return View("Index", list);
+            }
+        }
         public async Task<IActionResult> SearchById(int id)
         {
-            var listHoaDonView = await LoadData();
+            listHoaDonView = await LoadData();
             var viewDetail = listHoaDonView.FirstOrDefault(x => x.Id == id);
-
             // Xử lý khi không tìm thấy hóa đơn
             if (viewDetail == null)
             {
                 ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn với ID này.");
             }
-
             // Tạo danh sách chứa thông tin hóa đơn tìm thấy
             var list = new List<HoaDonView>();
             if (viewDetail != null)

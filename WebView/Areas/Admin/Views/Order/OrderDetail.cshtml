@@ -1,4 +1,5 @@
-﻿@using static WebView.Areas.Admin.ViewModels.ViewHoaDon
+﻿@using Enum.EnumVVA
+@using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model HoaDonView
 <!DOCTYPE html>
 <html>
@@ -75,34 +76,69 @@
             </table>
         </div>
         <div class="form-group">
-            <label for="@Model.TrangThai">Trạng thái:</label>
-            <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                @* // Trạng thái chung
-                ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
-                HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
-                HuyDon = 7,            // Đơn hàng bị hủy
+            @switch (@Enum.GetName(typeof(ETrangThaiHD), Model.TrangThai))
+            {
+                case "ChoXacNhan":
+                    <label for="@Model.TrangThai">Trạng thái:</label>
+                    <select id="@Model.TrangThai" name="TrangThai" class="form-control">
+                        <option value="1" selected>Chờ xác nhận</option>
+                        <option value="2">Chờ thanh toán</option>
+                        <option value="3">Đã xác nhận</option>
+                        <option value="4">Đang vận chuyển </option>
+                        <option value="5">Hoàn thành đơn</option>
+                        <option value="6">Hủy đơn</option>
 
-                // Trạng thái dành riêng cho bán online
-                ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-                ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
-                DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-                DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
-                HoanHang = 6,          // Đơn hàng đã được hoàn trả *@
-                @* DaThanhToan = 8 *@
-                <option value="0">Chờ xử lý </option>
-                <option value="1">Chờ xác nhận</option>
-                <option value="2">Chờ thanh toán</option>
-                <option value="8">Đã thanh toán</option>
-                <option value="3">Đang vận chuyển</option>
-                <option value="4">Đang vận chuyển COD</option>
-                <option value="5">Hoàn thành đơn</option>
-                <option value="6">Hoàn đơn</option>
-                <option value="7">Hủy đơn</option>
-            </select>
+                    </select>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    break;
+                case "ChoThanhToan":
+                    <label for="@Model.TrangThai">Trạng thái:</label>
+                    <select id="@Model.TrangThai" name="TrangThai" class="form-control">
+                        <option value="2" selected>Chờ thanh toán</option>
+                        <option value="3">Đã xác nhận</option>
+                        <option value="4">Đang vận chuyển </option>
+                        <option value="5">Hoàn thành đơn</option>
+                        <option value="6">Hủy đơn</option>
+
+                    </select>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    break;
+                 case "DaXacNhan":
+                 <label for="@Model.TrangThai">Trạng thái:</label>
+                    <select id="@Model.TrangThai" name="TrangThai" class="form-control">
+                        <option value="3" selected>Đã xác nhận</option>
+                        <option value="4">Đang vận chuyển </option>
+                        <option value="5">Hoàn thành đơn</option>
+                        <option value="6">Hủy đơn</option>
+
+                    </select>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    break;
+                case "DangVanChuyen":
+                    <label for="@Model.TrangThai">Trạng thái:</label>
+                    <select id="@Model.TrangThai" name="TrangThai" class="form-control">
+                        <option value="4" selected>Đang vận chuyển </option>
+                        <option value="5">Hoàn thành đơn</option>
+                        <option value="6">Hủy đơn</option>
+                    </select>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    break;
+                case "HoanThanhDon":
+                    <label for="@Model.TrangThai">Trạng thái:</label>
+                    <input type="text" id="TrangThai" name="TrangThai" class="form-control" value="@Model.TrangThai" readonly>
+                    break;
+                case "HuyDon":
+                    <label for="@Model.TrangThai">Trạng thái:</label>
+                    <input type="text" id="TrangThai" name="TrangThai" class="form-control" value="@Model.TrangThai" readonly>
+                    break;
+            }
         </div>
-        
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
-        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+       
+        <a class="btn btn-primary" href="@Url.Action("Index")">Quay Lại</a>
 
     </form>
    
