@@ -67,35 +67,27 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
             var isValid = current switch
             {
-                //HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
-                //HuyDon = 6,            // Đơn hàng bị hủy
-                //                       // Trạng thái dành riêng cho bán online
-                //ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-                //ChoThanhToan = 2,      // Đơn hàng chờ thanh toán 
-                //DaXacNhan = 3,         // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-                //DangVanChuyen = 4,     // Đơn hàng  đang được vận chuyển
-              
-
-                // Đã thanh toán: có thể chuyển sang "Hoàn thành đơn"
-                ETrangThaiHD.DangVanChuyen =>
-                    next == ETrangThaiHD.HoanThanhDon,
-
-                // Chờ xác nhận: Có thể chuyển sang "Chờ thanh toán", "Đang vận chuyển COD" hoặc "Hủy đơn"
+                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" 
                 ETrangThaiHD.ChoXacNhan =>
-                    next == ETrangThaiHD.DaXacNhan ||
-                    next == ETrangThaiHD.DangVanChuyen ||
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HuyDon,
-
-                // Chờ thanh toán: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
+                    next == ETrangThaiHD.DaXacNhan ,
                 ETrangThaiHD.ChoThanhToan =>
-                    next == ETrangThaiHD.DaXacNhan ||
-                    next == ETrangThaiHD.DangVanChuyen ||
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HuyDon,
+                    next ==ETrangThaiHD.DaXacNhan||
+                    next ==ETrangThaiHD.HoanThanhDon||
+                    next ==ETrangThaiHD.HuyDon,
+                //Đã xác nhận: có thể chuyển sang "đang vận chuyển"
+                ETrangThaiHD.DaXacNhan =>
+                    next == ETrangThaiHD.DangVanChuyen,
 
+                // Đang vận chuyển: Có thể chuyển sang "Hoàn thành",  hoặc "Hủy đơn"
+                ETrangThaiHD.DangVanChuyen =>
+                    next == ETrangThaiHD.HoanThanhDon ||
+                    next == ETrangThaiHD.HuyDon ,
+                   
+
+         
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
+
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
                 // Mặc định

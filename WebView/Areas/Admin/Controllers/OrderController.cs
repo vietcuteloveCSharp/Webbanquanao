@@ -206,7 +206,8 @@ namespace WebView.Areas.Admin.Controllers
                     TrangThai = hd.TrangThai,
                     KhachHangs = khachHangView,
                     SanPhams = lstsanphamview,
-                });
+
+                }); 
 
             }
             return listHoaDonView;
