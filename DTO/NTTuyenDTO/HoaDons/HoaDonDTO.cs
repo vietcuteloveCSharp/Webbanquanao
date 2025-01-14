@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DTO.NTTuyen.HoaDons
 {
-    public class HoaDonDTO
+    public class HoaDonDTO2
     {
 
         public decimal TongTien { get; set; } 

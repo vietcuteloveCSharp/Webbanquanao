@@ -32,6 +32,6 @@ namespace WebView.NghiaDTO
         public bool TrangThai { get; set; } = true;
 
         public virtual ICollection<GioHang>? GioHangs { get; set; } = new List<GioHang>();
-        public virtual ICollection<HoaDon>? HoaDons { get; set; } = new List<HoaDon>();
+        public virtual ICollection<HoaDonDTO>? HoaDons { get; set; } = new List<HoaDonDTO>();
     }
 }

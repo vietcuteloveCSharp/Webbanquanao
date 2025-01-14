@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DTO.NTTuyen.HoaDons
 {
-    public class FullHoaDonDTO
+    public class FullHoaDonDTO2
     {
         public int Id { get; set; }
         public decimal TongTien { get; set; } // tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
