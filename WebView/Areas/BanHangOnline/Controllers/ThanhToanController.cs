@@ -306,7 +306,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     return View("ThanhToanThatBai");
                 }
                 // thay đổi trạng thái của hóa đơn
-                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaThanhToan;
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaXacNhan;
                 _context.SaveChanges();
                 // thêm ThanhToanHoaDons
                 var ptThanhToan = new PhuongThucThanhToan();

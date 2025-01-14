@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DAL.Context;
+using DAL.Entities;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using Enum.EnumVVA;
 using Microsoft.EntityFrameworkCore;
@@ -66,47 +67,37 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
             var isValid = current switch
             {
-                // Chờ xử lý: Có thể chuyển sang "Hoàn thành đơn" hoặc "Chờ xác nhận"
-                ETrangThaiHD.ChoXuLy =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.ChoXacNhan ||
-                    next == ETrangThaiHD.DaThanhToan,
+                //HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+                //HuyDon = 6,            // Đơn hàng bị hủy
+                //                       // Trạng thái dành riêng cho bán online
+                //ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+                //ChoThanhToan = 2,      // Đơn hàng chờ thanh toán 
+                //DaXacNhan = 3,         // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+                //DangVanChuyen = 4,     // Đơn hàng  đang được vận chuyển
+              
+
                 // Đã thanh toán: có thể chuyển sang "Hoàn thành đơn"
-                ETrangThaiHD.DaThanhToan =>
+                ETrangThaiHD.DangVanChuyen =>
                     next == ETrangThaiHD.HoanThanhDon,
 
                 // Chờ xác nhận: Có thể chuyển sang "Chờ thanh toán", "Đang vận chuyển COD" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoXacNhan =>
-                    next == ETrangThaiHD.ChoThanhToan ||
-                    next == ETrangThaiHD.DangVanChuyenCOD ||
+                    next == ETrangThaiHD.DaXacNhan ||
+                    next == ETrangThaiHD.DangVanChuyen ||
+                    next == ETrangThaiHD.HoanThanhDon ||
                     next == ETrangThaiHD.HuyDon,
 
                 // Chờ thanh toán: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoThanhToan =>
-                    next == ETrangThaiHD.DaThanhToan ||
+                    next == ETrangThaiHD.DaXacNhan ||
                     next == ETrangThaiHD.DangVanChuyen ||
-                    next == ETrangThaiHD.DangVanChuyenCOD ||
+                    next == ETrangThaiHD.HoanThanhDon ||
                     next == ETrangThaiHD.HuyDon,
-
-                // Đang vận chuyển: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
-                ETrangThaiHD.DangVanChuyen =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HoanHang,
-
-                // Đang vận chuyển COD: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
-                ETrangThaiHD.DangVanChuyenCOD =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HoanHang,
 
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
-
-                // Hoàn hàng: Không thể chuyển tiếp
-                ETrangThaiHD.HoanHang => false,
-
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
-
                 // Mặc định
                 _ => false
             };

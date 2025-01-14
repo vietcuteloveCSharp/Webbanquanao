@@ -1,5 +1,6 @@
-﻿@using DTO.NTTuyen.HoaDons
+﻿
 @using DTO.VuvietanhDTO.KhachHangs
+@using DTO.VuvietanhDTO.HoadonsDTO
 @using Enum.EnumVVA
 @using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model List<HoaDonView>
@@ -28,12 +29,19 @@
 </head>
 <body>
     <h2>Tìm kiếm</h2>
-    <form >
-        <label for="orderID">Mã hóa đơn:</label>
-        <input type="number" name="searchId" id="searchId" name="orderID">
-        <button type="button btn-primary" asp-action="SearchById" asp-route-Id="searchId">Tìm kiếm</button>
-    </form>
+    <form asp-action="SearchById" method="get"> 
+        <label for="orderID">Mã hóa đơn:</label> 
+        <input type="number" name="orderID" id="searchId" class="form-control" />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </form>
     <h1>Thông Tin Đơn Hàng</h1>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger"> @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            } </div>
+    }
     <table>
         <tr>
             <th>Thông tin khách hàng</th>
@@ -44,56 +52,60 @@
             <th>Trạng thái</th>
             <th>Hành động</th>
         </tr>
-        @foreach (var hoaDon in Model)
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>
-                    <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
-                    <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
-                </td>
-                <td>
-                    <p>Mã đơn hàng: @hoaDon.Id</p>
-                    <table border="none">
-                        <tr>
-                            <th>Sản Phẩm</th>
-                            <th>Số Lượng</th>
-                        </tr>
-                        @foreach (var sp in hoaDon.SanPhams)
-                        {
+            @foreach (var hoaDon in Model)
+            {
+                <tr>
+                    <td>
+                        <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
+                        <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
+                    </td>
+                    <td>
+                        <p>Mã đơn hàng: @hoaDon.Id</p>
+                        <table border="none">
                             <tr>
-                                <td>@sp.Ten</td>
-                                <td>@sp.SoLuong</td>
+                                <th>Sản Phẩm</th>
+                                <th>Số Lượng</th>
                             </tr>
-                        }
-                    </table>
-                </td>
-                <td>@hoaDon.NgayTao</td>    
+                            @if (hoaDon.SanPhams != null && hoaDon.SanPhams.Any())
+                            {
+                                @foreach (var sp in hoaDon.SanPhams)
+                                {
+                                    <tr>
+                                        <td>@sp.Ten</td>
+                                        <td>@sp.SoLuong</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>TenSp</td>
+                                    <td>SoLuongSp</td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>@hoaDon.NgayTao</td>
 
-               <td>@hoaDon.DiaChiGiaoHang</td>
+                    <td>@hoaDon.DiaChiGiaoHang</td>
 
-               <td>@hoaDon.TongTien</td>
-                <td>
-                    @* // Trạng thái chung
-                ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
-                HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
-                HuyDon = 7,            // Đơn hàng bị hủy
+                    <td>@hoaDon.TongTien</td>
+                    <td>
+                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang vận chuyển ").Replace("DangVanChuyenCOD", "Đang vận chuyển COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
+                    </td>
+                    <td>
 
-                // Trạng thái dành riêng cho bán online
-                ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-                ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
-                DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-                DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
-                HoanHang = 6,          // Đơn hàng đã được hoàn trả *@
-                    @* DaThanhToan = 8 *@
-                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang vận chuyển ").Replace("DangVanChuyenCOD", "Đang vận chuyển COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
-                </td>
-               <td>
-                    
-                    <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
+                        <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
 
-                    <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
-               </td>
-            </tr>
+                        <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
+                    </td>
+                </tr>
+            }
+        }else
+        {
+            <p>Không có hóa đơn nào </p>
         }
     </table>
 </body>
