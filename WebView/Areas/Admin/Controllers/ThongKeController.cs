@@ -74,6 +74,35 @@ namespace WebView.Areas.Admin.Controllers
                 totalRevenue
             });
         }
+        [HttpGet]
+        public IActionResult ThongKeSanPhamBanChay(DateTime? startDate, DateTime? endDate)
+        {
+            var query = _context.ChiTietHoaDons
+                .Include(cthd => cthd.ChiTietSanPham)
+                .Include(cthd => cthd.HoaDon)
+                .Where(cthd => cthd.HoaDon.TrangThai == ETrangThaiHD.HoanThanhDon);
+
+            // Lấy top 3 sản phẩm bán chạy
+            var sanPhamBanChay = query
+                .GroupBy(cthd => new
+                {
+                    cthd.Id_ChiTietSanPham,
+                    cthd.ChiTietSanPham.SanPham.Ten
+                })
+                .Select(g => new
+                {
+                    SanPhamId = g.Key.Id_ChiTietSanPham,
+                    TenSanPham = g.Key.Ten,
+                    TongSoLuong = g.Sum(cthd => cthd.SoLuong),
+                })
+                .OrderByDescending(sp => sp.TongSoLuong) // Sắp xếp giảm dần
+                .Take(3) // Lấy top 3
+                .ToList();
+
+            return Json(new { sanPhamBanChay });
+        }
+      
+
 
     }
 }
