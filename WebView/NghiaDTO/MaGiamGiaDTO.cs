@@ -17,7 +17,8 @@ namespace WebView.NghiaDTO
         [Range(1, double.MaxValue, ErrorMessage = "Điều kiện giảm giá phải phải > 0")]
         public decimal? DieuKienGiamGia { get; set; } // > 0 thì yêu cầu đơn hàng trên dk thì mới áp đc || = 0 thì không cần check đơn hàng
 
-        [Range(1, double.MaxValue, ErrorMessage = "Giá trị giảm phải phải > 0")]
+        [Range(0, 100, ErrorMessage = "Giá trị giảm phải nằm trong khoảng từ 0 đến 100.")]
+
         public decimal? GiaTriGiam { get; set; } // GiaTriGiam sẽ là %: 10, 20, 30 %
 
         [Range(1, double.MaxValue, ErrorMessage = "Mệnh giá phải phải > 0.")]

@@ -1,17 +1,11 @@
 ﻿using DTO.NTTuyen.ChiTietHoaDon;
-using DTO.NTTuyen.HoaDons;
-
-//using DTO.NTTuyen.HoaDons;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Sanphams;
-using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
-using WebView.Models;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
 
 namespace WebView.Areas.Admin.Controllers
@@ -23,7 +17,7 @@ namespace WebView.Areas.Admin.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private List<HoaDonView> listHoaDonView;
         //private string apiBaseUrl = System.Configuration.ConfigurationManager.AppSettings["BaseApiAddress"];
-        private const  string ApiUri = "https://localhost:7169/api";
+        private const string ApiUri = "https://localhost:7169/api";
         public OrderController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
@@ -33,8 +27,6 @@ namespace WebView.Areas.Admin.Controllers
         [HttpGet("/Hoadon/Get-All-HoaDon")]
         public async Task<List<FullHoaDonDTO>> GetListHoaDon()
         {
-
-        
 
             List<FullHoaDonDTO> result = new List<FullHoaDonDTO>();
 
@@ -199,7 +191,7 @@ namespace WebView.Areas.Admin.Controllers
                     KhachHangs = khachHangView,
                     SanPhams = lstsanphamview,
 
-                });
+                }); 
 
             }
             return listHoaDonView;
@@ -208,6 +200,12 @@ namespace WebView.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             listHoaDonView = await LoadData();
+            if (listHoaDonView == null)
+            {
+                
+                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào");
+                return View();
+            }
             return View(listHoaDonView);    
         }
         public async Task<IActionResult> SearchById(int id)
@@ -218,7 +216,7 @@ namespace WebView.Areas.Admin.Controllers
             // Xử lý khi không tìm thấy hóa đơn
             if (viewDetail == null)
             {
-                ModelState.AddModelError("", "Không tìm thấy hóa đơn với ID này.");
+                ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn với ID này.");
             }
 
             // Tạo danh sách chứa thông tin hóa đơn tìm thấy
@@ -230,7 +228,6 @@ namespace WebView.Areas.Admin.Controllers
 
             return View("Index", list);
         }
-
         public async Task<IActionResult> OrderDetail(int id)
         {
             listHoaDonView = await LoadData();

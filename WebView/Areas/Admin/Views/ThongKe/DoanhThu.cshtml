@@ -1,0 +1,398 @@
+﻿@model WebView.NghiaDTO.DoanhThuViewModel
+
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<
+<style>
+    .text-center {
+        text-align: center;
+    }
+
+    .text-primary {
+        color: #007bff;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .font-weight-bold {
+        font-weight: bold;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .form-row .col {
+            flex: 1;
+        }
+
+    .table-responsive {
+        margin-top: 20px;
+    }
+
+    .card-body h4 {
+        margin-bottom: 0;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .table-container {
+        margin-top: 40px;
+    }
+
+        .table-container .table {
+            margin-bottom: 30px;
+        }
+
+    .filter-form-container {
+        margin-bottom: 30px;
+    }
+
+    .card-summary {
+        margin-top: 30px;
+    }
+</style>
+
+
+<!-- Form lọc theo ngày tháng -->
+
+
+<div class="table-container">
+    <!-- Biểu đồ Top sản phẩm bán chạy -->
+    <div class="chart-container mb-4">
+        <h3 class="text-center">Top 3 sản phẩm bán chạy</h3>
+        <canvas id="topProductsChart" width="700px" height="300px"></canvas>
+    </div>
+    <div class="filter-form-container">
+        <form id="filterForm">
+            <div class="form-row">
+                <!-- Ngày bắt đầu -->
+                <div class="col">
+                    <label for="startDate" class="font-weight-bold">Ngày bắt đầu</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+
+                <!-- Ngày kết thúc -->
+                <div class="col">
+                    <label for="endDate" class="font-weight-bold">Ngày kết thúc</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+
+                <!-- Lựa chọn số ngày -->
+                <div class="col">
+                    <label for="dayRange" class="font-weight-bold">Chọn số ngày</label>
+                    <select id="dayRange" class="form-control">
+                        <option value="">Không chọn</option>
+                        <option value="3">3 ngày trước</option>
+                        <option value="7">7 ngày trước</option>
+                        <option value="30">1 tháng trước</option>
+                    </select>
+                </div>
+
+                <!-- Nút lọc -->
+                <div class="col">
+                    <label class="font-weight-bold" style="visibility: hidden;">Lọc</label>
+                    <button type="submit" class="btn btn-primary">Lọc</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Tổng doanh thu -->
+    <div class="card card-summary">
+        <div class="card-body text-center">
+            <h4 class="text-success">
+                Tổng doanh thu:
+                <span id="totalRevenue" class="font-weight-bold">
+                    @Model.TotalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                </span>
+            </h4>
+        </div>
+    </div>
+    <!-- Doanh thu theo hóa đơn -->
+    <div class="table-responsive">
+        <h3 class="text-center">Danh sách hóa đơn</h3>
+        <table id="data-table" class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Mã hóa đơn</th>
+                    <th scope="col">Thực thu</th>
+                    <th scope="col">Ngày tạo</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                @if (Model.HoaDons.Any())
+                {
+                    int index = 1;
+                    foreach (var hoaDon in Model.HoaDons)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@hoaDon.Id</td>
+                            <td class="text-success font-weight-bold">
+                                @hoaDon.Total.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                            </td>
+                            <td>@hoaDon.NgayTao.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        index++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Không có dữ liệu hóa đơn.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+  
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo biểu đồ
+            let revenueChart, topProductsChart;
+
+            // Hàm khởi tạo biểu đồ doanh thu
+            function renderRevenueChart(data) {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                if (revenueChart) revenueChart.destroy(); // Xóa biểu đồ cũ nếu có
+                revenueChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: data.revenues,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true },
+                            tooltip: { enabled: true }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Ngày' } },
+                            y: { title: { display: true, text: 'Doanh thu (VNĐ)' }, beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            // Hàm khởi tạo biểu đồ sản phẩm bán chạy
+            function renderTopProductsChart(data) {
+                const ctx = document.getElementById('topProductsChart').getContext('2d');
+                if (topProductsChart) topProductsChart.destroy(); // Xóa biểu đồ cũ nếu có
+                topProductsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Số lượng bán',
+                            data: data.quantities,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: true }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Sản phẩm' } },
+                            y: { title: { display: true, text: 'Số lượng bán' }, beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            // Hàm tải dữ liệu biểu đồ
+            function loadChartData(startDate, endDate) {
+                // Lấy dữ liệu doanh thu
+                $.getJSON('/Admin/ThongKe/ThongKeDoanhThuTheoNgay', { startDate, endDate }, function (data) {
+                    const chartData = {
+                        labels: data.hoaDons.map(item => new Date(item.ngayTao).toLocaleDateString('vi-VN')),
+                        revenues: data.hoaDons.map(item => item.total)
+                    };
+                    renderRevenueChart(chartData);
+                });
+
+                // Lấy dữ liệu top sản phẩm bán chạy
+                $.getJSON('/Admin/ThongKe/ThongKeSanPhamBanChay', { startDate, endDate }, function (data) {
+                    const chartData = {
+                        labels: data.sanPhamBanChay.map(item => item.tenSanPham),
+                        quantities: data.sanPhamBanChay.map(item => item.tongSoLuong)
+                    };
+                    renderTopProductsChart(chartData);
+                });
+            }
+
+            // Lấy dữ liệu biểu đồ ban đầu
+            loadChartData();
+
+            // Lọc dữ liệu khi form được submit
+            $('#filterForm').submit(function (e) {
+                e.preventDefault();
+
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
+                const dayRange = $('#dayRange').val();
+
+                let calculatedStartDate = startDate;
+                let calculatedEndDate = endDate;
+
+                // Tính toán ngày nếu chọn số ngày
+                if (dayRange) {
+                    const today = new Date();
+                    calculatedEndDate = today.toISOString().split('T')[0]; // Ngày hiện tại
+                    const start = new Date();
+                    start.setDate(today.getDate() - parseInt(dayRange));
+                    start.setHours(0, 0, 0, 0);
+                    calculatedStartDate = start.toISOString().split('T')[0];
+                }
+
+                // Gọi hàm load dữ liệu biểu đồ với các ngày đã tính toán
+                loadChartData(calculatedStartDate, calculatedEndDate);
+            });
+        });
+    </script>
+
+
+    <script>
+        $('#filterForm').submit(function (e) {
+            e.preventDefault();
+
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var dayRange = $('#dayRange').val();
+
+            // Nếu chọn số ngày, tính toán ngày bắt đầu và ngày kết thúc
+            if (dayRange) {
+                var today = new Date();
+                endDate = today.toISOString().split('T')[0]; // Ngày hiện tại
+                var start = new Date();
+                start.setDate(today.getDate() - parseInt(dayRange)); // Lùi lại số ngày
+                start.setHours(0, 0, 0, 0); // Đảm bảo là bắt đầu từ đầu ngày
+
+                startDate = start.toISOString().split('T')[0];
+            }
+
+            $.getJSON('/Admin/ThongKe/ThongKeDoanhThuTheoNgay', { startDate: startDate, endDate: endDate }, function (data) {
+                var tbody = $('#data-body');
+                tbody.empty(); // Xóa dữ liệu cũ
+
+                if (data.hoaDons.length > 0) {
+                    var index = 1;
+                    var totalRevenue = 0;
+
+                    data.hoaDons.forEach(function (item) {
+                        totalRevenue += item.total; // Cộng dồn doanh thu của các hóa đơn
+
+                        // Đảm bảo mỗi dòng có 4 cột
+                        var row = `<tr>
+                            <td>${index}</td>
+                            <td>${item.id}</td>
+                            <td class="text-success font-weight-bold">${item.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                            <td>${new Date(item.ngayTao).toLocaleDateString('vi-VN')}</td>
+                        </tr>`;
+                        tbody.append(row);
+                        index++;
+                    });
+
+                    // Cập nhật tổng doanh thu
+                    $('#totalRevenue').text(totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted">Không có dữ liệu.</td></tr>');
+                    $('#totalRevenue').text('0 VND'); // Nếu không có dữ liệu
+                }
+
+                // Làm mới lại bảng DataTable sau khi lọc
+                table.clear(); // Xóa dữ liệu cũ trong DataTable
+                table.rows.add(tbody.children()); // Thêm các dòng mới vào DataTable
+                table.draw(); // Vẽ lại bảng với dữ liệu đã cập nhật
+            });
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Lấy dữ liệu sản phẩm bán chạy ngay khi trang được tải
+            $.getJSON('/Admin/ThongKe/ThongKeSanPhamBanChay', function (data) {
+                var tbody = $('#sanpham-body');
+                tbody.empty(); // Xóa dữ liệu cũ
+
+                if (data.sanPhamBanChay.length > 0) {
+                    var index = 1;
+                    data.sanPhamBanChay.forEach(function (item) {
+                        var row = `<tr>
+                                    <td>${index}</td>
+                                    <td>${item.sanPhamId}</td>
+                                    <td>${item.tenSanPham}</td>
+                                    <td class="text-success font-weight-bold">${item.tongSoLuong}</td>
+                                </tr>`;
+                        tbody.append(row);
+                        index++;
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted">Không có dữ liệu sản phẩm.</td></tr>');
+                }
+            }).fail(function () {
+                alert('Lỗi khi tải dữ liệu sản phẩm bán chạy.');
+            });
+        });
+    </script>
+    <script>
+        // Khởi tạo DataTable chỉ một lần
+        var table;
+
+        $(document).ready(function () {
+            table = $('#data-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Xuất Excel',
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            modifier: {
+                                page: 'current',
+                                search: 'current'
+                            }
+                        }
+                    }
+                ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/Vietnamese.json'
+                },
+                processing: true,
+                serverSide: false
+            });
+        });
+
+    </script>
+
+}

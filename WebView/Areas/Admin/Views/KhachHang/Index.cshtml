@@ -1,0 +1,130 @@
+﻿@model IEnumerable<WebView.NghiaDTO.KhachHangDTO>
+<h1>Danh sách người dùng</h1>
+<style>
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    /* Tạo kiểu dáng cho ô màu sắc */
+    .color-box {
+        border-radius: 50%; /* Làm cho ô màu tròn */
+        border: 1px solid #ddd; /* Thêm viền nhẹ cho ô màu */
+        display: inline-block;
+        width: 25px; /* Kích thước ô màu lớn hơn một chút */
+        height: 25px; /* Kích thước ô màu lớn hơn một chút */
+        margin-right: 5px; /* Khoảng cách giữa các ô màu */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+    }
+
+        /* Thêm hiệu ứng hover cho các ô màu */
+        .color-box:hover {
+            transform: scale(1.2); /* Phóng to khi hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+        }
+
+    /* Tạo kiểu dáng cho các nút hành động */
+    .btn {
+        border-radius: 5px; /* Làm tròn các góc của nút */
+        padding: 8px 12px; /* Thêm padding để nút rộng hơn */
+        font-size: 0.9rem; /* Giảm kích thước font cho các nút */
+        transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền khi hover */
+    }
+
+        .btn:hover {
+            background-color: #007bff; /* Màu nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+        }
+
+    .btn-sm {
+        padding: 6px 10px; /* Giảm kích thước nút nhỏ */
+    }
+
+    /* Thêm kiểu cho badge (kích thước) */
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    /* Sửa lại CSS cho badge */
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    }
+</style>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" id="myTable">
+    <thead>
+        <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Tài khoản</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Email</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kh in Model)
+        {
+            <tr>
+                <td >@kh.Id</td>
+                <td>@kh.TaiKhoan</td>
+                <td>@kh.Ten</td>
+                <td>@kh.Email</td>
+                <td>@kh.Sdt</td>
+                <td>
+                    @if (kh.TrangThai)
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Bị khóa</span>
+                    }
+                </td>
+                <td>
+                        <a asp-action="Details" asp-controller="KhachHang" asp-route-Id="@kh.Id" class="btn btn-sm btn-success">
+                            <i class="fa fa-edit"></i> Chi tiết
+                        </a>
+                    <form asp-action="ToggleStatus" asp-route-id="@kh.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            @if (kh.TrangThai)
+                            {
+                                <span>Khóa</span>
+                            }
+                            else
+                            {
+                                <span>Mở khóa</span>
+                            }
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
