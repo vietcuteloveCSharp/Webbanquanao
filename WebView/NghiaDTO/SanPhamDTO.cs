@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace WebView.NghiaDTO
 {
+    //mã sản phẩm 
     public class SanPhamDTO
     {
         [Required(ErrorMessage = "Id là bắt buộc")]

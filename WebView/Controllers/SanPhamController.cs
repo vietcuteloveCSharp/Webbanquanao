@@ -24,7 +24,9 @@ namespace WebView.Controllers
                 .Include(ctsp => ctsp.SanPham)  // Load thông tin sản phẩm
                 .ThenInclude(sp => sp.DanhMuc)  // Load thông tin danh mục sản phẩm
                 .Include(ctsp => ctsp.MauSac)   // Load thông tin màu sắc
+
                 .Include(ctsp => ctsp.KichThuoc) // Load thông tin kích thước
+
                 .FirstOrDefaultAsync(ctsp => ctsp.Id == id);
 
             if (chiTietSanPham == null)
@@ -36,7 +38,7 @@ namespace WebView.Controllers
             ViewBag.RelatedProducts = await _context.SanPhams
                 .Where(p => p.Id_DanhMuc == chiTietSanPham.SanPham.Id_DanhMuc && p.Id != chiTietSanPham.SanPham.Id)
                 .Take(6) // Giới hạn số lượng sản phẩm liên quan
-                .ToListAsync();
+                .ToListAsync();// giới hạn số lượng sản phẩm liên quan
 
             return View(chiTietSanPham);
         }
