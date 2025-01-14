@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DAL.Context;
+using DAL.Entities;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using Enum.EnumVVA;
 using Microsoft.EntityFrameworkCore;
@@ -89,7 +90,6 @@ namespace Service.VuVietAnhService.Repository.Hoadon
 
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
-
                 // Mặc định
                 _ => false
             };

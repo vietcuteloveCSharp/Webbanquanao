@@ -1,17 +1,13 @@
-﻿using DTO.NTTuyen.ChiTietHoaDon;
-using DTO.NTTuyen.HoaDons;
-
-//using DTO.NTTuyen.HoaDons;
+﻿using DAL.Entities;
+using DTO.NTTuyen.ChiTietHoaDon;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Sanphams;
 using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
-using WebView.Models;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
 
 namespace WebView.Areas.Admin.Controllers
@@ -22,8 +18,7 @@ namespace WebView.Areas.Admin.Controllers
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private List<HoaDonView> listHoaDonView;
-        //private string apiBaseUrl = System.Configuration.ConfigurationManager.AppSettings["BaseApiAddress"];
-        private const  string ApiUri = "https://localhost:7169/api";
+        private const string ApiUri = "https://localhost:7169/api";
         public OrderController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
@@ -33,8 +28,6 @@ namespace WebView.Areas.Admin.Controllers
         [HttpGet("/Hoadon/Get-All-HoaDon")]
         public async Task<List<FullHoaDonDTO>> GetListHoaDon()
         {
-
-        
 
             List<FullHoaDonDTO> result = new List<FullHoaDonDTO>();
 
@@ -85,23 +78,7 @@ namespace WebView.Areas.Admin.Controllers
             }
             return result;
         }
-        [HttpGet("chitiethoadon/{id}")]
-        public async Task<ChiTietHoaDonDTO> GetChiTietHoaDonById(int id)
-        {
-            ChiTietHoaDonDTO result = new ChiTietHoaDonDTO();
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.GetAsync(ApiUri+"/Hoadon_NTT/"+ id);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ChiTietHoaDonDTO>(responseContent);
-                }
-            }
-            return result;
-        }
+        
         [HttpGet("chitietsanpham/{id}")]
         public async Task<ChiTietSanPhamDTO> GetChiTietSanPhamById(int id)
         {
@@ -138,7 +115,7 @@ namespace WebView.Areas.Admin.Controllers
         }
         // ...
 
-        [HttpPost]
+        [HttpPost("UpdateOrder")]
         public async Task<IActionResult> UpdateOrder(HoaDonView hoadonView)
         {
             using (HttpClient client = new HttpClient())
@@ -159,15 +136,33 @@ namespace WebView.Areas.Admin.Controllers
                     ModelState.AddModelError(response.StatusCode.ToString(), "Error");
                 }
             }
-            return View(hoadonView);
+            return View("OrderDetail",hoadonView);
         }
 
+        [HttpPost("CancelOrder")]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
 
-        //public async Task<IActionResult> CancelOrder(int id)
-        //{
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiUri);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        //    return RedirectToAction("Index");
-        //}
+                var response = await client.PutAsJsonAsync($"{ApiUri}/Hoadon/{id}/update-trangthai-hoadon?nextTrangThai={6}",6);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Hủy đơn hàng thành công!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(response.StatusCode.ToString(), "Lỗi Hủy");
+                }
+            }
+           return RedirectToAction("Index");
+        }
         public async Task<List<HoaDonView>> LoadData()  
         {
             List<FullHoaDonDTO> listHoaDon = await GetListHoaDon();
@@ -223,20 +218,41 @@ namespace WebView.Areas.Admin.Controllers
         ///Phương thức trả về cho view một list viewmodel của hóa đơn
         public async Task<IActionResult> Index()
         {
-            listHoaDonView = await LoadData();
+             listHoaDonView = await LoadData();
+            if (listHoaDonView == null)
+            {
+                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào");
+                return View();
+            }
             return View(listHoaDonView);    
+        }
+
+        public async Task<IActionResult> FilterByStatus(ETrangThaiHD filterorder)
+        {
+            listHoaDonView = await LoadData();
+            if (filterorder.GetHashCode()==0)
+            {
+                return View("Index", listHoaDonView);
+            }
+            else
+            {
+                var list = listHoaDonView.Where(x => x.TrangThai == filterorder).ToList();
+                if (list.Count == 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn có trạng thái này.");
+                }
+                return View("Index", list);
+            }
         }
         public async Task<IActionResult> SearchById(int id)
         {
-            var listHoaDonView = await LoadData();
+            listHoaDonView = await LoadData();
             var viewDetail = listHoaDonView.FirstOrDefault(x => x.Id == id);
-
             // Xử lý khi không tìm thấy hóa đơn
             if (viewDetail == null)
             {
-                ModelState.AddModelError("", "Không tìm thấy hóa đơn với ID này.");
+                ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn với ID này.");
             }
-
             // Tạo danh sách chứa thông tin hóa đơn tìm thấy
             var list = new List<HoaDonView>();
             if (viewDetail != null)
@@ -246,7 +262,6 @@ namespace WebView.Areas.Admin.Controllers
 
             return View("Index", list);
         }
-
         public async Task<IActionResult> OrderDetail(int id)
         {
             listHoaDonView = await LoadData();

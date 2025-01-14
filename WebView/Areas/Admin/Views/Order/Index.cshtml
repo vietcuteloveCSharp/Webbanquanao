@@ -1,9 +1,9 @@
-﻿@using DTO.NTTuyen.HoaDons
+﻿
 @using DTO.VuvietanhDTO.KhachHangs
+@using DTO.VuvietanhDTO.HoadonsDTO
 @using Enum.EnumVVA
 @using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model List<HoaDonView>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,12 +28,43 @@
 </head>
 <body>
     <h2>Tìm kiếm</h2>
-    <form >
-        <label for="orderID">Mã hóa đơn:</label>
-        <input type="number" name="searchId" id="searchId" name="orderID">
-        <button type="button btn-primary" asp-action="SearchById" asp-route-Id="searchId">Tìm kiếm</button>
+    <form asp-action="SearchById" method="post"> 
+        <label for="orderID">Mã hóa đơn:</label> 
+        <input type="number" name="orderID" id="searchId" class="form-control" />
+        <br />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </form>
+    <h2>Lọc trạng thái</h2>
+    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+
+    // Trạng thái dành riêng cho bán online
+    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
+    HuyDon = 6,            // Đơn hàng bị hủy *@
+    <form asp-action="FilterByStatus" method="post">
+        <label for="FilterStatus">Trạng thái:</label>
+        <select id="FilterStatus" name="FilterStatus" class="form-control">
+            <option value="0" selected >Tất cả</option>
+            <option value="1">Chờ xác nhận </option>
+            <option value="2">Chờ thanh toán </option>
+            <option value="3">Đã xác nhận</option>
+            <option value="4">Đang vận chuyển </option>
+            <option value="5">Hoàn thành đơn</option>
+            <option value="6">Hủy đơn</option>
+        </select>
+        <br />
+        <button type="submit" class="btn btn-primary">Lọc</button>
     </form>
     <h1>Thông Tin Đơn Hàng</h1>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger"> @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            } </div>
+    }
     <table>
         <tr>
             <th>Thông tin khách hàng</th>
@@ -44,56 +75,72 @@
             <th>Trạng thái</th>
             <th>Hành động</th>
         </tr>
-        @foreach (var hoaDon in Model)
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>
-                    <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
-                    <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
-                </td>
-                <td>
-                    <p>Mã đơn hàng: @hoaDon.Id</p>
-                    <table border="none">
-                        <tr>
-                            <th>Sản Phẩm</th>
-                            <th>Số Lượng</th>
-                        </tr>
-                        @foreach (var sp in hoaDon.SanPhams)
-                        {
+            @foreach (var hoaDon in Model)
+            {
+                <tr>
+                    <td>
+                        <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
+                        <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
+                    </td>
+                    <td>
+                        <p>Mã đơn hàng: @hoaDon.Id</p>
+                        <table border="none">
                             <tr>
-                                <td>@sp.Ten</td>
-                                <td>@sp.SoLuong</td>
+                                <th>Sản Phẩm</th>
+                                <th>Số Lượng</th>
                             </tr>
+                            @if (hoaDon.SanPhams != null && hoaDon.SanPhams.Any())
+                            {
+                                @foreach (var sp in hoaDon.SanPhams)
+                                {
+                                    <tr>
+                                        <td>@sp.Ten</td>
+                                        <td>@sp.SoLuong</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>TenSp</td>
+                                    <td>SoLuongSp</td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                    <td>@hoaDon.NgayTao</td>
+
+                    <td>@hoaDon.DiaChiGiaoHang</td>
+
+                    <td>@hoaDon.TongTien</td>
+                    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+
+                    // Trạng thái dành riêng cho bán online
+                    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
+                    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
+                    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
+                    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
+                    HuyDon = 6,            // Đơn hàng bị hủy *@
+                   @*  <td>@hoaDon.TrangThai</td> *@
+                    <td>
+                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DaXacNhan", "Đã Xác Nhận").Replace("DangVanChuyen", "Đang vận chuyển").Replace("HuyDon", "Hủy Đơn").Replace("HoanThanhDon", "Hoàn thành đơn")
+                    </td>
+                    <td>
+                        <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
+                        @if (hoaDon.TrangThai != ETrangThaiHD.HoanThanhDon && hoaDon.TrangThai != ETrangThaiHD.HuyDon)
+                        {
+                            <br />
+                            <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
                         }
-                    </table>
-                </td>
-                <td>@hoaDon.NgayTao</td>    
-
-               <td>@hoaDon.DiaChiGiaoHang</td>
-
-               <td>@hoaDon.TongTien</td>
-                <td>
-                    @* // Trạng thái chung
-                ChoXuLy = 0,           // Hóa đơn đang chờ xử lý
-                HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
-                HuyDon = 7,            // Đơn hàng bị hủy
-
-                // Trạng thái dành riêng cho bán online
-                ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-                ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
-                DangVanChuyen = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-                DangVanChuyenCOD = 4,  // Đơn hàng COD đang được vận chuyển
-                HoanHang = 6,          // Đơn hàng đã được hoàn trả *@
-                    @* DaThanhToan = 8 *@
-                    @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXuLy", "Chờ xử lý").Replace("HoanThanhDon", "Hoàn thành đơn").Replace("HuyDon", "Hủy đơn").Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DangVanChuyen", "Đang vận chuyển ").Replace("DangVanChuyenCOD", "Đang vận chuyển COD").Replace("HoanHang", "Hoàn Hàng").Replace("DaThanhToan", "Đã thanh toán ")
-                </td>
-               <td>
-                    
-                    <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
-
-                    <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
-               </td>
-            </tr>
+                        
+                    </td>
+                </tr>
+            }
+        }else
+        {
+            <p>Không có hóa đơn nào </p>
         }
     </table>
 </body>

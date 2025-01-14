@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace WebView.NghiaDTO
 {
+    //mã màu sắc
     public class MauSacDTO
     {
         public int Id { get; set; }

@@ -1,0 +1,144 @@
+[33m531b169[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mTuyen1[m[33m, [m[1;31morigin/Tuyen1[m[33m)[m meger-1
+[33mfdfcb57[m m1
+[33m283a416[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Biểu đồ
+[33m7395258[m top3productpay
+[33m5691103[m update lại hoadon
+[33m2bb420a[m Merge branch 'vietanh3'
+[33m0bd98a8[m update hoadon-trangthai
+[33me6bcb63[m Merge pull request #62 from vietcuteloveCSharp/vietanh3
+[33mf4e4546[m update khi cap nhat trang thai
+[33mcbf3f18[m[33m ([m[1;32mmaster[m[33m)[m Emun
+[33mf752f3b[m Merge branch 'master' of https://github.com/vietcuteloveCSharp/Webbanquanao
+[33mfeddf87[m Change Endpoint Order
+[33maf3997b[m M
+[33m766925d[m Change Endpoint API Order
+[33m37adb4e[m editproduct
+[33ma6c5358[m Xuất file excel doanh thu
+[33m2bb6fae[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33mbed1ef0[m Thongke
+[33m60eb116[m Merge pull request #60 from vietcuteloveCSharp/Nhu_Hoang
+[33m719d447[m chỉnh sửa giao diện bán tại quầy
+[33m14eef52[m Merge pull request #59 from vietcuteloveCSharp/master
+[33m1f48d61[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33mace819c[m ass
+[33m8118722[m Quan ly Hoa Don
+[33m1b15ee0[m Thêm trường địa chỉ giao hàng
+[33mb794caf[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33me082b97[m Quản lý User
+[33mf0fb88d[m thêm địa chỉ hóa đơn
+[33mc3796c3[m feature changeorderstatus
+[33mfd0713d[m Merge pull request #58 from vietcuteloveCSharp/Nhu_Hoang
+[33m6af5222[m Thêm trường trong hóa đơn
+[33m0ef8893[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33m5ae472c[m fix edit product
+[33m646ad58[m Merge pull request #56 from vietcuteloveCSharp/vietanh2
+[33mb0ef3b7[m update hoadon
+[33m86831d4[m QLHD v2
+[33m7835ab6[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33m012ce54[m fix validate product
+[33m01b682d[m Merge pull request #54 from vietcuteloveCSharp/Nhu_Hoang
+[33mba66fa4[m fig lỗi tìm kiếm
+[33mcd88907[m Merge pull request #53 from vietcuteloveCSharp/Nhu_Hoang
+[33mb9d9d2f[m BanHangOnline: ThanhToan + TimKiem
+[33m6da86ed[m Merge pull request #52 from vietcuteloveCSharp/master
+[33m5a8e399[m View Ql hóa đơn
+[33mf8e9b6d[m fix product images
+[33m164fcf9[m Khuyễn Mại
+[33mb8eb88d[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33m6cb7d02[m UpdateUpListUrlImages
+[33m83c702c[m hoadon api v1
+[33m1fa86ae[m Merge pull request #51 from vietcuteloveCSharp/master
+[33mea653c0[m Merge pull request #50 from vietcuteloveCSharp/Nhu_Hoang
+[33md4ed0c9[m update db: HoaDon
+[33m32e7422[m Thay đổi thuộc tính KhuyenMai Chitietkhuyenmai
+[33m0675e1c[m abc
+[33mb009884[m Error API 2
+[33m0ce0217[m "ErrorApi"
+[33m69b4194[m Merge branch 'Nhu_Hoang' of https://github.com/vietcuteloveCSharp/Webbanquanao into Nhu_Hoang
+[33m285d2c3[m change appsetting for ThanhToan
+[33m04899dd[m settup đường dẫn thành 7043
+[33maffe652[m Merge pull request #49 from vietcuteloveCSharp/Nhu_Hoang
+[33m4a4e051[m Merge pull request #48 from vietcuteloveCSharp/master
+[33m2c9e278[m Merge branch 'Nhu_Hoang' into master
+[33m1426dbc[m UpdateDb: table: ChiTietHoaDon, ChiTietMaGiamGia, HoaDon
+[33m21198f7[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33ma36d8ba[m hinhanhsp
+[33mdebc9bf[m Merge pull request #46 from vietcuteloveCSharp/Nghia22
+[33m95301a8[m Merge pull request #45 from vietcuteloveCSharp/master
+[33m47ba014[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33mcd96c0d[m hinhanhsp
+[33m432a618[m Merge pull request #44 from vietcuteloveCSharp/Nhu_Hoang
+[33mb3cb1d7[m Merge branch 'Nhu_Hoang' of https://github.com/vietcuteloveCSharp/Webbanquanao into Nhu_Hoang
+[33mb09a85a[m Thay doi db: ChiTietMaGiamGia HoaDon ThanhToanHoaDon
+[33mbe99f84[m Merge pull request #43 from vietcuteloveCSharp/master
+[33m680cf5b[m Back_end HoaDon
+[33m577e1e3[m Merge pull request #42 from vietcuteloveCSharp/Nhu_Hoang
+[33m10e5440[m aaa
+[33mc5013bd[m BanHangOnline - thanhtoan
+[33m8c75873[m Merge pull request #41 from vietcuteloveCSharp/master
+[33me9a6557[m Merge pull request #40 from vietcuteloveCSharp/master
+[33mf9fe2db[m Merge pull request #39 from vietcuteloveCSharp/Nghia22
+[33mc00bc44[m Merge branch 'master' into Nghia22
+[33m76e2e54[m MaGiamGia
+[33mbade957[m ,
+[33mc714a77[m Merge pull request #38 from vietcuteloveCSharp/Nhu_Hoang
+[33m3b1878c[m Merge branch 'Nhu_Hoang' of https://github.com/vietcuteloveCSharp/Webbanquanao into Nhu_Hoang
+[33m74e0f52[m Merge pull request #37 from vietcuteloveCSharp/master
+[33m972303a[m BanOnline-GioHang-27/12
+[33m2111945[m Merge pull request #34 from vietcuteloveCSharp/master
+[33m039cdb8[m Merge branch 'Nghia22' into master
+[33m390922a[m Merge pull request #35 from vietcuteloveCSharp/Vietanh
+[33mc8a4c53[m update lại enum trạng thái
+[33m549a3cb[m a
+[33mb2e3571[m Merge pull request #32 from vietcuteloveCSharp/master
+[33m9175556[m Merge pull request #33 from vietcuteloveCSharp/Vietanh
+[33m5184a63[m update trangthaihoadon
+[33ma3b5080[m Fix conflic
+[33mc153e67[m HoaDonDTO
+[33mfe8584d[m Merge pull request #31 from vietcuteloveCSharp/Nhu_Hoang
+[33m17b5b31[m Chi tiết sản phẩm - done
+[33m9a34380[m Merge pull request #30 from vietcuteloveCSharp/Nhu_Hoang
+[33m53fc214[m Merge branch 'Nhu_Hoang' of https://github.com/vietcuteloveCSharp/Webbanquanao into Nhu_Hoang
+[33m6052626[m BanHangOnline_24-12
+[33m4c7e2c5[m Merge pull request #29 from vietcuteloveCSharp/master
+[33m5cc9603[m Pull thay đổi các thuộc tính trong mã giảm giá string -> decimal Thêm các trường cần thiết
+[33medbc5c2[m Merge pull request #28 from vietcuteloveCSharp/master
+[33mbb75918[m Merge pull request #27 from vietcuteloveCSharp/master
+[33m6e566e7[m Merge branch 'master' of github.com:vietcuteloveCSharp/Webbanquanao
+[33m408797e[m Pull sửa  size, màu thêm vào giỏ hàng
+[33m4fd2148[m Merge pull request #26 from vietcuteloveCSharp/Nhu_Hoang
+[33me1c468c[m Add table "SoLuongSanPham"
+[33m0cc7aea[m Merge pull request #25 from vietcuteloveCSharp/Nhu_Hoang
+[33mdbb9b02[m Xoa bang "SoLuongSanPham" Ly do: Khong dung den
+[33m558dfec[m Merge pull request #24 from vietcuteloveCSharp/Nhu_Hoang
+[33m95cc7d0[m Giao dien ban hang online - hoangnn - 11/12
+[33m03abe87[m Merge pull request #23 from vietcuteloveCSharp/Nhu_Hoang
+[33mff6d930[m update - program
+[33mdb54d4a[m a
+[33m6799d9a[m create new area
+[33m20c1bcd[m Merge pull request #22 from vietcuteloveCSharp/master
+[33m6ccda56[m CRUD Màu sắc,Kích cỡ, Thương Hiệu, Danh Mục
+[33mad30666[m pull quantity product
+[33m495a5b3[m Pull crud sanpham full
+[33mff7ae77[m Merge pull request #21 from vietcuteloveCSharp/Nghia22
+[33m7f1655f[m pull crud sản phẩm
+[33ma87f0f4[m login_error
+[33m8e59335[m abc
+[33mc8aba0b[m pulllennay
+[33mce2df47[m[33m ([m[1;31morigin/Test[m[33m, [m[1;31morigin/Nghia21[m[33m)[m Merge pull request #20 from vietcuteloveCSharp/Nhu_Hoang
+[33mbefd3b9[m Merge branch 'Nhu_Hoang' of https://github.com/vietcuteloveCSharp/Webbanquanao into Nhu_Hoang
+[33m0d4a0a4[m Ban tai quay - 4/12
+[33m20086a2[m Merge pull request #19 from vietcuteloveCSharp/master
+[33mc18da0c[m Merge pull request #18 from vietcuteloveCSharp/Nhu_Hoang
+[33m703ab99[m Merge branch 'master' into Nhu_Hoang
+[33mdb5a4f0[m Merge pull request #17 from vietcuteloveCSharp/master
+[33m78a423c[m Merge pull request #16 from vietcuteloveCSharp/Vietanh
+[33m20e2842[m vuvietanh update
+[33m401fbc2[m Merge pull request #15 from vietcuteloveCSharp/master
+[33m104146a[m Merge pull request #14 from vietcuteloveCSharp/Vietanh
+[33mb226bf5[m vuvietanh update
+[33m2ad3697[m merge
+[33m39cae57[m update-bantaiquay-bannhanh
+[33madb0137[m Merge pull request #13 from vietcuteloveCSharp/master
+[33mc548598[m Merge pull request #12 from vietcuteloveCSharp/master
+[33ma6f6545[m[33m ([m[1;31morigin/nghiabr[m[33m, [m[1;31mor
