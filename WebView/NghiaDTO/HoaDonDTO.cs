@@ -1,13 +1,11 @@
-﻿using Enum.EnumVVA;
-using System.ComponentModel.DataAnnotations;
+﻿using DAL.Entities;
+using Enum.EnumVVA;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Entities
+namespace WebView.NghiaDTO
 {
-    public class HoaDon
+    public class HoaDonDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public decimal TongTien { get; set; } = 0;// tổng tiền = sản phẩm + Phí vận chuyển - tiền từ mã giảm giá
         public decimal PhiVanChuyen { get; set; } = 0; // tiền phí vận chuyển
@@ -24,7 +22,6 @@ namespace DAL.Entities
         public virtual KhachHang? KhachHang { get; set; }
 
         public virtual ICollection<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
-        public virtual ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; }
-
+        public virtual ICollection<ChiTietHoaDonDTO> ChiTietHoaDons { get; set; }
     }
 }

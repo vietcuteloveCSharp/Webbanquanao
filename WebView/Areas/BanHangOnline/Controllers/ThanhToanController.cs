@@ -323,7 +323,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             if (response.VnPayResponseCode == "00")
             {
                 // thay đổi trạng thái của hóa đơn
-                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaThanhToan;
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.HoanThanhDon;
                 _context.SaveChanges();
                 // thêm ThanhToanHoaDons
                 var ptThanhToan = new PhuongThucThanhToan();

@@ -11,7 +11,6 @@ namespace DTO.VuvietanhDTO.HoadonsDTO
     public class UpdateTrangThaiDTO
     {
         public int Id { get; set; }
-        public decimal PhiVanChuyen { get; set; } // tiền phí vận chuyển
         public ETrangThaiHD TrangThai { get; set; }
         public int Id_NhanVien { get; set; }
    
