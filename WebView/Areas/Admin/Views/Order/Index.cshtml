@@ -10,139 +10,318 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thông Tin Đơn Hàng</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+            .form-container form {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 600px;
+                width: 100%;
+            }
+
+        select, button {
+            padding: 8px 12px;
+            font-size: 16px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
 
         th, td {
+            padding: 12px;
             border: 1px solid #ddd;
-            padding: 8px;
+            text-align: left;
         }
 
         th {
             background-color: #f2f2f2;
         }
+
+        .btn-sm {
+            padding: 6px 12px;
+        }
+
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+        }
+
+        .dataTables_wrapper {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .dataTables_filter, .dataTables_length {
+            margin-bottom: 20px;
+        }
+        /* Table Style */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+            .table th, .table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .table th {
+                background-color: #f4f4f4;
+                font-weight: bold;
+            }
+
+        /* Flexbox Layout */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        .product-name {
+            font-weight: bold;
+        }
+
+        .product-quantity {
+            color: #555;
+        }
+
     </style>
 </head>
 <body>
-    <h2>Tìm kiếm</h2>
-    <form asp-action="SearchById" method="post"> 
-        <label for="orderID">Mã hóa đơn:</label> 
-        <input type="number" name="orderID" id="searchId" class="form-control" />
-        <br />
-        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </form>
-    <h2>Lọc trạng thái</h2>
-    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
 
-    // Trạng thái dành riêng cho bán online
-    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
-    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
-    HuyDon = 6,            // Đơn hàng bị hủy *@
-    <form asp-action="FilterByStatus" method="post">
-        <label for="FilterStatus">Trạng thái:</label>
-        <select id="FilterStatus" name="FilterStatus" class="form-control">
-            <option value="0" selected >Tất cả</option>
-            <option value="1">Chờ xác nhận </option>
-            <option value="2">Chờ thanh toán </option>
-            <option value="3">Đã xác nhận</option>
-            <option value="4">Đang vận chuyển </option>
-            <option value="5">Hoàn thành đơn</option>
-            <option value="6">Hủy đơn</option>
-        </select>
-        <br />
-        <button type="submit" class="btn btn-primary">Lọc</button>
-    </form>
+    <h2>Lọc trạng thái</h2>
+    <div class="form-container">
+        <form asp-action="FilterByStatus" method="post">
+            <label for="filterorder">Trạng thái:</label>
+            <select id="filterorder" name="filterorder" class="form-control">
+                <option value="0">Tất cả</option>
+                <option value="1">Chờ xác nhận</option>
+                <option value="2">Chờ thanh toán</option>
+                <option value="3">Đã xác nhận</option>
+                <option value="4">Đang vận chuyển</option>
+                <option value="5">Hoàn thành đơn</option>
+                <option value="6">Hủy đơn</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </form>
+    </div>
     <h1>Thông Tin Đơn Hàng</h1>
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger"> @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        <div class="alert">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
                 <p>@error.ErrorMessage</p>
-            } </div>
+            }
+        </div>
     }
-    <table>
-        <tr>
-            <th>Thông tin khách hàng</th>
-            <th>Thông tin đơn hàng</th>
-            <th>Thời Gian</th>
-            <th>Địa chỉ Giao Hàng</th>
-            <th>Tổng Tiền</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var hoaDon in Model)
+    <table id="hoaDonTable">
+        <thead>
+            <tr>
+                <th>Thông tin khách hàng</th>
+                <th>Mã đơn hàng</th>
+                <th>Sản phẩm</th>
+                <th>Thời gian</th>
+                <th>Địa chỉ giao hàng</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
             {
-                <tr>
-                    <td>
-                        <p>SĐT: @hoaDon.KhachHangs.Sdt</p>@* //Lấy SDT *@
-                        <p>Tên Khách Hàng: @hoaDon.KhachHangs.Ten</p> @* //Lấy tên *@
-                    </td>
-                    <td>
-                        <p>Mã đơn hàng: @hoaDon.Id</p>
-                        <table border="none">
-                            <tr>
-                                <th>Sản Phẩm</th>
-                                <th>Số Lượng</th>
-                            </tr>
+                @foreach (var hoaDon in Model)
+                {
+                    <tr>
+                        <td>
+                            <p>SĐT: @hoaDon.KhachHangs.Sdt</p>
+                            <p>Tên: @hoaDon.KhachHangs.Ten</p>
+                        </td>
+                        <td>@hoaDon.Id</td>
+                        <td>
                             @if (hoaDon.SanPhams != null && hoaDon.SanPhams.Any())
                             {
-                                @foreach (var sp in hoaDon.SanPhams)
-                                {
-                                    <tr>
-                                        <td>@sp.Ten</td>
-                                        <td>@sp.SoLuong</td>
-                                    </tr>
-                                }
+                                <table class="table">
+                                    <tbody>
+                                        @foreach (var sp in hoaDon.SanPhams)
+                                        {
+                                            <tr>
+                                                <td>@sp.Ten</td>
+                                                <td>@sp.SoLuong</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
                             }
                             else
                             {
-                                <tr>
-                                    <td>TenSp</td>
-                                    <td>SoLuongSp</td>
-                                </tr>
+                                <p>Không có sản phẩm</p>
                             }
-                        </table>
-                    </td>
-                    <td>@hoaDon.NgayTao</td>
+                        </td>
 
-                    <td>@hoaDon.DiaChiGiaoHang</td>
+                        <td>Ngày @hoaDon.NgayTao.ToString("d/M/yyyy HH:mm")</td>
+                        <td>@hoaDon.DiaChiGiaoHang</td>
+                        <td>@string.Format("{0:N0} VND", Convert.ToDecimal(hoaDon.TongTien))</td>
 
-                    <td>@hoaDon.TongTien</td>
-                    @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
+                        <td>
+                            @{
+                                // Lấy trạng thái từ enum và xác định tên hiển thị
+                                string trangThaiHienThi = hoaDon.TrangThai switch
+                                {
+                                    ETrangThaiHD.ChoXacNhan => "Chờ xác nhận",
+                                    ETrangThaiHD.ChoThanhToan => "Chờ thanh toán",
+                                    ETrangThaiHD.DaXacNhan => "Đã xác nhận",
+                                    ETrangThaiHD.DangVanChuyen => "Đang vận chuyển",
+                                    ETrangThaiHD.HoanThanhDon => "Hoàn thành đơn",
+                                    ETrangThaiHD.HuyDon => "Hủy đơn",
+                                    _ => "Trạng thái không xác định"
+                                };
 
-                    // Trạng thái dành riêng cho bán online
-                    ChoXacNhan = 1,        // Đơn hàng chờ xác nhận từ người bán
-                    ChoThanhToan = 2,      // Đơn hàng chờ thanh toán (nếu không phải COD)
-                    DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
-                    DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
-                    HuyDon = 6,            // Đơn hàng bị hủy *@
-                   @*  <td>@hoaDon.TrangThai</td> *@
-                    <td>
-                        @Enum.GetName(typeof(ETrangThaiHD), @hoaDon.TrangThai).Replace("ChoXacNhan", "Chờ xác nhận").Replace("ChoThanhToan", "Chờ Thanh Toán ").Replace("DaXacNhan", "Đã Xác Nhận").Replace("DangVanChuyen", "Đang vận chuyển").Replace("HuyDon", "Hủy Đơn").Replace("HoanThanhDon", "Hoàn thành đơn")
-                    </td>
-                    <td>
-                        <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi Tiết</a>
-                        @if (hoaDon.TrangThai != ETrangThaiHD.HoanThanhDon && hoaDon.TrangThai != ETrangThaiHD.HuyDon)
-                        {
-                            <br />
-                            <a asp-action="CancelOrder" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-danger">Hủy đơn</a>
-                        }
-                        
-                    </td>
+                                // Lấy class CSS của badge từ trạng thái
+                                string classCss = hoaDon.TrangThai switch
+                                {
+                                    ETrangThaiHD.ChoXacNhan => "badge bg-warning text-dark", // Vàng
+                                    ETrangThaiHD.ChoThanhToan => "badge bg-info text-white", // Xanh dương nhạt
+                                    ETrangThaiHD.DaXacNhan => "badge bg-primary text-white", // Xanh dương
+                                    ETrangThaiHD.DangVanChuyen => "badge bg-secondary text-white", // Xám
+                                    ETrangThaiHD.HoanThanhDon => "badge bg-success text-white", // Xanh lá cây
+                                    ETrangThaiHD.HuyDon => "badge bg-danger text-white", // Đỏ
+                                    _ => "badge bg-light text-dark" // Trạng thái không xác định (màu sáng)
+                                };
+                            }
+
+                            <!-- Hiển thị trạng thái với màu sắc -->
+                            <span class="@classCss">@trangThaiHienThi</span>
+                        </td>
+
+
+                        <td>
+                            <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi tiết</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8">Không có hóa đơn nào</td>
                 </tr>
             }
-        }else
-        {
-            <p>Không có hóa đơn nào </p>
-        }
+        </tbody>
     </table>
+
 </body>
 
 </html>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var table = $('#hoaDonTable').DataTable({
+                dom: 'Bfrtip', // Thêm `B` để hiển thị các nút
+                buttons: [
+                    {
+                        extend: 'pdfHtml5', // Xuất PDF
+                        title: 'Danh sách đơn hàng',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ],
+                columns: [
+                    { data: 'thongtinkhachhang' },
+                    { data: 'madonhang' },
+                    { data: 'sanpham' },
+                    { data: 'thoigian' },
+                    { data: 'diachiagiaohang' },
+                    { data: 'tongtien' },
+                    { data: 'trangthai' },
+                    { data: 'hanhdong' }
+                ],
+                initComplete: function () {
+                    // Kiểm tra dữ liệu khi bảng được khởi tạo
+                    checkTableData(this.api());
+                },
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json' // Hỗ trợ tiếng Việt
+                }
+            });
+
+            // Lọc dữ liệu và kiểm tra sau khi thay đổi
+            $('#FilterStatus').on('change', function () {
+                var filterValue = $(this).val();
+                table.ajax.url(`/api/orders?status=${filterValue}`).load(function () {
+                    checkTableData(table);
+                });
+            });
+
+            // Hàm kiểm tra và hiển thị thông báo
+            function checkTableData(api) {
+                if (api.rows().data().length === 0) {
+                    $('#noDataMessage').show(); // Hiển thị thông báo
+                } else {
+                    $('#noDataMessage').hide(); // Ẩn thông báo
+                }
+            }
+        });
+    </script>
+
+
+}

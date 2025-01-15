@@ -483,8 +483,20 @@ namespace WebView.Areas.Admin.Controllers
 
         private void PopulateDropDownLists(SanPhamDTO sanPhamDTO = null)
         {
-            ViewBag.ThuongHieus = new SelectList(_context.ThuongHieus, "Id", "Ten", sanPhamDTO?.Id_ThuongHieu);
-            ViewBag.DanhMucs = new SelectList(_context.DanhMucs, "Id", "TenDanhMuc", sanPhamDTO?.Id_DanhMuc);
+            // Lọc thương hiệu có trạng thái true
+            ViewBag.ThuongHieus = new SelectList(
+                _context.ThuongHieus.Where(th => th.TrangThai == true), // Lọc trạng thái true
+                "Id",
+                "Ten",
+                sanPhamDTO?.Id_ThuongHieu
+            );
+            // Chỉ lấy danh mục có trạng thái true
+            ViewBag.DanhMucs = new SelectList(
+                _context.DanhMucs.Where(dm => dm.TrangThai == true), // Lọc trạng thái true
+                "Id",
+                "TenDanhMuc",
+                sanPhamDTO?.Id_DanhMuc
+            );
             ViewBag.MauSacs = new SelectList(_context.MauSacs, "Id", "Ten");
             ViewBag.KichThuocs = new SelectList(_context.KichThuocs, "Id", "Ten");
         }

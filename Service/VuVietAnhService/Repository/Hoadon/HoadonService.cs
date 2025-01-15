@@ -67,30 +67,27 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
             var isValid = current switch
             {
-                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" 
+                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoXacNhan =>
-                    next == ETrangThaiHD.DaXacNhan ,
-                ETrangThaiHD.ChoThanhToan =>
-                    next ==ETrangThaiHD.DaXacNhan||
-                    next ==ETrangThaiHD.HoanThanhDon||
-                    next ==ETrangThaiHD.HuyDon,
-                //Đã xác nhận: có thể chuyển sang "đang vận chuyển"
+                    next == ETrangThaiHD.DaXacNhan || next == ETrangThaiHD.HuyDon,
+                // Đã xác nhận: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
                 ETrangThaiHD.DaXacNhan =>
-                    next == ETrangThaiHD.DangVanChuyen,
-
-                // Đang vận chuyển: Có thể chuyển sang "Hoàn thành",  hoặc "Hủy đơn"
+                    next == ETrangThaiHD.DangVanChuyen || next == ETrangThaiHD.HuyDon,
+                // Chờ thanh toán: Không thể chuyển sang "Hủy đơn"
+                ETrangThaiHD.ChoThanhToan =>
+                    next != ETrangThaiHD.HuyDon &&
+                    (next == ETrangThaiHD.DaXacNhan || next == ETrangThaiHD.HoanThanhDon),
+                // Đang vận chuyển: Không thể chuyển sang "Hủy đơn"
                 ETrangThaiHD.DangVanChuyen =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HuyDon ,
-                   
+                    next == ETrangThaiHD.HoanThanhDon,
 
-         
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
 
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
-                // Mặc định
+
+                // Mặc định: Không hợp lệ
                 _ => false
             };
             if (!isValid)
