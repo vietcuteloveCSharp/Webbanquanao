@@ -97,15 +97,15 @@
                                 @* <p class="mb-1 text-muted">Mã SP: @item.IdChiTietSanPham</p> *@
                                 <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps?.FirstOrDefault(x=> x.Id == item.IdKichThuoc)?.Ten</span></p>
                                 <p class="mb-1">Màu sắc: <span>@item.MauSacResps?.FirstOrDefault(x=> x.Id == item.IdMauSac)?.Ten</span></p>
-                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" onclick="GetMauSac(@item.Id)"
+                               @*  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" onclick="GetMauSac(@item.Id)"
                                         data-bs-target="#modal-giohang-@item.Id">
                                     Chọn phân loại
-                                </button>
+                                </button> *@
                             </div>
                         </td>
                         <td>
                             <div class="text-start">
-                                @if(item.SanPham.GiaBanDau == 0){
+                                @if(item.SanPham.GiaBanDau == item.SanPham.GiaBan){
                                     <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>
                                 }else{
                                      <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>

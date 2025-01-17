@@ -47,6 +47,7 @@ namespace WebView.Services.Vnpay
             {
                 VnpTxnRef = tick,
                 IdHoaDon = model.IdHoaDon,
+                PhuongThucThanhToan = model.PhuongThucThanhToan,
             };
             var lstSessionThanhToan = context.Session.GetObjectFromJson<List<SessionThanhToanModel>>("SessionThanhToan");
             if (lstSessionThanhToan != null && lstSessionThanhToan.Count >= 1)
