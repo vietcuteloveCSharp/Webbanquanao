@@ -1,5 +1,4 @@
-﻿using DAL.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebView.NghiaDTO
@@ -13,19 +12,19 @@ namespace WebView.NghiaDTO
         [Required(ErrorMessage = "Mô tả không được để trống.")]
         public string MoTa { get; set; } = string.Empty;
 
-        [Range(0, 100, ErrorMessage = "Loại khuyến mại phải trong khoảng từ 0 đến 100.")]
-        public int LoaiKhuyenMai { get; set; } // theo % 
+        [Required(ErrorMessage = "% giảm giá không được để trống.")]
 
-        [Range(1, double.MaxValue, ErrorMessage = "Giá trị giảm phải lớn hơn 0.")]
+        [Range(1, 100, ErrorMessage = "Giá trị % giảm giá  phải trong khoảng từ 1% đến 100%.")]
+
         public decimal GiaTriGiam { get; set; } // % giảm
+        [Required(ErrorMessage = "Điều kiện giảm giá  không được để trống.")]
+        [Range(1, 20000000, ErrorMessage = "Điều kiện giảm giá không được vượt quá 20 triệu")]
 
-        [Range(0, double.MaxValue, ErrorMessage = "Điều kiện giảm giá phải lớn hơn 0.")]
+
         public decimal DieuKienGiamGia { get; set; } // điều kiện giảm sản phẩm 
 
-        [Required(ErrorMessage = "Ngày tạo không được để trống.")]
         public DateTime NgayTao { get; set; } = DateTime.Now;
 
-        [Required(ErrorMessage = "Ngày bắt đầu không được để trống.")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime NgayBatDau { get; set; }
@@ -38,5 +37,6 @@ namespace WebView.NghiaDTO
                                            //public int Id_DanhMuc { get; set; }
         public List<ChiTietKhuyenMaiDTO> chiTietKhuyenMaiDTOs { get; set; } = new();
         public List<SelectListItem> DanhMucs { get; set; }
+        // Thêm thuộc tính này để lưu danh sách ID danh mục đã chọn
     }
 }

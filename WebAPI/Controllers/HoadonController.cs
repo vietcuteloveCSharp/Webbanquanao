@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
                 {
                     Message = "Cập nhật trạng thái hóa đơn thành công.",
                     Data = result
-                });
+                }); 
             }
             catch (KeyNotFoundException ex)
             {

@@ -55,32 +55,23 @@ public async Task<IActionResult> Index()
             return View(model);
         }
         // POST: Admin/MaGiamGia/Create
+        // POST: Admin/MaGiamGia/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MaGiamGiaDTO maGiamGiaDto)
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra trùng tên mã giảm giá
                 var existingCoupon = await _context.MaGiamGias
-           .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten);
+                    .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten);
 
                 if (existingCoupon != null)
                 {
-                    // Nếu tên mã giảm giá đã tồn tại, trả về lỗi
                     ModelState.AddModelError("Ten", "Tên mã giảm giá đã tồn tại.");
                     return View(maGiamGiaDto);
                 }
-
-                // Kiểm tra xem mã giảm giá có bị trùng không (nếu có trường mã giảm giá)
-                var existingCode = await _context.MaGiamGias
-                    .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten);
-
-                if (existingCode != null)
-                {
-                    // Nếu mã giảm giá đã tồn tại, trả về lỗi
-                    ModelState.AddModelError("MaGiamGia", "Mã giảm giá đã tồn tại.");
-                    return View(maGiamGiaDto);
-                }
+                // Lưu thông tin mã giảm giá vào cơ sở dữ liệu
                 var entity = new MaGiamGia
                 {
                     Id = maGiamGiaDto.Id,
@@ -91,10 +82,11 @@ public async Task<IActionResult> Index()
                     TrangThai = maGiamGiaDto.TrangThai,
                     ThoiGianTao = DateTime.Now,
                     ThoiGianKetThuc = maGiamGiaDto.ThoiGianKetThuc,
-                    DieuKienGiamGia = maGiamGiaDto.DieuKienGiamGia ?? 0,// Lưu điều kiện giảm giá vào cơ sở dữ liệu
+                    DieuKienGiamGia = maGiamGiaDto.DieuKienGiamGia ?? 0,
                     SoLuong = maGiamGiaDto.SoLuong, // Lưu số lượng
                     SoLuongDaSuDung = 0
                 };
+
                 // Chỉ lưu trường phù hợp với loại giảm giá
                 if (maGiamGiaDto.LoaiGiamGia == 0) // Coupon
                 {
@@ -105,14 +97,20 @@ public async Task<IActionResult> Index()
                     entity.MenhGia = maGiamGiaDto.MenhGia ?? 0;
                 }
 
-
+                // Thêm mới vào cơ sở dữ liệu
                 _context.MaGiamGias.Add(entity);
                 await _context.SaveChangesAsync();
+
+                // Thêm thông báo thành công
                 TempData["success"] = "Thêm mới mã giảm giá thành công!";
                 return RedirectToAction(nameof(Index));
             }
+
+            // Nếu ModelState không hợp lệ, trả về View cùng với thông báo lỗi
+            TempData["error"] = "Có lỗi xảy ra, vui lòng kiểm tra lại!";
             return View(maGiamGiaDto);
         }
+
 
 
         [HttpGet]
