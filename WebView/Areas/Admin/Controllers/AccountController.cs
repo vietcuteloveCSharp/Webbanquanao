@@ -49,9 +49,10 @@ namespace WebView.Areas.Admin.Controllers
                 // Xử lý khi đăng nhập thất bại
                 ModelState.AddModelError(string.Empty,loginResponse.Message);
                 return View();
+
             }
-            ModelState.AddModelError(string.Empty, "Error logging in");
-            return RedirectToAction("Index", "Order");
+            ModelState.AddModelError(string.Empty, "Tên tài khoản hoặc mật khẩu không chính xác");
+            return View();
         }
 
     }
