@@ -1,0 +1,172 @@
+﻿@{
+    var type = ViewData["type"] as string;
+}
+
+<div class="container mb-5 mt-5">
+    <div class="d-flex">
+        <div style="width: 62px;height: 62px; border-radius: 50%;overflow: hidden;align-items: center;position: relative;display: flex;justify-content: center;">
+            <img src="https://pm2ec.s3.ap-southeast-1.amazonaws.com/customer/84981642651_1721662556880-376279814.jpg"
+                 style="width: 100%;
+                height: 100%;
+                text-align: center;
+                object-fit: cover;
+                color: transparent;
+                text-indent: 500px;" alt="">
+        </div>
+        <div class="ms-3">
+            <p class="mb-1">Xin chào,</p>
+            <span class="fw-bold">HHH</span>
+        </div>
+    </div>
+    <div class="row mt-3 gap-3">
+        <div class="col-2 border border-1 p-3">
+            <div class=" flex-column  w-100 h-100">
+                @{
+                    switch (type)
+                    {
+                        case "donhang":
+                            <div class="mb-3 ">
+                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-danger">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                    Sổ địa chỉ
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "taikhoan":
+                            <div class="mb-3 ">
+                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                    Sổ địa chỉ
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "sodiachi":
+                            <div class="mb-3 ">
+                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn  btn-danger">
+                                    Sổ địa chỉ
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "doimatkhau":
+                            <div class="mb-3 ">
+                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
+                                    Sổ địa chỉ
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn  btn-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                    }
+                }
+               
+            </div>
+
+        </div>
+        <div class="col-9 border border-1 p-3">
+            @* <div class="tab-content " id="v-pills-tabContent"> *@
+                @{
+                    switch (type)
+                    {
+                        case "donhang":
+                            @Html.Partial("DonHangPartial")
+                            break;
+                        case "taikhoan":
+                            @Html.Partial("TaiKhoanCuaToiPartial")
+                            break;
+                        case "sodiachi":
+                            @Html.Partial("SoDiaChiPartial")
+                            break;
+                        case "doimatkhau":
+                            @Html.Partial("DoiMatKhauPartial")
+                            break;
+
+                    }
+               }
+                
+               
+               
+
+            @* </div> *@
+        </div>
+    </div>
+</div>
+
+
+
+
