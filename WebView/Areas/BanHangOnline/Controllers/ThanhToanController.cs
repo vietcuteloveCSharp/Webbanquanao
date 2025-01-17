@@ -85,7 +85,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             foreach (var item in lstSp)
             {
                 var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.chiTietKhuyenMais.Any(a => a.Id_DanhMuc == item.Id_DanhMuc));
-                var giaBan = item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                var giaBan = khuyenMai != null && item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
                 lstSpNew.Add(new SanPhamResp
                 {
                     Id = item.Id,
