@@ -23,8 +23,8 @@ namespace DAL.Entities
         public virtual NhanVien? NhanVien { get; set; }
         public virtual KhachHang? KhachHang { get; set; }
 
-        public virtual ICollection<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
-        public virtual ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; }
+        public virtual ICollection<ThanhToanHoaDon>? ThanhToanHoaDons { get; set; }
+        public virtual ICollection<ChiTietHoaDon>? ChiTietHoaDons { get; set; }
 
     }
 }

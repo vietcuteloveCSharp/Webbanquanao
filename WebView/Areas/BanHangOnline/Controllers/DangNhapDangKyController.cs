@@ -121,6 +121,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        [HttpGet]
+        public IActionResult ChuaDangNhap()
+        {
+            return View();
+        }
         private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
     }

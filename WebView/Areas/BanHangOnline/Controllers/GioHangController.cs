@@ -25,7 +25,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
             if (tk == null)
             {
-                return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
+                return Redirect("/BanHangOnline/DangNhapDangKy/ChuaDangNhap");
             }
             // list giỏ hàng của khách hàng
             var lstGioHang = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0).Include(x => x.ChiTietSanPham).ToListAsync();
@@ -82,8 +82,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var lstSpNew = new List<SanPhamResp>();
             foreach (var item in lstSp)
             {
-                var khuyenMai = lstKhuyenMai.FirstOrDefault(c => c.Id_DanhMuc == item.Id_DanhMuc).KhuyenMai;
-                var giaBan = item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                var khuyenMai = lstKhuyenMai?.FirstOrDefault(c => c.Id_DanhMuc == item.Id_DanhMuc)?.KhuyenMai ?? null;
+                var giaBan = khuyenMai != null && item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
                 lstSpNew.Add(new SanPhamResp
                 {
                     Id = item.Id,

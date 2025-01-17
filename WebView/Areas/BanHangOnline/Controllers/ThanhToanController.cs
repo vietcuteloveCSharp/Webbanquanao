@@ -148,21 +148,34 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
             }
+            if (!_context.KhachHangs.Any(x => x.Id == tk.Id && x.TrangThai == true))
+            {
+                return Json(new { status = 401, success = false, message = "Tài khoản đã bị khóa không thể thực hiện thanh toán." });
+            }
             // Xác định số lượng trong giỏ hàng <= so lượng trong sản phẩm chi tiết
-            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).Where(x => x.SoLuong <= x.ChiTietSanPham.SoLuong).ToListAsync();
+            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).Where(x => x.TrangThai).Where(x => x.SoLuong <= x.ChiTietSanPham.SoLuong).ToListAsync();
             if (lstGioHang == null || lstGioHang.Count <= 0)
             {
                 ViewData["message"] = "Thanh toán thất bại";
                 return View("ThanhToanThatBai");
             }
             // check khuyến mại cho sản phẩm or danh mục sản phẩm
-            // 29/12 hỏi lại về cơ chế khuyến mại
+            var lstIdDm = lstGioHang.Select(x => x.ChiTietSanPham.SanPham.Id_DanhMuc).Distinct().ToList();
+            var timenow = DateTime.Now;
+            var lstKhuyenMai = await _context.ChiTietKhuyenMais.Where(x => lstIdDm.Contains((int)x.Id_DanhMuc))
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timenow && timenow <= x.KhuyenMai.NgayKetThuc)
+                .ToListAsync();
 
             // lấy tổng tiền hóa đơn
             decimal tongTienHoaDon = 0;
             foreach (var item in lstGioHang)
             {
-                tongTienHoaDon += item.SoLuong * item.ChiTietSanPham.SanPham.Gia;
+                var khuyenmai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.ChiTietSanPham.SanPham.Id_DanhMuc).KhuyenMai;
+                var giaban = item.ChiTietSanPham.SanPham.Gia >= khuyenmai.DieuKienGiamGia ? Math.Round(item.ChiTietSanPham.SanPham.Gia - (item.ChiTietSanPham.SanPham.Gia * khuyenmai.GiaTriGiam / 100)) : Math.Round(item.ChiTietSanPham.SanPham.Gia);
+                tongTienHoaDon += item.SoLuong * giaban;
+
             }
             // check mã giảm giá mà kh đã thêm
 
@@ -219,28 +232,23 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 Id_KhachHang = tk.Id,
                 TongTien = tongTienHoaDon,
-                TrangThai = Enum.EnumVVA.ETrangThaiHD.ChoThanhToan,
+                TrangThai = req.PhuongThucThanhToan.Trim().ToLower() == "vnpay" ? Enum.EnumVVA.ETrangThaiHD.ChoThanhToan : Enum.EnumVVA.ETrangThaiHD.ChoXacNhan,
                 NgayTao = DateTime.Now,
                 PhiVanChuyen = req.PhiVanChuyen,
                 DiaChiGiaoHang = req.DiaChiGiaoHang,
 
             }).Entity;
             _context.SaveChanges();
-            var requestVnPay = new PaymentInformationModel
+            // khi phương thức thanh toán là cod
+            if (req.PhuongThucThanhToan.Trim().ToLower() == "cod")
             {
-                Name = tk.Ten,
-                Amount = (double)Math.Round(tongTienHoaDon),
-                OrderType = "other",
-                OrderDescription = $"Thanh toán vnpay cho đơn của khách hàng {tk.Ten}, tổng tiền hàng: {(double)Math.Round(tongTienHoaDon)} tại CANMAN shop",
-                IdHoaDon = hoaDonDb.Id
-            };
-
-            // Xử lý logic tạo URL thanh toán VNPAY
-            var url = _vnPayService.CreatePaymentUrl(requestVnPay, HttpContext);
-
-            if (!string.IsNullOrEmpty(url))
-            {
-                // Lưu thông tin: DonHang, ChiTietHoaDon, ChiTietMaGiamGia, VnpayInfo,
+                //thành công:
+                //trừ số lượng sản phẩm chi tiết theo số lượng giỏ hàng
+                foreach (var item in lstGioHang)
+                {
+                    item.ChiTietSanPham.SoLuong = item.ChiTietSanPham.SoLuong - item.SoLuong;
+                }
+                _context.SaveChanges();
 
                 // thêm  chi tiết hóa đơn
                 foreach (var spctgh in lstGioHang)
@@ -254,6 +262,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         TrangThai = true
                     });
                 }
+                _context.SaveChanges();
+
                 if (giamGia != null)
                 {
                     giamGia.SoLuong -= 1;
@@ -277,16 +287,104 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }
                 // xóa toàn bộ sản phẩm đã mua có trong giỏ hàng khách hàng
                 _context.RemoveRange(lstGioHang);
+                //lưu thông tin thanh toán
+                var ptThanhToan = new PhuongThucThanhToan();
+                if (!_context.PhuongThucThanhToans.Any(x => x.Ten.ToLower().Trim() == "cod"))
+                {
+                    ptThanhToan = _context.PhuongThucThanhToans.Add(new PhuongThucThanhToan
+                    {
+                        Mota = $"Phương thức thanh toán cod",
+                        Ten = "cod",
+                        NgayTao = DateTime.Now,
+                        TrangThai = true
+                    }).Entity;
 
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    ptThanhToan = _context.PhuongThucThanhToans.FirstOrDefault(x => x.Ten.ToLower().Trim() == "cod");
+                }
+
+                _context.ThanhToanHoaDons.Add(new ThanhToanHoaDon
+                {
+                    Id_HoaDon = hoaDonDb.Id,
+                    Id_PhuongThucThanhToan = ptThanhToan.Id,
+                    TongTien = hoaDonDb.TongTien,
+                    NgayThanhToan = DateTime.Now,
+                    SoTienDaThanhToan = hoaDonDb.TongTien,
+                    MaGiaoDich = "",
+                });
                 _context.SaveChanges();
-                // Chuyển hướng người dùng đến URL thanh toán
-                return Redirect(url);
+
+                return View("ThanhToanThanhCong", null);
             }
             else
             {
-                // Trường hợp URL không được tạo thành công
-                ViewData["message"] = "không thể tạo url vnpay";
-                return View("ThanhToanThatBai");
+                // khi phương thức thanh toán là vnpay
+                var requestVnPay = new PaymentInformationModel
+                {
+                    Name = tk.Ten,
+                    Amount = (double)Math.Round(tongTienHoaDon),
+                    OrderType = "other",
+                    OrderDescription = $"Thanh toán vnpay cho đơn của khách hàng {tk.Ten}, tổng tiền hàng: {(double)Math.Round(tongTienHoaDon)} tại CANMAN shop",
+                    IdHoaDon = hoaDonDb.Id,
+                    PhuongThucThanhToan = req.PhuongThucThanhToan,
+                };
+
+                // Xử lý logic tạo URL thanh toán VNPAY
+                var url = _vnPayService.CreatePaymentUrl(requestVnPay, HttpContext);
+
+                if (!string.IsNullOrEmpty(url))
+                {
+                    // Lưu thông tin: DonHang, ChiTietHoaDon, ChiTietMaGiamGia, VnpayInfo,
+
+                    // thêm  chi tiết hóa đơn
+                    foreach (var spctgh in lstGioHang)
+                    {
+                        var chiTietHD = _context.ChiTietHoaDons.Add(new ChiTietHoaDon
+                        {
+                            Id_HoaDon = hoaDonDb.Id,
+                            SoLuong = spctgh.SoLuong,
+                            Id_ChiTietSanPham = spctgh.Id_ChiTietSanPham,
+                            Gia = spctgh.ChiTietSanPham.SanPham.Gia, // giá này chưa được giảm khi có đợt khuyến mại
+                            TrangThai = true
+                        });
+                    }
+                    if (giamGia != null)
+                    {
+                        giamGia.SoLuong -= 1;
+                        giamGia.SoLuongDaSuDung += 1;
+                        if (giamGia.SoLuong == 0)
+                        {
+                            giamGia.TrangThai = 2;
+                        }
+
+
+                        // thêm chi tiết mã giảm giá
+                        _context.ChiTietMaGiamGias.Add(new ChiTietMaGiamGia
+                        {
+                            Id_HoaDon = hoaDonDb.Id,
+                            Id_KhachHang = tk.Id,
+                            Id_MaGiamGia = giamGia?.Id ?? 0,
+                            TongTien = tongTienGiam,
+                            NgaySuDung = DateTime.Now,
+                            NoiDung = $"{tk.Ten} đã sử dụng mã giảm giá {giamGia.Id} cho đơn hàng {hoaDonDb.Id} vào {DateTime.Now}, tổng số tiền giảm {tongTienGiam}"
+                        });
+                    }
+                    // xóa toàn bộ sản phẩm đã mua có trong giỏ hàng khách hàng
+                    _context.RemoveRange(lstGioHang);
+
+                    _context.SaveChanges();
+                    // Chuyển hướng người dùng đến URL thanh toán
+                    return Redirect(url);
+                }
+                else
+                {
+                    // Trường hợp URL không được tạo thành công
+                    ViewData["message"] = "không thể tạo url vnpay";
+                    return View("ThanhToanThatBai");
+                }
             }
         }
 
@@ -323,16 +421,18 @@ namespace WebView.Areas.BanHangOnline.Controllers
             if (response.VnPayResponseCode == "00")
             {
                 // thay đổi trạng thái của hóa đơn
-                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.HoanThanhDon;
+
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaXacNhan;
+
                 _context.SaveChanges();
                 // thêm ThanhToanHoaDons
                 var ptThanhToan = new PhuongThucThanhToan();
-                if (!_context.PhuongThucThanhToans.Any(x => x.Ten.Equals("VnPay")))
+                if (!_context.PhuongThucThanhToans.Any(x => x.Ten.ToLower().Trim() == sessionHoaDon.PhuongThucThanhToan.ToLower().Trim()))
                 {
                     ptThanhToan = _context.PhuongThucThanhToans.Add(new PhuongThucThanhToan
                     {
-                        Mota = "Phương thức thanh toán VnPay",
-                        Ten = "VnPay",
+                        Mota = $"Phương thức thanh toán {sessionHoaDon.PhuongThucThanhToan.Trim().ToLower()}",
+                        Ten = sessionHoaDon.PhuongThucThanhToan.Trim().ToLower(),
                         NgayTao = DateTime.Now,
                         TrangThai = true
                     }).Entity;
@@ -341,8 +441,9 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }
                 else
                 {
-                    ptThanhToan = _context.PhuongThucThanhToans.FirstOrDefault(x => x.Ten.Equals("VnPay"));
+                    ptThanhToan = _context.PhuongThucThanhToans.FirstOrDefault(x => x.Ten.ToLower().Trim() == sessionHoaDon.PhuongThucThanhToan.ToLower().Trim());
                 }
+
                 _context.ThanhToanHoaDons.Add(new ThanhToanHoaDon
                 {
                     Id_HoaDon = hoaDon.Id,
@@ -410,20 +511,17 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         mess = "Giao dịch không thành công do: Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.";
                         break;
                     case "99":
-                        mess = "Các lỗi khác";
+                        mess = "Lỗi hệ thống thanh toán vnpay";
                         break;
                     case "11":
-                        mess = "Giao dịch không thành công do: Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.";
+                        mess = "Giao dịch không thành công do: Đã hết hạn chờ thanh toán.";
                         break;
-                    //return RedirectToAction("ThucHienThanhToanLai", mess);
                     case "75":
                         mess = "Ngân hàng thanh toán đang bảo trì.";
                         break;
-                    //return RedirectToAction("ThucHienThanhToanLai", mess);
                     case "79":
-                        mess = "Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch";
+                        mess = "Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định.";
                         break;
-                        //return RedirectToAction("ThucHienThanhToanLai", mess);
                 }
                 ViewData["message"] = mess;
                 return View("ThanhToanThatBai");
