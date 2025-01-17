@@ -43,7 +43,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 .Where(x => x.KhuyenMai.TrangThai == 1)
                 .Where(x => x.KhuyenMai.NgayBatDau <= timenow && timenow < x.KhuyenMai.NgayKetThuc)
                 .FirstOrDefault();
-            var giaBan = sp.Gia >= khuyenMai.KhuyenMai.DieuKienGiamGia ? Math.Round(sp.Gia - (sp.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(sp.Gia);
+            var giaBan = khuyenMai != null && sp.Gia >= khuyenMai?.KhuyenMai?.DieuKienGiamGia ? Math.Round(sp.Gia - (sp.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(sp.Gia);
             var lstHinHAnh = await _context.HinhAnhs.Where(x => x.Id_SanPham == sp.Id).ToListAsync();
             resp.SanPham = new SanPhamResp
             {
