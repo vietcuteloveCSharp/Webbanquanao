@@ -1,7 +1,10 @@
-﻿@* <div class="tab-pane fade" id="v-pills-acc" role="tabpanel" aria-labelledby="v-pills-acc-tab"> *@
+﻿@using DAL.Entities
+@model KhachHang
+
+@* <div class="tab-pane fade" id="v-pills-acc" role="tabpanel" aria-labelledby="v-pills-acc-tab"> *@
     <div class="row">
 
-        <div class="col-5  border-end">
+        @* <div class="col-5  border-end">
             <div class="d-flex justify-content-center mb-4">
                 <img id="selectedAvatar"
                      src="https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg"
@@ -18,29 +21,29 @@
             <div class="d-flex justify-content-center">
                 <p>Dung lượng tối đa 1MB. Định dạng .JPEG, .PNG</p>
             </div>
-        </div>
-        <div class="col-7">
-            <form>
+        </div> *@
+        <div class="col-12">
+        <form action="/BanHangOnline/DangNhapdangky/PostTaiKhoan" method="post">
                 <div class="mb-3">
                     <label for="hoTenInput" class="form-label">Họ và Tên</label>
-                    <input type="text" class="form-control" id="hoTenInput">
+                <input type="text" class="form-control" value="@Model.Ten" name="ten" id="hoTenInput" required>
                 </div>
                 <div class="mb-3">
                     <label for="datetimeInput" class="form-label">Ngày sinh</label>
-                    <input type="date" class="form-control" id="datetimeInput">
+                    <input type="date" class="form-control" value="@(Model.NgaySinh)" id="datetimeInput" disabled>
                 </div>
-                <div class="mb-3">
+               @*  <div class="mb-3">
                     <label class="form-label">Giới tính</label>
                     <div class="d-flex justify-content-start">
                         <div class="form-check me-4">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                   id="radioNam">
+                            <input class="form-check-input" type="radio" name="gioitinh"
+                                   id="radioNam" checked>
                             <label class="form-check-label" for="radioNam">
                                 Nam
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                        <div class="form-check">s
+                             <input class="form-check-input" type="radio" name="gioitinh"
                                    id="radioNu">
                             <label class="form-check-label" for="radioNu">
                                 Nữ
@@ -48,19 +51,18 @@
                         </div>
                     </div>
 
-                </div>
+                </div> *@
                 <div class="mb-3">
                     <label for="sdtInput" class="form-label">Số điện thoại</label>
-                    <input type="text" class="form-control" id="sdtInput" disabled>
+                    <input type="text" class="form-control" value="@Model.Sdt" id="sdtInput" disabled>
                 </div>
                 <div class="mb-3">
                     <label for="emailInput" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="emailInput" disabled>
+                <input type="email" class="form-control" value="@Model.Email" id="emailInput" disabled>
                 </div>
                 <div class="text-end">
                     <button type="submit" class="btn btn-danger ">
-                        Lưu thay
-                        đổi
+                        Lưu thay đổi
                     </button>
                 </div>
 
