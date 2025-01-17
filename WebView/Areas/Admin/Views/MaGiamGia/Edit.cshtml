@@ -43,7 +43,10 @@
     <div id="voucher-fields" style="@(Model.LoaiGiamGia == 1 ? "display:block" : "display:none")">
         <div class="form-group">
             <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
-            <input asp-for="MenhGia" class="form-control typing-price" />
+            <input asp-for="MenhGia" class="form-control typing-price" value="@((Model.MenhGia == 0 ? "" : Model.MenhGia?.ToString("0.##")))" />
+
+
+
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
     </div>
@@ -96,15 +99,25 @@
     <button type="submit" class="btn btn-primary">Cập nhật</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
-
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const menhGia = document.getElementById("MenhGia");
+
+            // Nếu giá trị là 0 hoặc 0.00, xóa giá trị
+            if (menhGia.value === "0" || menhGia.value === "0.00") {
+                menhGia.value = ""; // Xóa giá trị trong ô input
+            }
+        });
+
+
         document.addEventListener("DOMContentLoaded", function () {
             const loaiGiamGia = document.getElementById("LoaiGiamGia");
             const couponFields = document.getElementById("coupon-fields");
             const voucherFields = document.getElementById("voucher-fields");
 
+            // Hàm thay đổi hiển thị các trường tùy theo loại giảm giá
             function toggleFields() {
                 if (loaiGiamGia.value === "0") {
                     couponFields.style.display = "block";
@@ -120,16 +133,51 @@
 
             // Sự kiện thay đổi
             loaiGiamGia.addEventListener("change", toggleFields);
-        });
-        document.addEventListener("DOMContentLoaded", function () {
-            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
 
-            typingPriceFields.forEach(function (field) {
-                field.addEventListener("input", function () {
-                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
+            // Lấy các input cần giới hạn
+            const inputs = [
+                document.getElementById("GiaTriGiam"),
+                document.getElementById("DieuKienGiamGia"),
+                document.getElementById("GiaTriToiDa"),
+                document.getElementById("MenhGia")
+            ];
+
+            // Hàm giới hạn giá trị nhập từ bàn phím
+            function enforceRange(inputElement, min, max) {
+                // Ngăn không cho nhập ký tự không phải số
+                inputElement.addEventListener("keypress", function (event) {
+                    const charCode = event.which || event.keyCode;
+                    // Chỉ cho phép nhập số (0-9)
+                    if (charCode < 48 || charCode > 57) {
+                        event.preventDefault();
+                    }
                 });
-            });
-        });
 
+                // Ngăn không cho nhập số âm hoặc vượt quá giới hạn
+                inputElement.addEventListener("input", function () {
+                    let value = parseFloat(this.value);
+                    if (value < min) {
+                        this.value = min;
+                    } else if (value > max) {
+                        this.value = max;
+                    }
+                });
+
+                // Đặt giá trị mặc định nếu để trống
+                inputElement.addEventListener("blur", function () {
+                    if (this.value === "" || parseFloat(this.value) < min) {
+                        this.value = min; // Giá trị mặc định
+                    }
+                });
+            }
+
+            // Áp dụng giới hạn cho các input
+            enforceRange(inputs[0], 1, 100);       // Giá trị giảm (%): 1-100
+            enforceRange(inputs[1], 1, 20000000); // Điều kiện giảm giá (VNĐ): 1-20 triệu
+            enforceRange(inputs[2], 1, 10000000); // Giá trị tối đa (VNĐ): 1-10 triệu
+            enforceRange(inputs[3], 1, 20000000); // Mệnh giá (VNĐ): 1-20 triệu
+        });
     </script>
 }
+
+

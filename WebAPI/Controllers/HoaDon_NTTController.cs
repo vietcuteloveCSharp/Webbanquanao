@@ -50,39 +50,6 @@ namespace WebAPI.Controllers
                 });
             }
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Add(HoaDonDTO hoaDonDTO)
-        //{
-        //    try
-        //    {
-        //        var result = await _hoaDonService.Add(hoaDonDTO);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new
-        //        {
-        //            Message = "Có lỗi xảy ra khi thêm dữ liệu",
-        //            Error = ex.Message
-        //        });
-        //    }
-        //}
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Update(int id, HoaDonDTO hoaDonDTO)
-        //{
-        //    try
-        //    {
-        //        var result = await _hoaDonService.Update(id, hoaDonDTO);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new
-        //        {
-        //            Message = "Có lỗi xảy ra khi cập nhật dữ liệu",
-        //            Error = ex.Message
-        //        });
-        //    }
-        //}
+       
     }
 }

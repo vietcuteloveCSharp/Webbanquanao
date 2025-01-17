@@ -79,6 +79,10 @@
                 {
                     <div class="image-url-item">
                         <input type="text" class="form-control mb-2" name="ImageUrls" value="@url" placeholder="Nhập link ảnh từ mạng" />
+                        <div class="invalid-feedback text-danger">
+                            Link ảnh không hợp lệ. Vui lòng nhập URL hợp lệ (png, jpg, jpeg, gif, webp, svg).
+                        </div>
+
                     </div>
                 }
             }
@@ -89,7 +93,9 @@
                 </div>
             }
         </div>
+
         <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
+
     </div>
 
 
@@ -98,25 +104,85 @@
 
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 @section Scripts{
-    @{
+ @*    @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    } *@
     <script>
-        $(document).ready(function () {
-            $("#addImageUrl").click(function () {
-                const newInput = `
-                        <div class="image-url-item">
+        document.addEventListener("DOMContentLoaded", function () {
+            // Thêm input mới cho link ảnh
+            document.getElementById("addImageUrl").addEventListener("click", function () {
+                const container = document.getElementById("imageUrlsContainer");
+                const newInput = document.createElement("div");
+                newInput.className = "image-url-item";
+                newInput.innerHTML = `
                             <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
-                            <button type="button" class="btn btn-danger btn-sm remove-image-url">Xóa</button>
-                        </div>`;
-                $("#imageUrlsContainer").append(newInput);
+                            <button type="button" class="btn btn-danger btn-sm remove-image-url">Xóa</button>`;
+                container.appendChild(newInput);
             });
 
-            $(document).on("click", ".remove-image-url", function () {
-                $(this).closest(".image-url-item").remove();
+            // Xóa input link ảnh
+            document.getElementById("imageUrlsContainer").addEventListener("click", function (e) {
+                if (e.target.classList.contains("remove-image-url")) {
+                    e.target.closest(".image-url-item").remove();
+                }
+            });
+
+            // Validate các link ảnh trước khi submit form
+            document.querySelector("form").addEventListener("submit", function (e) {
+                const imageInputs = document.querySelectorAll('input[name="ImageUrls"]');
+                const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg))$/i;
+                let isValid = true;
+                const seenUrls = new Set(); // Dùng Set để kiểm tra trùng lặp
+
+                imageInputs.forEach(input => {
+                    const value = input.value.trim();
+                    const errorDiv = input.nextElementSibling;
+
+                    // Xóa class is-invalid nếu URL hợp lệ
+                    input.classList.remove("is-invalid");
+
+                    // Kiểm tra nếu URL đã tồn tại trong Set
+                    if (value && seenUrls.has(value)) {
+                        isValid = false;
+                        input.classList.add("is-invalid");
+                        if (!errorDiv || !errorDiv.classList.contains("text-danger")) {
+                            const error = document.createElement("div");
+                            error.className = "invalid-feedback text-danger";
+                            error.innerText = "Link ảnh bị trùng. Vui lòng nhập một URL khác.";
+                            input.parentNode.appendChild(error);
+                        }
+                    } else if (value && !urlPattern.test(value)) {
+                        isValid = false;
+                        input.classList.add("is-invalid");
+                        if (!errorDiv || !errorDiv.classList.contains("text-danger")) {
+                            const error = document.createElement("div");
+                            error.className = "invalid-feedback text-danger"; // Thêm màu đỏ
+                            error.innerText = "Link ảnh không hợp lệ. Vui lòng nhập URL hợp lệ (png, jpg, jpeg, gif, webp, svg).";
+                            input.parentNode.appendChild(error);
+                        }
+                    } else {
+                        // Nếu không có lỗi, loại bỏ các thông báo lỗi
+                        if (errorDiv && errorDiv.classList.contains("text-danger")) {
+                            errorDiv.remove();
+                        }
+                    }
+
+                    // Nếu URL hợp lệ, thêm vào Set để kiểm tra trùng
+                    if (value && urlPattern.test(value)) {
+                        seenUrls.add(value);
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault(); // Ngăn form submit nếu có lỗi
+                }
             });
         });
+
     </script>
+
+
+
 
     <script>
         $(document).ready(function () {

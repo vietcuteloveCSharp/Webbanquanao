@@ -28,7 +28,6 @@ namespace WebView.Areas.Admin.Controllers
                     Id = km.Id,
                     Ten = km.Ten,
                     MoTa = km.MoTa,
-                    LoaiKhuyenMai = km.LoaiKhuyenMai,
                     GiaTriGiam = km.GiaTriGiam,
                     DieuKienGiamGia = km.DieuKienGiamGia,
                     NgayTao = km.NgayTao,
@@ -94,8 +93,6 @@ namespace WebView.Areas.Admin.Controllers
 
             return View(khuyenmaiDTO);
         }
-
-
         // POST: Thêm Khuyến Mại
         [HttpPost]
         [ValidateAntiForgeryToken]

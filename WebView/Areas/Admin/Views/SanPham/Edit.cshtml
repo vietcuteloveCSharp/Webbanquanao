@@ -1,4 +1,4 @@
-﻿ @model WebView.NghiaDTO.SanPhamDTO
+﻿  @model WebView.NghiaDTO.SanPhamDTO
 @{
     ViewData["Title"] = "Sửa Sản Phẩm";
 }
@@ -75,14 +75,17 @@
         }
     </div>
 
+    <!-- Quản lý hình ảnh mới -->
     <div class="form-group">
         <label for="ImageUrls">Quản lý hình ảnh</label>
         <textarea id="NewImageUrls" name="NewImageUrls" class="form-control" placeholder="Nhập mỗi link ảnh trên một dòng"></textarea>
+        <span class="text-danger" id="imageUrlsError"></span>
         <button type="button" class="btn btn-success" id="addMultipleImageUrls">Thêm link ảnh</button>
     </div>
     <div id="newImageLinksContainer" style="margin-top: 10px;">
         <ul id="newImageLinksList"></ul>
     </div>
+
 
     <button type="submit" class="btn btn-primary">Lưu</button>
 
@@ -91,9 +94,87 @@
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 
 @section Scripts {
-    @{
+   @*  @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    } *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy danh sách URL hình ảnh hiện tại
+            const existingImages = Array.from(
+                document.querySelectorAll('img[src]')
+            ).map(img => img.src.trim());
+
+            // Thêm nhiều URL hình ảnh
+            document.getElementById('addMultipleImageUrls').addEventListener('click', function () {
+                const textarea = document.getElementById('NewImageUrls');
+                const links = textarea.value.split('\n').map(link => link.trim()).filter(link => link !== '');
+                const container = document.getElementById('newImageLinksList');
+                const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg))$/i;
+
+                links.forEach(link => {
+                    // Kiểm tra trùng lặp
+                    const isDuplicate =
+                        existingImages.includes(link) ||
+                        Array.from(container.querySelectorAll('input[name="ImageUrls"]')).some(input => input.value === link);
+
+                    if (isDuplicate) {
+                        // Hiển thị lỗi cho link trùng lặp
+                        const error = document.getElementById('imageUrlsError');
+                        error.textContent = 'Hình ảnh đã tồn tại. Vui lòng nhập URL khác.';
+                    } else if (!urlPattern.test(link)) {
+                        // Hiển thị lỗi cho link không hợp lệ
+                        const li = document.createElement('li');
+                        li.innerHTML = `<div>
+                                <input type="text" class="form-control is-invalid" name="ImageUrls" value="${link}" />
+                                <div class="invalid-feedback text-danger">Link ảnh không hợp lệ.</div>
+                            </div>`;
+                        container.appendChild(li);
+                    } else {
+                        // Thêm link hợp lệ
+                        const li = document.createElement('li');
+                        li.innerHTML = `<input type="text" class="form-control" name="ImageUrls" value="${link}" />`;
+                        container.appendChild(li);
+                        existingImages.push(link); // Cập nhật danh sách ảnh hiện tại
+                    }
+                });
+
+                // Xóa nội dung textarea sau khi thêm
+                textarea.value = '';
+            });
+
+            // Kiểm tra trước khi gửi form
+            document.querySelector("form").addEventListener("submit", function (e) {
+                const imageInputs = document.querySelectorAll('input[name="ImageUrls"]');
+                let isValid = true;
+
+                // Kiểm tra trùng lặp trong các URL mới
+                const uniqueLinks = new Set();
+                imageInputs.forEach(input => {
+                    const value = input.value.trim();
+                    if (uniqueLinks.has(value)) {
+                        isValid = false;
+                        input.classList.add("is-invalid");
+                        input.nextElementSibling?.remove();
+                        const error = document.createElement("div");
+                        error.className = "invalid-feedback text-danger";
+                        error.innerText = "Link ảnh bị trùng lặp.";
+                        input.parentNode.appendChild(error);
+                    } else {
+                        uniqueLinks.add(value);
+                        input.classList.remove("is-invalid");
+                        input.nextElementSibling?.remove();
+                    }
+                });
+
+                // Ngăn form nếu có lỗi
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Hiển thị/ẩn chi tiết sản phẩm
@@ -144,19 +225,19 @@
                 }
             });
 
-            // Thêm nhiều URL hình ảnh
-            document.getElementById('addMultipleImageUrls').addEventListener('click', function () {
-                const textarea = document.getElementById('NewImageUrls');
-                const links = textarea.value.split('\n').map(link => link.trim()).filter(link => link !== '');
-                const container = document.getElementById('newImageLinksList');
+            // // Thêm nhiều URL hình ảnh
+            // document.getElementById('addMultipleImageUrls').addEventListener('click', function () {
+            //     const textarea = document.getElementById('NewImageUrls');
+            //     const links = textarea.value.split('\n').map(link => link.trim()).filter(link => link !== '');
+            //     const container = document.getElementById('newImageLinksList');
 
-                links.forEach(link => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<input type="text" class="form-control" name="ImageUrls" value="${link}" readonly />`;
-                    container.appendChild(li);
-                });
-                textarea.value = '';
-            });
+            //     links.forEach(link => {
+            //         const li = document.createElement('li');
+            //         li.innerHTML = `<input type="text" class="form-control" name="ImageUrls" value="${link}" readonly />`;
+            //         container.appendChild(li);
+            //     });
+            //     textarea.value = '';
+            // });
 
             // Hiển thị giá dạng tiền tệ
             $(".typing-price").on("input", function () {
