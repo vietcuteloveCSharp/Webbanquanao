@@ -4,7 +4,7 @@
     var spChiTiet = ViewData["sanphamchitiet"] as ChiTietSanPhamResp;
     decimal TinhPhanTramGiamGia(decimal? giaBanDau, decimal? giaBan)
     {
-        return (decimal)(((giaBanDau - giaBan) / giaBanDau) * 100);
+        return Math.Round((decimal)(((giaBanDau - giaBan) / giaBanDau) * 100));
     }
 }
 <style>
@@ -179,12 +179,12 @@
                         <h1 class="mb-3 product-name">@spChiTiet?.SanPham?.Ten</h1>
                         <div class="price-box mb-3">
                             <span class="normal-price">
-                                <span class="price">@spChiTiet?.SanPham?.GiaBan ₫</span>
+                                <span class="price">@spChiTiet?.SanPham?.GiaBan vnd</span>
                             </span>
-                            @if (spChiTiet.SanPham.GiaBanDau > 0)
+                            @if (spChiTiet.SanPham.GiaBanDau != spChiTiet.SanPham.GiaBan)
                             {
                                 <span class="old-price">
-                                    @spChiTiet?.SanPham?.GiaBanDau ₫
+                                    @spChiTiet?.SanPham?.GiaBanDau vnd
                                 </span>
                                 <span class="price-percent">-@(TinhPhanTramGiamGia(spChiTiet?.SanPham?.GiaBanDau, spChiTiet?.SanPham?.GiaBan))%</span>
                             }
@@ -242,95 +242,9 @@
         else
         {
             
-        <div class="col-7 row">
-            <div class="slider-for col-9">
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                         alt="Slide 1" class="zoom-image">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-2.webp" alt="Slide 2"
-                         class="zoom-image">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-1-u.webp"
-                         alt="Slide 3" class=" zoom-image">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-2.webp" alt="Slide 4"
-                         class="zoom-image">
-                </div>
-            </div>
-
-            <!-- Slider điều hướng -->
-            <div class="slider-nav mt-4 col-3">
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-1-u.webp"
-                         alt="Thumb 1">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sk010-128-2.webp"
-                         alt="Thumb 2">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-1-u.webp"
-                         alt="Thumb 3">
-                </div>
-                <div>
-                    <img src="https://canifa.com/img/1517/2000/resize/1/t/1tw24w004-sp091-128-2.webp"
-                         alt="Thumb 4">
-                </div>
-            </div>
-        </div>
         <div class="col-5">
             <div class="container ">
-                <div class="product-card">
-                    <h1 class="mb-3 product-name">Áo nỉ bé gái in hình Elsa</h1>
-                    <div class="price-box mb-3">
-                        <span class="normal-price">
-                            <span class="price">319.200 ₫</span>
-                        </span>
-                        <span class="old-price">
-                            399.000 ₫
-                        </span>
-                        <span class="price-percent">-20%</span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Màu sắc:</strong></label>
-                        <div class="color-options">
-                            <input type="radio" id="color-black" name="color" value="black" checked>
-                            <label for="color-black" class="color-black"></label>
-                            <input type="radio" id="color-purple" name="color" value="purple">
-                            <label for="color-purple" class="color-purple"></label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Kích cỡ:</strong></label>
-                        <div class="size-options d-flex justify-content-start flex-wrap gap-1">
-                            <input type="radio" id="size-98" name="size" value="98">
-                            <label for="size-98">98</label>
-                            <input type="radio" id="size-104" name="size" value="104">
-                            <label for="size-104">104</label>
-                            <input type="radio" id="size-110" name="size" value="110">
-                            <label for="size-110">110</label>
-                            <input type="radio" id="size-116" name="size" value="116">
-                            <label for="size-116">116</label>
-                            <input type="radio" id="size-122" name="size" value="122">
-                            <label for="size-122">122</label>
-                            <input type="radio" id="size-128" name="size" value="128">
-                            <label for="size-128">128</label>
-                            <input type="radio" id="size-134" name="size" value="134">
-                            <label for="size-134">134</label>
-                            <input type="radio" id="size-140" name="size" value="140">
-                            <label for="size-140">140</label>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-danger w-100" onclick="SubmitSp()">
-                            <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
-                        </button>
-                    </div>
-                </div>
+               <h1 class="text-danger">Sản phẩm không tồn tại</h1>
             </div>
         </div>
 

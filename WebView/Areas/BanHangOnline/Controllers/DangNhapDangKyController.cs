@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using WebView.Areas.BanHangOnline.HoangDTO;
 using WebView.Areas.BanHangOnline.HoangDTO.Param;
 using WebView.Repository;
@@ -42,8 +43,9 @@ namespace WebView.Areas.BanHangOnline.Controllers
         {
             if (string.IsNullOrEmpty(param.TaiKhoanDN) || string.IsNullOrEmpty(param.PasswordDN))
             {
-                ModelState.AddModelError(string.Empty, "Xin nhập tài khoản và mật khẩu");
-                return View();
+                ViewData["State"] = JsonSerializer.Serialize("Đăng nhập thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
             }
             var khachHang = await _context.KhachHangs
                .FirstOrDefaultAsync(kh => kh.TaiKhoan == param.TaiKhoanDN && kh.MatKhau == param.PasswordDN);
@@ -52,48 +54,50 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 // Lưu Id của KhachHang vào session
                 HttpContext.Session.SetObjectAsJson("TaiKhoan", khachHang);
-
-                // Lấy giỏ hàng từ cookie
-                //var cookieCart = Request.Cookies.GetObjectFromJson<List<GioHang>>("GioHang");
-                //if (cookieCart != null)
-                //{
-                //    foreach (var item in cookieCart)
-                //    {
-                //        var existingItem = await _context.GioHangs
-                //            .FirstOrDefaultAsync(g => g.Id_ChiTietSanPham == item.Id_ChiTietSanPham && g.Id_KhachHang == khachHang.Id);
-
-                //        if (existingItem != null)
-                //        {
-                //            // Cập nhật số lượng nếu sản phẩm đã có trong giỏ hàng
-                //            existingItem.SoLuong += item.SoLuong;
-                //            _context.GioHangs.Update(existingItem);
-                //        }
-                //        else
-                //        {
-                //            // Thêm mới sản phẩm vào giỏ hàng
-                //            var newGioHangItem = new GioHang
-                //            {
-                //                Id_KhachHang = khachHang.Id,
-                //                Id_ChiTietSanPham = item.Id_ChiTietSanPham,
-                //                SoLuong = item.SoLuong,
-                //                TrangThai = true
-                //            };
-                //            _context.GioHangs.Add(newGioHangItem);
-                //        }
-                //    }
-
-                //    await _context.SaveChangesAsync();
-
-                //    // Xóa cookie sau khi chuyển giỏ hàng thành công
-                //    Response.Cookies.Delete("GioHang");
-                //}
+                ViewData["State"] = JsonSerializer.Serialize("Đăng nhập thành công.");
+                ViewData["IsError"] = false;
                 return Redirect("/BanHangOnline/TrangChu/Index");
             }
-
-            ModelState.AddModelError(string.Empty, "Sai tài khoản hoặc mật khẩu.");
-            return View();
+            ViewData["State"] = JsonSerializer.Serialize("Đăng nhập thất bại.");
+            ViewData["IsError"] = true;
+            return View("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DangKy(DangKyParam param)
+        {
+            if (string.IsNullOrEmpty(param.TaikhoanDK) || string.IsNullOrEmpty(param.NameFullDK) || param.NgaySinhDK == null || string.IsNullOrEmpty(param.RegisterPhoneDK) || string.IsNullOrEmpty(param.EmailDK) || string.IsNullOrEmpty(param.RegisterPasswordDK) || string.IsNullOrEmpty(param.ConfirmPasswordDK))
+            {
+                ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
+            }
+            if (_context.KhachHangs.Any(x => x.TaiKhoan.Equals(param.TaikhoanDK)))
+            {
+                ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
+            }
+            if (!param.RegisterPasswordDK.Equals(param.ConfirmPasswordDK))
+            {
+                ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
+            }
+            _context.KhachHangs.Add(new KhachHang
+            {
+                TaiKhoan = param.TaikhoanDK.Trim(),
+                Ten = param.NameFullDK.Trim(),
+                NgaySinh = param.NgaySinhDK,
+                Email = param.EmailDK.Trim(),
+                Sdt = param.RegisterPhoneDK.Trim(),
+                MatKhau = param.RegisterPasswordDK.Trim()
+            });
+            _context.SaveChanges();
+            ViewData["State"] = JsonSerializer.Serialize("Đăng ký thành công.");
+            ViewData["IsError"] = false;
+            return View("Index");
+        }
         private string GenerationToken(KhachHang taiKhoan, string role)
         {
             // ma hoa key
@@ -116,6 +120,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     signingCredentials: crenditals
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        [HttpGet]
+        public IActionResult ChuaDangNhap()
+        {
+            return View();
         }
         private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 

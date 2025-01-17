@@ -1,7 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Đăng nhập - Đăng ký";
 }
-
+<style>
+    #toast-container {
+        right: 0;
+    }
+</style>
+   
+<div class="toast-container" id="toast-container"></div>
 <div class="container mt-5">
     <div class="row">
         <!-- Đăng nhập -->
@@ -42,45 +48,51 @@
         <!-- Đăng ký -->
         <div class="col-md-6">
             <h3 class="mb-4">Đăng ký</h3>
-            <form id="registerForm" action="#" method="post" novalidate>
+            <form id="registerForm" action="/BanHangOnline/DangNhapdangky/DangKy" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="taikhoanDK" class="form-label">Tài khoản <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="taikhoanDK" name="TaikhoanDK"
+                           placeholder="Nhập tài khoản đăng ký của bạn" required>
+                    <div class="invalid-feedback">Vui lòng nhập tài khoản.</div>
+                </div>
                 <div class=" mb-3">
                     <label for="nameFull" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="nameFull" name="nameFullDK"
+                    <input type="text" class="form-control" id="nameFull" name="NameFullDK"
                            placeholder="Nhập họ và tên của bạn" required>
                     <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
                 </div>
                 <div class="mb-3">
                     <label for="registerPhone" class="form-label">SĐT <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="sdtDK" id="registerPhone"
+                    <input type="text" class="form-control" name="RegisterPhoneDK" id="registerPhone"
                            placeholder="Nhập số điện thoại" required>
                     <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
                 </div>
-                <div class="mb-3">
+                @* <div class="mb-3">
                     <label class="form-label">Giới tính <span class="text-danger">*</span></label>
                     <div>
-                        <input type="radio" id="genderFemale" name="gender" value="Nữ" checked>
+                        <input type="radio" id="genderFemale" name="genderDK" value="Nữ" checked>
                         <label for="genderFemale" class="me-3">Nữ</label>
-                        <input type="radio" id="genderMale" name="gender" value="Nam">
+                        <input type="radio" id="genderMale" name="genderDK" value="Nam">
                         <label for="genderMale">Nam</label>
                     </div>
                     <div class="invalid-feedback">Vui lòng chọn giới tính.</div>
-                </div>
+                </div> *@
                 <div class="mb-3">
                     <label for="emailDK" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" id="emailDK" name="emailDK"
+                    <input type="email" class="form-control" id="emailDK" name="EmailDK"
                            placeholder="Nhập email của bạn" required>
                     <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
                 </div>
                 <div class="mb-3">
                     <label for="dob" class="form-label">Ngày sinh</label>
-                    <input type="date" class="form-control" name="ngaySinh" id="dob" required>
+                    <input type="date" class="form-control" name="NgaySinhDK" id="dob" required>
                     <div class="invalid-feedback">Vui lòng nhập ngày sinh.</div>
                 </div>
                 <div class="mb-3">
                     <label for="registerPassword" class="form-label">
                         Mật khẩu <span class="text-danger">*</span>
                     </label>
-                    <input type="password" class="form-control" name="registerPasswordDK" id="registerPassword"
+                    <input type="password" class="form-control" name="RegisterPasswordDK" id="registerPassword"
                            placeholder="Nhập mật khẩu" required>
                     <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
                 </div>
@@ -88,7 +100,7 @@
                     <label for="confirmPassword" class="form-label">
                         Xác nhận mật khẩu <span class="text-danger">*</span>
                     </label>
-                    <input type="password" class="form-control" id="confirmPassword"
+                    <input type="password" class="form-control" id="confirmPassword" name="ConfirmPasswordDK"
                            placeholder="Nhập lại mật khẩu xác nhận" required>
                     <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
                 </div>
@@ -223,6 +235,28 @@
             forms.classList.add('was-validated');
         });
     })();
+    let state = "@ViewData["State"]".replaceAll("&quot;","");
+    let isError = "@ViewData["IsError"]".replace("True", true).replace("False",false);
+    const toastContainer = document.getElementById('toast-container');
+    // Hiển thị thông báo
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-bg-${isError ? 'danger' : 'success'} border-0 show`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+                        <div class="d-flex">
+                            <div class="toast-body">${message}</div>
+                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        `;
 
+        toastContainer.appendChild(toast);
 
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+    if (state != null && state != ""){
+        showToast(state, isError);
+    }
 </script>

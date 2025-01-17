@@ -39,6 +39,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                                                                 .Where(x => x.TrangThai == true && x.ChiTietSanPhams.Any(a => a.SoLuong >= 1)).ToListAsync();
             if (lstSp == null || lstSp.Count <= 0)
             {
+                ViewData["ClientSessionData"] = null;
                 return View("Index", resp);
             }
             // kiểm tra có bất kỳ đợt khuyến mại. Khuyến mại áp dụng theo danh mục
@@ -74,8 +75,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         SanPham = new SanPhamResp()
                         {
                             Id = x.Id,
-                            GiaBan = x.Gia >= dkGiam && giaTriGiam > 0 ? x.Gia - (x.Gia * giaTriGiam / 100) : x.Gia,
-                            GiaBanDau = x.Gia >= dkGiam && giaTriGiam > 0 ? x.Gia : 0,
+                            GiaBan = x.Gia >= dkGiam && giaTriGiam > 0 ? Math.Round(x.Gia - (x.Gia * giaTriGiam / 100)) : Math.Round(x.Gia),
+                            GiaBanDau = Math.Round(x.Gia),
                             Id_DanhMuc = x.Id_DanhMuc,
                             MoTa = x.MoTa,
                             SoLuong = x.ChiTietSanPhams.Sum(a => a.SoLuong),
@@ -112,6 +113,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }).OrderByDescending(x => x.ChiTietSanPhams.SanPham.Id).ToList());
             }
             // Sắp xếp giá từ thấp đến cao
+            if (resp == null || resp.Count <= 0)
+            {
+                ViewData["ClientSessionData"] = null;
+                return View("Index", resp);
+            }
             resp = resp.OrderBy(x => x.ChiTietSanPhams.SanPham.GiaBan).ToList();
             var serila = JsonSerializer.Serialize(resp);
             ViewData["ClientSessionData"] = serila;

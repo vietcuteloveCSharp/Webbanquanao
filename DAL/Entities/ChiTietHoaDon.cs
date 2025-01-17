@@ -17,7 +17,7 @@ namespace DAL.Entities
         [ForeignKey("ChiTietSanPham")]
         public int Id_ChiTietSanPham { get; set; }
 
-        public virtual HoaDon HoaDon { get; set; }
-        public virtual ChiTietSanPham ChiTietSanPham { get; set; }
+        public virtual HoaDon? HoaDon { get; set; }
+        public virtual ChiTietSanPham? ChiTietSanPham { get; set; }
     }
 }

@@ -13,6 +13,6 @@ namespace DAL.Entities
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public bool TrangThai { get; set; } = true;
 
-        public virtual ICollection<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
+        public virtual ICollection<ThanhToanHoaDon>? ThanhToanHoaDons { get; set; }
     }
 }
