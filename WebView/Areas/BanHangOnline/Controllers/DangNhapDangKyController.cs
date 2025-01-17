@@ -28,8 +28,12 @@ namespace WebView.Areas.BanHangOnline.Controllers
         }
         public IActionResult Index()
         {
-
-            return View();
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("Index");
+            }
+            return RedirectToAction("TaiKhoan");
         }
 
         [HttpGet]
@@ -131,28 +135,61 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
         public IActionResult TaiKhoan()
         {
-            ViewData["type"] = "donhang";
-
-            return View("TaiKhoan");
-        }
-
-        public IActionResult TaiKhoanCuaToi()
-        {
             ViewData["type"] = "taikhoan";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.Id == tk.Id);
+            if (kh == null)
+            {
+                return View("ChuaDangNhap");
 
-            return View("TaiKhoan");
+            }
+
+            return View("TaiKhoan", kh);
         }
-        public IActionResult SoDiaChi()
+        [HttpPost]
+        public IActionResult PostTaiKhoan(TaiKhoanModel req)
         {
-            ViewData["type"] = "sodiachi";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.Id == tk.Id);
+            if (kh == null)
+            {
+                return View("ChuaDangNhap");
 
-            return View("TaiKhoan");
+            }
+            kh.Ten = req.ten.Trim();
+            _context.SaveChanges();
+            ViewData["type"] = "taikhoan";
+            return RedirectToAction("TaiKhoan");
         }
         public IActionResult DoiMatKhau()
         {
             ViewData["type"] = "doimatkhau";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.Id == tk.Id);
+            if (kh == null)
+            {
+                return View("ChuaDangNhap");
 
-            return View("TaiKhoan");
+            }
+            return View("TaiKhoan", kh);
+        }
+        public IActionResult DangXuat()
+        {
+            HttpContext.Session.Remove("TaiKhoan");
+            HttpContext.Session.Clear();
+            return View("DangXuat");
         }
     }
 }
