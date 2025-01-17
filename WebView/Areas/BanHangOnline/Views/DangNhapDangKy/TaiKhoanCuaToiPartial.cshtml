@@ -1,0 +1,70 @@
+﻿@* <div class="tab-pane fade" id="v-pills-acc" role="tabpanel" aria-labelledby="v-pills-acc-tab"> *@
+    <div class="row">
+
+        <div class="col-5  border-end">
+            <div class="d-flex justify-content-center mb-4">
+                <img id="selectedAvatar"
+                     src="https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg"
+                     class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;"
+                     alt="example placeholder" />
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
+                    <label class="form-label text-white m-1" for="customFile2">Chọn ảnh</label>
+                    <input type="file" class="form-control d-none" id="customFile2"
+                           onchange="displaySelectedImage(event, 'selectedAvatar')" />
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <p>Dung lượng tối đa 1MB. Định dạng .JPEG, .PNG</p>
+            </div>
+        </div>
+        <div class="col-7">
+            <form>
+                <div class="mb-3">
+                    <label for="hoTenInput" class="form-label">Họ và Tên</label>
+                    <input type="text" class="form-control" id="hoTenInput">
+                </div>
+                <div class="mb-3">
+                    <label for="datetimeInput" class="form-label">Ngày sinh</label>
+                    <input type="date" class="form-control" id="datetimeInput">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giới tính</label>
+                    <div class="d-flex justify-content-start">
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                   id="radioNam">
+                            <label class="form-check-label" for="radioNam">
+                                Nam
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                   id="radioNu">
+                            <label class="form-check-label" for="radioNu">
+                                Nữ
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="mb-3">
+                    <label for="sdtInput" class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" id="sdtInput" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="emailInput" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="emailInput" disabled>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-danger ">
+                        Lưu thay
+                        đổi
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+@* </div> *@
