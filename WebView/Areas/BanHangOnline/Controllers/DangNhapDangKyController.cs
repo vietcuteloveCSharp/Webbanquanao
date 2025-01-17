@@ -98,6 +98,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             ViewData["IsError"] = false;
             return View("Index");
         }
+
         private string GenerationToken(KhachHang taiKhoan, string role)
         {
             // ma hoa key
@@ -128,5 +129,30 @@ namespace WebView.Areas.BanHangOnline.Controllers
         }
         private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
+        public IActionResult TaiKhoan()
+        {
+            ViewData["type"] = "donhang";
+
+            return View("TaiKhoan");
+        }
+
+        public IActionResult TaiKhoanCuaToi()
+        {
+            ViewData["type"] = "taikhoan";
+
+            return View("TaiKhoan");
+        }
+        public IActionResult SoDiaChi()
+        {
+            ViewData["type"] = "sodiachi";
+
+            return View("TaiKhoan");
+        }
+        public IActionResult DoiMatKhau()
+        {
+            ViewData["type"] = "doimatkhau";
+
+            return View("TaiKhoan");
+        }
     }
 }

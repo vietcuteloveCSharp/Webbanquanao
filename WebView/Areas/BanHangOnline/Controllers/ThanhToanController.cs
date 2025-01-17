@@ -85,7 +85,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             foreach (var item in lstSp)
             {
                 var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.chiTietKhuyenMais.Any(a => a.Id_DanhMuc == item.Id_DanhMuc));
-                var giaBan = item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                var giaBan = khuyenMai != null && item.Gia >= khuyenMai.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
                 lstSpNew.Add(new SanPhamResp
                 {
                     Id = item.Id,
@@ -153,7 +153,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 return Json(new { status = 401, success = false, message = "Tài khoản đã bị khóa không thể thực hiện thanh toán." });
             }
             // Xác định số lượng trong giỏ hàng <= so lượng trong sản phẩm chi tiết
-            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).Where(x => x.TrangThai).Where(x => x.SoLuong <= x.ChiTietSanPham.SoLuong).ToListAsync();
+            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).ToListAsync();
             if (lstGioHang == null || lstGioHang.Count <= 0)
             {
                 ViewData["message"] = "Thanh toán thất bại";
@@ -172,8 +172,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             decimal tongTienHoaDon = 0;
             foreach (var item in lstGioHang)
             {
-                var khuyenmai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.ChiTietSanPham.SanPham.Id_DanhMuc).KhuyenMai;
-                var giaban = item.ChiTietSanPham.SanPham.Gia >= khuyenmai.DieuKienGiamGia ? Math.Round(item.ChiTietSanPham.SanPham.Gia - (item.ChiTietSanPham.SanPham.Gia * khuyenmai.GiaTriGiam / 100)) : Math.Round(item.ChiTietSanPham.SanPham.Gia);
+                var khuyenmai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.ChiTietSanPham.SanPham.Id_DanhMuc)?.KhuyenMai;
+                var giaban = khuyenmai != null && item.ChiTietSanPham.SanPham.Gia >= khuyenmai.DieuKienGiamGia ? Math.Round(item.ChiTietSanPham.SanPham.Gia - (item.ChiTietSanPham.SanPham.Gia * khuyenmai.GiaTriGiam / 100)) : Math.Round(item.ChiTietSanPham.SanPham.Gia);
                 tongTienHoaDon += item.SoLuong * giaban;
 
             }
