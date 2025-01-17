@@ -5,7 +5,9 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
+	<PropertyGroup>
+		<OutputPath>bin\Debug\</OutputPath>
+	</PropertyGroup>
   <ItemGroup>
     <Compile Remove="Areas\Admin\Repos\**" />
     <Content Remove="Areas\Admin\Repos\**" />

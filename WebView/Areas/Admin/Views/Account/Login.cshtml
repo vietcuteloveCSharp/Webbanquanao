@@ -5,69 +5,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>- |Admin Login</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-           /*  background-image: url('https://tse3.mm.bing.net/th?id=OIG2.ulnTdG.s5dwY_Bocn57T&pid=ImgGn'); */
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: #fff;
         }
 
         .login-container {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid white; 
-            width: 400px; 
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .login-container p {
+            margin-bottom: 20px;
+            color: #666;
         }
 
         .form-control {
-            background: rgba(255, 255, 255, 0.8);
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
         }
 
         .remember-forgot {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top:10px;
-            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .text-danger {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+         (max-width: 500px) {
+            .login-container {
+                width: 90%;
+                padding: 20px;
+            }
         }
     </style>
-    
 </head>
 <body>
 
-<div class="login-container ">
-    <h2>Welcome back</h2>
+<div class="login-container">
+    <h2>Welcome Back</h2>
     <p>Login to your account</p>
     <form asp-action="Login" method="post">
         <div class="form-group">
-            <label asp-for="TaiKhoan" >User name</label>
-            <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="account name">
+            <label asp-for="TaiKhoan">Username</label>
+            <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="Enter your username">
             <span asp-validation-for="TaiKhoan" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="MatKhau">Password</label>
-            <input type="password" asp-for="MatKhau" class="form-control" placeholder="*****">
+            <input type="password" asp-for="MatKhau" class="form-control" placeholder="Enter your password">
             <span asp-validation-for="MatKhau" class="text-danger"></span>
         </div>
-            <div>
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <div class="text-danger">@error.ErrorMessage</div>
-                }
-            </div>
-        <div class="remember-forgot">
-            <a href="#" class="forgot-password">Forgot password?</a>
+        <div>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div class="text-danger">@error.ErrorMessage</div>
+            }
         </div>
-        <button type="submit" class="btn btn-primary btn-block"> Login</button>
+        <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
     </form>
 </div>
 

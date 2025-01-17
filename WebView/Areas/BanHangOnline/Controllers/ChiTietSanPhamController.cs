@@ -36,12 +36,20 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 return View("SanPhamKhongTonTai");
             }
+            // Tìm khuyến mại cho sản phẩm
+            var timenow = DateTime.Now;
+            var khuyenMai = _context.ChiTietKhuyenMais.Where(x => x.Id_DanhMuc == sp.Id_DanhMuc)
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timenow && timenow < x.KhuyenMai.NgayKetThuc)
+                .FirstOrDefault();
+            var giaBan = sp.Gia >= khuyenMai.KhuyenMai.DieuKienGiamGia ? Math.Round(sp.Gia - (sp.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(sp.Gia);
             var lstHinHAnh = await _context.HinhAnhs.Where(x => x.Id_SanPham == sp.Id).ToListAsync();
             resp.SanPham = new SanPhamResp
             {
                 Id = sp?.Id,
-                GiaBan = sp.Gia,
-                GiaBanDau = 0,
+                GiaBan = giaBan,
+                GiaBanDau = Math.Round(sp.Gia),
                 Id_DanhMuc = sp?.Id_DanhMuc,
                 MoTa = sp?.MoTa,
                 SoLuong = sp?.SoLuong ?? 0,
@@ -66,7 +74,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Id = x?.KichThuoc?.Id,
                     Ten = x?.KichThuoc?.Ten,
                     Id_MauSac = x?.MauSac?.Id
-                })?.Distinct().OrderBy(x => x.Id_MauSac).ThenBy(x => x.Ten).ToList();
+                })?.DistinctBy(x => x.Id).OrderBy(x => x.Id_MauSac).ThenBy(x => x.Ten).ToList();
 
 
                 resp.MauSacResps = lstMauSac?.Select(x => new MauSacResp
@@ -74,7 +82,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Id = x?.Id,
                     MaHex = x?.MaHex,
                     Ten = x?.Ten
-                })?.Distinct().ToList();
+                })?.DistinctBy(x => x.Id).ToList();
                 resp.KichThuocResps = lstKichThuoc;
             }
             ViewData["sanphamchitiet"] = resp;
@@ -141,7 +149,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 if (resp.KichThuocResps.Any(x => x.Id_MauSac == id))
                 {
                     Content($"{JsonConvert.DeserializeObject<ChiTietSanPhamResp>(userName)}");
-                    return JsonConvert.SerializeObject(resp.KichThuocResps.Where(x => x.Id_MauSac == id).ToList());
+                    return JsonConvert.SerializeObject(resp.KichThuocResps.Where(x => x.Id_MauSac == id).DistinctBy(x => x.Id).ToList());
                 }
             }
             return null;

@@ -6,15 +6,17 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-
 <form asp-action="Create" method="post">
     @* Tên mã *@
     <div class="form-group">
         <label asp-for="Ten"></label>
         <input asp-for="Ten" class="form-control" placeholder="@Model?.Ten" value="@Model?.Ten" />
-
         <span asp-validation-for="Ten" class="text-danger"></span>
-
+    </div>
+       <div class="form-group">
+        <label asp-for="NoiDung"></label>
+        <input asp-for="NoiDung" class="form-control" placeholder="@Model.NoiDung" value="@Model.NoiDung" />
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
     </div>
 
     @* Loại giảm giá *@
@@ -26,24 +28,24 @@
         </select>
         <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
-        <input asp-for="DieuKienGiamGia" class="form-control typing-price" />
+        <input asp-for="DieuKienGiamGia" class="form-control typing-price" id="DieuKienGiamGia" />
         <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
     </div>
+
     @* Trường dành riêng cho Coupon *@
     <div id="coupon-fields" style="display: none;">
-        
-
         <div class="form-group">
             <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
-            <input asp-for="GiaTriGiam" class="form-control typing-price"/>
+            <input asp-for="GiaTriGiam" class="form-control typing-price" id="GiaTriGiam" />
             <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="GiaTriToiDa">Giá trị tối đa (VNĐ)</label>
-            <input asp-for="GiaTriToiDa" class="form-control typing-price" />
+            <input asp-for="GiaTriToiDa" class="form-control typing-price" id="GiaTriToiDa" />
             <span asp-validation-for="GiaTriToiDa" class="text-danger"></span>
         </div>
     </div>
@@ -52,10 +54,11 @@
     <div id="voucher-fields" style="display: none;">
         <div class="form-group">
             <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
-            <input asp-for="MenhGia" class="form-control typing-price" />
+            <input asp-for="MenhGia" class="form-control typing-price" id="MenhGia"/>
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
     </div>
+
     @* Trạng thái *@
     <div class="form-group">
         <label asp-for="TrangThai"></label>
@@ -78,10 +81,11 @@
         <input asp-for="SoLuong" class="form-control" type="number" min="1" />
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
-
+   
     <button type="submit" class="btn btn-primary">Tạo</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
+
 @if (TempData["error"] != null)
 {
     <div class="alert alert-danger">
@@ -94,6 +98,7 @@
         @TempData["success"]
     </div>
 }
+
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
@@ -102,6 +107,7 @@
             const couponFields = document.getElementById("coupon-fields");
             const voucherFields = document.getElementById("voucher-fields");
 
+            // Hàm thay đổi hiển thị các trường tùy theo loại giảm giá
             function toggleFields() {
                 if (loaiGiamGia.value === "0") {
                     couponFields.style.display = "block";
@@ -117,16 +123,51 @@
 
             // Sự kiện thay đổi
             loaiGiamGia.addEventListener("change", toggleFields);
-        });
-        document.addEventListener("DOMContentLoaded", function () {
-            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
 
-            typingPriceFields.forEach(function (field) {
-                field.addEventListener("input", function () {
-                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
+            // Lấy các input cần giới hạn
+            const inputs = [
+                document.getElementById("GiaTriGiam"),
+                document.getElementById("DieuKienGiamGia"),
+                document.getElementById("GiaTriToiDa"),
+                document.getElementById("MenhGia")
+            ];
+
+            // Hàm giới hạn giá trị nhập từ bàn phím
+            function enforceRange(inputElement, min, max) {
+                // Ngăn không cho nhập ký tự không phải số
+                inputElement.addEventListener("keypress", function (event) {
+                    const charCode = event.which || event.keyCode;
+                    // Chỉ cho phép nhập số (0-9)
+                    if (charCode < 48 || charCode > 57) {
+                        event.preventDefault();
+                    }
                 });
-            });
-        });
 
+                // Ngăn không cho nhập số âm hoặc vượt quá giới hạn
+                inputElement.addEventListener("input", function () {
+                    let value = parseFloat(this.value);
+                    if (value < min) {
+                        this.value = min;
+                    } else if (value > max) {
+                        this.value = max;
+                    }
+                });
+
+                // Đặt giá trị mặc định nếu để trống
+                inputElement.addEventListener("blur", function () {
+                    if (this.value === "" || parseFloat(this.value) < min) {
+                        this.value = min; // Giá trị mặc định
+                    }
+                });
+            }
+
+            // Áp dụng giới hạn cho các input
+            enforceRange(inputs[0], 1, 100);       // Giá trị giảm (%): 1-100
+            enforceRange(inputs[1], 1, 20000000); // Điều kiện giảm giá (VNĐ): 1-20 triệu
+            enforceRange(inputs[2], 1, 10000000); // Giá trị tối đa (VNĐ): 1-10 triệu
+            enforceRange(inputs[3], 1, 20000000); // Mệnh giá (VNĐ): 1-20 triệu
+        });
     </script>
 }
+
+

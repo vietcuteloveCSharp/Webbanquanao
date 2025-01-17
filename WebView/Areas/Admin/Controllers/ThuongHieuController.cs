@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
 
 namespace WebView.Areas.Admin.Controllers
@@ -38,19 +39,30 @@ namespace WebView.Areas.Admin.Controllers
             return View();
         }
 
-        // 2. POST: Xử lý thêm mới thương hiệu
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ThuongHieuDTO model)
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra xem tên thương hiệu đã tồn tại trong cơ sở dữ liệu chưa
+                var existingTen = await _context.ThuongHieus
+                    .FirstOrDefaultAsync(t => t.Ten.Trim().ToLower() == model.Ten.Trim().ToLower());
+
+                // Nếu tên đã tồn tại, thêm lỗi vào ModelState
+                if (existingTen != null)
+                {
+                    ModelState.AddModelError("Ten", "Tên thương hiệu đã tồn tại.");
+                    return View(model); // Trả về view với lỗi
+                }
+
+                // Nếu tên chưa tồn tại, tiếp tục thêm mới
                 var entity = new ThuongHieu
                 {
                     Ten = model.Ten,
                     MoTa = model.MoTa,
                     TrangThai = model.TrangThai,
-                    // Thêm bất kỳ trường nào cần thiết khác vào đây.
+                    // Thêm bất kỳ trường nào cần thiết khác vào đây
                 };
 
                 _context.ThuongHieus.Add(entity);
@@ -63,6 +75,7 @@ namespace WebView.Areas.Admin.Controllers
             // Nếu validation không thành công, trở lại form.
             return View(model);
         }
+
 
 
         [HttpGet]
@@ -88,10 +101,22 @@ namespace WebView.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Lấy thông tin bản ghi đang cần chỉnh sửa
                 var entity = await _context.ThuongHieus.FindAsync(model.Id);
                 if (entity == null) return NotFound();
 
-                // Cập nhật các thuộc tính
+                // Kiểm tra xem tên thương hiệu đã tồn tại trong cơ sở dữ liệu chưa, ngoại trừ bản ghi hiện tại
+                var existingTen = await _context.ThuongHieus
+                    .FirstOrDefaultAsync(t => t.Ten.Trim().ToLower() == model.Ten.Trim().ToLower() && t.Id != model.Id);
+
+                // Nếu tên đã tồn tại, thêm lỗi vào ModelState
+                if (existingTen != null)
+                {
+                    ModelState.AddModelError("Ten", "Tên thương hiệu đã tồn tại.");
+                    return View(model); // Trả về view với lỗi
+                }
+
+                // Cập nhật các thuộc tính của thương hiệu
                 entity.Ten = model.Ten;
                 entity.MoTa = model.MoTa;
                 entity.TrangThai = model.TrangThai;
@@ -103,9 +128,10 @@ namespace WebView.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Trả lại form nếu có lỗi
+            // Nếu có lỗi validation, trả về form để người dùng sửa lại
             return View(model);
         }
+
 
         // 4. GET: Xóa thương hiệu
         public async Task<IActionResult> Delete(int id)
