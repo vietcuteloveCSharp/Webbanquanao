@@ -63,7 +63,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }).ToList(),
             };
             // list sp chi tiet 
-            var lstSpCT = await _context.ChiTietSanPhams.Include(x => x.MauSac).Include(x => x.KichThuoc).Where(x => x.Id_SanPham == sp.Id)?.ToListAsync();
+            var lstSpCT = await _context.ChiTietSanPhams.Include(x => x.MauSac).Include(x => x.KichThuoc).Where(x=> x.SoLuong > 0).Where(x => x.Id_SanPham == sp.Id)?.ToListAsync();
             if (lstSpCT != null && lstSpCT.Count > 0)
             {
                 // list mau sac

@@ -22,7 +22,7 @@ namespace WebView.NghiaDTO
         public decimal? DieuKienGiamGia { get; set; } // > 0 thì yêu cầu đơn hàng trên dk thì mới áp đc || = 0 thì không cần check đơn hàng
 
 
-        [Required(ErrorMessage = "% giảm giá không được để trống.")]
+        //[Required(ErrorMessage = "% giảm giá không được để trống.")]
 
         [Range(1, 100, ErrorMessage = "Giá trị % giảm giá  phải trong khoảng từ 1% đến 100%.")]
 
@@ -54,7 +54,29 @@ namespace WebView.NghiaDTO
 
   
         public int? SoLuongDaSuDung { get; set; } // Số lượng mã giảm giá đã sử dụng
+        public bool IsApplied { get; set; } // Thêm thuộc tính này
 
         public virtual ICollection<ChiTietMaGiamGiaDTO> ChiTietMaGiamGiaDTOs { get; set; }
+        // Validation tuỳ chỉnh
+        public bool ValidateCouponOrVoucher()
+        {
+            if (LoaiGiamGia == 0) // Coupon
+            {
+                // Kiểm tra các trường liên quan đến Coupon
+                if (!GiaTriGiam.HasValue || !GiaTriToiDa.HasValue)
+                {
+                    return false;
+                }
+            }
+            else if (LoaiGiamGia == 1) // Voucher
+            {
+                // Kiểm tra các trường liên quan đến Voucher
+                if (!MenhGia.HasValue)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

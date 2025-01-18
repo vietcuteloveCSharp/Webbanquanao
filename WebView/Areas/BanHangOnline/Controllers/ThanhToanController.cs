@@ -146,11 +146,18 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
             if (tk == null)
             {
-                return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
+                ViewData["message"] = "Thanh toán thất bại";
+                return View("ThanhToanThatBai");
             }
             if (!_context.KhachHangs.Any(x => x.Id == tk.Id && x.TrangThai == true))
             {
-                return Json(new { status = 401, success = false, message = "Tài khoản đã bị khóa không thể thực hiện thanh toán." });
+                ViewData["message"] = "Thanh toán thất bại";
+                return View("ThanhToanThatBai");
+            }
+            if (string.IsNullOrEmpty(req.DiaChiGiaoHang))
+            {
+                ViewData["message"] = "Thanh toán thất bại";
+                return View("ThanhToanThatBai");
             }
             // Xác định số lượng trong giỏ hàng <= so lượng trong sản phẩm chi tiết
             var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).ToListAsync();

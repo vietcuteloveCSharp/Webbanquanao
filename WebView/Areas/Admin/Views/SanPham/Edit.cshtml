@@ -15,9 +15,15 @@
 
     <div class="form-group">
         <label for="Gia">Giá</label>
-        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
+        <input class="form-control typing-price"
+               id="Gia"
+               name="Gia"
+               value="@($"{Model.Gia:#,##0} VNĐ")"
+                />
         <span asp-validation-for="Gia" class="text-danger"></span>
     </div>
+
+
     <div id="price-convert"></div>
 
     <div class="form-group">

@@ -93,7 +93,8 @@
     <div class="offcanvas-body">
         <div class="d-flex flex-column gap-3">
             <button class="btn btn-light" type="button">Quản lý</button>
-            <button class="btn btn-light" type="button">Đăng xuất</button>
+            <a class="btn btn-light" href="/Admin">Đăng xuất</a>
+
 
         </div>
     </div>
@@ -253,14 +254,16 @@
     // Lưu trữ thông tin giỏ hàng
     let cart = [];
     // Fetch Products via API
+    let allProduct = [];
     function fetchProducts(query, page) {
-        fetch(`BanNhanh/GetProducts?searchQuery=${encodeURIComponent(query)}&page=${page}`)
+        fetch(`/BanTaiQuay/BanNhanh/GetProducts?searchQuery=${encodeURIComponent(query)}&page=${page}`)
             .then(response => response.json())
             .then(data => {
                 console.log("Data san pham:", data); // Kiểm tra dữ liệu trả về
                 if (data.products && Array.isArray(data.products)) {
                     renderProducts(data.products);
                     renderPagination(data.currentPage, data.totalPages);
+                    allProduct = data.products;
                 } else {
                     console.error("Dữ liệu sản phẩm không hợp lệ:", data);
                     productList.innerHTML = "<tr><td colspan='6'>Không có sản phẩm nào được tìm thấy!</td></tr>";
@@ -271,7 +274,7 @@
     }
     // Fetch Khách hàng từ api
     function fetchKhachHang(query) {
-        fetch(`BanNhanh/GetKhachHang?sdt=${encodeURIComponent(query)}`)
+        fetch(`/BanTaiQuay/BanNhanh/GetKhachHang?sdt=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 console.log("Data khach hang:", data); // Kiểm tra dữ liệu trả về
@@ -403,10 +406,23 @@
                 const existingProduct = cart.find(item => item.id == productId);
 
                 if (existingProduct) {
-                    existingProduct.quantity++;
-                    existingProduct.total = existingProduct.quantity * existingProduct.price;
-                    showToast(`Tăng số lượng sản phẩm: ${productName}`);
-                    saveHoaDonToSession();
+                     var ishave = allProduct.find(x => x.id == existingProduct.id);
+                    if (ishave != null) {
+                        if (ishave.soLuong == existingProduct.quantity) {
+                            showToast(`Số lượng sản phẩm tối đa. Không thể thêm nữa`, true);
+                            return;
+                        }
+                        existingProduct.quantity++;
+                        existingProduct.total = existingProduct.quantity * existingProduct.price;
+                        showToast(`Tăng số lượng sản phẩm: ${productName}`);
+                        saveHoaDonToSession();
+                    } else {
+
+                        existingProduct.quantity++;
+                        existingProduct.total = existingProduct.quantity * existingProduct.price;
+                        showToast(`Tăng số lượng sản phẩm: ${productName}`);
+                        saveHoaDonToSession();
+                    }
                 } else {
                     cart.push({
                         id: productId,
@@ -672,10 +688,13 @@
                         }
                         // xóa session của hóa đơn hiện tại
                         sessionStorage.removeItem(idHdHienTai);
+                        idKh.value = "0";
+                        tenKH.innerHTML = "Khách lạ";
+                        btnKhachHang.style.display = "none";
                         cart=[];
                         renderCart();
                         calculateTotal();
-
+                        saveHoaDonToSession();
                     })
                     .catch(error => {
                         // Xử lý lỗi
