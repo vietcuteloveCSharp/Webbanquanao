@@ -1,8 +1,9 @@
-﻿namespace Enum.EnumVVA
+﻿using System;
+namespace Enum.EnumVVA
 {
     public enum ETrangThaiHD
     {
-       
+       None = 0,
         HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
      
         // Trạng thái dành riêng cho bán online

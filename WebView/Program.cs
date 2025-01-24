@@ -65,7 +65,7 @@ app.MapAreaControllerRoute(
 //    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "Areas",
-    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}");
 //app.MapControllerRoute(
 //               name: "default",
 //               pattern: "{controller=Home}/{action=Index}/{id?}");

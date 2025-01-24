@@ -22,7 +22,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             resp.DictionarySanPham = new Dictionary<DanhMucResp, List<SanPhamResp>>();
             //  lấy danh mục phải có ít nhất 3 sản phẩm trở lên
             var lstDm = await _context.DanhMucs.Include(x => x.SanPhams).Where(x => x.SanPhams != null).Where(x => x.SanPhams.Count >= 3).ToListAsync();
-            var lst5DM = Random5DM(lstDm);
+            //var lst5DM = Random5DM(lstDm);
+            var lst5DM = lstDm?.TakeLast(5)?.ToList() ?? null;
             if (lst5DM == null)
             {
                 return View();
@@ -33,31 +34,52 @@ namespace WebView.Areas.BanHangOnline.Controllers
             lstSpTheoDm = lstSpTheoDm.Distinct().ToList();
             // lấy list hình ảnh
             var lstIdSp = lstSpTheoDm.Select(x => x.Id)?.Distinct()?.ToList();
-            var lstSp = await _context.SanPhams.Include(x => x.ChiTietSanPhams).Where(x => lstIdSp.Contains(x.Id)).Where(x => x.ChiTietSanPhams != null && x.ChiTietSanPhams.Count != 0).ToListAsync();
+            var lstSp = await _context.SanPhams.Include(x => x.ChiTietSanPhams)
+                .Where(x => lstIdSp.Contains(x.Id))
+                .Where(x => x.ChiTietSanPhams != null && x.ChiTietSanPhams.Count != 0)
+                .ToListAsync();
             var lstHinhAnh = await _context.HinhAnhs.Where(x => lstIdSp.Contains((int)x.Id_SanPham)).ToListAsync();
-
+            // lấy list khuyến mại theo danh mục
+            var timeNow = DateTime.Now;
+            var lstIdDm = lst5DM.Select(x => x.Id)?.Distinct()?.ToList();
+            var lstKhuyenMaiCT = await _context.ChiTietKhuyenMais.Where(x => lstIdDm.Contains((int)x.Id_DanhMuc))
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timeNow && timeNow <= x.KhuyenMai.NgayKetThuc)
+                .ToListAsync();
             // resp
 
             foreach (var item in lst5DM)
             {
-                var lstSpResp = lstSp.Where(x => x.Id_DanhMuc == item.Id).Select(x => new SanPhamResp
+                var lstSpResp = new List<SanPhamResp>();
+                var khuyenMai = lstKhuyenMaiCT?.FirstOrDefault(x => x.Id_DanhMuc == item.Id);
+                foreach (var sp in lstSp)
                 {
-                    Id = x.Id,
-                    GiaBan = x.Gia,
-                    GiaBanDau = 0,
-                    MoTa = x.MoTa,
-                    SoLuong = x?.SoLuong,
-                    Ten = x?.Ten,
-                    Id_DanhMuc = x?.Id_DanhMuc,
-                    ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == x.Id)?.Select(a => new HinhAnhResp
+                    if (sp.Id_DanhMuc == item.Id)
                     {
-                        Id = a?.Id,
-                        Url = a?.Url,
-                        Id_SanPham = a?.Id_SanPham,
-                        ImageData = a?.ImageData,
-                        ImageSourceType = a.ImageSourceType,
-                    }).ToList()
-                }).ToList();
+                        // Lấy giá bán đã khuyến mại
+                        var giaBan = khuyenMai != null && sp.Gia >= khuyenMai?.KhuyenMai.DieuKienGiamGia ? sp.Gia - (sp.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100) : sp.Gia;
+
+                        lstSpResp.Add(new SanPhamResp
+                        {
+                            Id = sp.Id,
+                            GiaBan = Math.Round(giaBan),
+                            GiaBanDau = Math.Round(sp.Gia),
+                            MoTa = sp.MoTa,
+                            SoLuong = sp?.SoLuong,
+                            Ten = sp?.Ten,
+                            Id_DanhMuc = sp?.Id_DanhMuc,
+                            ListHinHAnh = lstHinhAnh.Where(a => a.Id_SanPham == sp.Id)?.Select(a => new HinhAnhResp
+                            {
+                                Id = a?.Id,
+                                Url = a?.Url,
+                                Id_SanPham = a?.Id_SanPham,
+                                ImageData = a?.ImageData,
+                                ImageSourceType = a.ImageSourceType,
+                            }).ToList()
+                        });
+                    }
+                }
                 var DanhMucResp = new DanhMucResp
                 {
                     Id = item?.Id,

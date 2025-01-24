@@ -4,7 +4,7 @@
     var lstSanPham = ViewData["lstSanPham"] as DictionarySanPhamResp;
     decimal TinhPhanTramGiamGia(decimal giaBanDau, decimal giaBan){
 
-        return (((giaBanDau - giaBan) / giaBanDau) * 100);
+        return Math.Round((((giaBanDau - giaBan) / giaBanDau) * 100));
     }
 }
 <style>
@@ -169,7 +169,7 @@
             <div class="mt-3 mb-3">
                 <div class="d-flex justify-content-between">
                     <span class="ten-danhmuc">@item.Key.TenDanhMuc</span>
-                    <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span>
+                   @*  <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span> *@
                 </div>
                 <div class="row">
                     <!-- Phần 1: Hình ảnh tổng quát -->
@@ -190,11 +190,11 @@
                             </a>
                             <div class="d-flex flex-column justify-content-start">
                                     <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
-                                <p class="price">@sp.GiaBan đ</p>
-                                @if (sp.GiaBanDau != 0)
+                                <p class="price">@sp.GiaBan vnd</p>
+                                @if (sp.GiaBanDau != sp.GiaBan)
                                     {
                                         <div class="d-flex justify-content-start">
-                                            <p class="old-price">@sp.GiaBanDau đ</p>
+                                            <p class="old-price">@sp.GiaBanDau vnd</p>
                                             <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
                                         </div>
                                     }

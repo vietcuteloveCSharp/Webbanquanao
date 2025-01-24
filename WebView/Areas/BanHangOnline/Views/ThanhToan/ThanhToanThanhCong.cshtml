@@ -2,13 +2,23 @@
 @model PaymentResponseModel;
 
 @{
-    ViewData["title"] = "Kết quả thông tin giao dịch thanh toán Vnpay thành công";
+    ViewData["title"] = "Kết quả thực hiện đặt hàng";
 }
+@if (Model == null)
+{
+    <h1 class="text-center mb-4 text-success">Đặt thành công đơn hàng</h1>
+    <p class="text-center mb-4 text-danger">Chờ cửa hàng xác nhận đơn hàng</p>
 
+}
+else
+{
+    
 <h1 class="text-center mb-4 text-success">Thanh toán thành công đơn hàng</h1>
 
 <div class="card shadow">
     <div class="card-body">
+      
+
         <p class="text-muted">@Model.OrderDescription</p>
 
         <table class="table table-bordered mt-3">
@@ -58,10 +68,11 @@
             </tbody>
         </table>
 
-        <a href="/BanHangOnline/TrangChu" class="btn btn-primary mt-3">Back to Home</a>
     </div>
+
 </div>
 
+}
 <script>
     sessionStorage.removeItem("ListGiamGia");
 </script>

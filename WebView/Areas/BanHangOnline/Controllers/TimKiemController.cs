@@ -26,19 +26,21 @@ namespace WebView.Areas.BanHangOnline.Controllers
         public async Task<IActionResult> GetTimKiemSanPham(string? str = "")
         {
             var resp = new List<SanPhamTimKiemResp>();
-            //if (string.IsNullOrEmpty(str))
-            //{
-            //    return View("Index", resp);
-            //}
+            if (string.IsNullOrEmpty(str))
+            {
+                ViewData["ClientSessionData"] = null;
+                return View("Index", resp);
+            }
             // tìm toàn bộ sản phâm có tên chứa ký tự str, trạng thái hoạt động, số lượng >=1
             // ưu tiên: sản phẩm mới, đang trong đợt khuyến mại
             var lstSp = await _context.SanPhams.AsNoTracking().Where(x => x.TrangThai == true)
-                                                                .Where(x => string.IsNullOrEmpty(str) || x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
+                                                                .Where(x =>x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
                                                                 .Include(x => x.DanhMuc).Include(x => x.ChiTietSanPhams).ThenInclude(a => a.KichThuoc)
                                                                 .Include(x => x.ChiTietSanPhams).ThenInclude(a => a.MauSac)
                                                                 .Where(x => x.TrangThai == true && x.ChiTietSanPhams.Any(a => a.SoLuong >= 1)).ToListAsync();
             if (lstSp == null || lstSp.Count <= 0)
             {
+                ViewData["ClientSessionData"] = null;
                 return View("Index", resp);
             }
             // kiểm tra có bất kỳ đợt khuyến mại. Khuyến mại áp dụng theo danh mục
@@ -74,8 +76,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         SanPham = new SanPhamResp()
                         {
                             Id = x.Id,
-                            GiaBan = x.Gia >= dkGiam && giaTriGiam > 0 ? x.Gia - (x.Gia * giaTriGiam / 100) : x.Gia,
-                            GiaBanDau = x.Gia >= dkGiam && giaTriGiam > 0 ? x.Gia : 0,
+                            GiaBan = x.Gia >= dkGiam && giaTriGiam > 0 ? Math.Round(x.Gia - (x.Gia * giaTriGiam / 100)) : Math.Round(x.Gia),
+                            GiaBanDau = Math.Round(x.Gia),
                             Id_DanhMuc = x.Id_DanhMuc,
                             MoTa = x.MoTa,
                             SoLuong = x.ChiTietSanPhams.Sum(a => a.SoLuong),
@@ -112,6 +114,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }).OrderByDescending(x => x.ChiTietSanPhams.SanPham.Id).ToList());
             }
             // Sắp xếp giá từ thấp đến cao
+            if (resp == null || resp.Count <= 0)
+            {
+                ViewData["ClientSessionData"] = null;
+                return View("Index", resp);
+            }
             resp = resp.OrderBy(x => x.ChiTietSanPhams.SanPham.GiaBan).ToList();
             var serila = JsonSerializer.Serialize(resp);
             ViewData["ClientSessionData"] = serila;

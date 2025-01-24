@@ -82,18 +82,29 @@ namespace WebView.Areas.Admin.Controllers
                 .Include(cthd => cthd.HoaDon)
                 .Where(cthd => cthd.HoaDon.TrangThai == ETrangThaiHD.HoanThanhDon);
 
+            // Lọc theo ngày nếu có
+            if (startDate.HasValue)
+            {
+                query = query.Where(cthd => cthd.HoaDon.NgayTao >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(cthd => cthd.HoaDon.NgayTao <= endDate.Value);
+            }
+
             // Lấy top 3 sản phẩm bán chạy
             var sanPhamBanChay = query
                 .GroupBy(cthd => new
                 {
-                    cthd.Id_ChiTietSanPham,
-                    cthd.ChiTietSanPham.SanPham.Ten
+                    cthd.ChiTietSanPham.SanPham.Id,  // Nhóm theo ID của sản phẩm
+                    cthd.ChiTietSanPham.SanPham.Ten // Nhóm theo tên sản phẩm
                 })
                 .Select(g => new
                 {
-                    SanPhamId = g.Key.Id_ChiTietSanPham,
-                    TenSanPham = g.Key.Ten,
-                    TongSoLuong = g.Sum(cthd => cthd.SoLuong),
+                    SanPhamId = g.Key.Id,  // Dùng Id sản phẩm để tính
+                    TenSanPham = g.Key.Ten, // Tên sản phẩm
+                    TongSoLuong = g.Sum(cthd => cthd.SoLuong), // Tổng số lượng bán
                 })
                 .OrderByDescending(sp => sp.TongSoLuong) // Sắp xếp giảm dần
                 .Take(3) // Lấy top 3
@@ -101,7 +112,8 @@ namespace WebView.Areas.Admin.Controllers
 
             return Json(new { sanPhamBanChay });
         }
-      
+
+
 
 
     }

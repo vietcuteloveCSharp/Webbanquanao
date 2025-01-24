@@ -1,0 +1,84 @@
+﻿
+    <div>
+        <div>
+            <h4 class="fw-bold text-uppercase">ĐỔI MẬT KHẨU</h4>
+        </div>
+        <div class="row">
+               @*  <div class="col-12 mt-3">
+                    <label for="mkMoi" class="form-label">
+                        Mật khẩu mới<span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" id="mkMoi"
+                           placeholder="Nhập mật khẩu" required>
+                    <div id="mkMoiError" class="invalid-feedback">
+                        Vui lòng nhập mật khẩu mới của bạn
+                    </div>
+                </div>
+                <div class="col-12 mt-3">
+                    <label for="mkXacNhan" class="form-label">
+                        Xác nhận mật khẩu<span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" id="mkXacNhan"
+                           placeholder="Nhập mật khẩu xác nhận" required>
+                    <div id="mkXacNhanError" class="invalid-feedback">
+                        Vui lòng nhập lại mật khẩu của bạn
+                    </div>
+                </div> *@
+                 <div class="mb-3">
+                    <label for="registerPassword" class="form-label">
+                        Mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" name="RegisterPasswordDK" id="registerPassword"
+                           placeholder="Nhập mật khẩu" required>
+                    <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">
+                        Xác nhận mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <input type="password" class="form-control" id="confirmPassword" name="ConfirmPasswordDK"
+                           placeholder="Nhập lại mật khẩu xác nhận" required>
+                    <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
+                </div>
+                <button type="submit" class="btn btn-danger w-100">Đăng ký</button>
+                <div class="col-12 mt-3">
+                    <button class="btn btn-primary mt-3" id="submitBtn">Xác nhận</button>
+                </div>
+        </div>
+    </div>
+<script>
+    document.getElementById("submitBtn").addEventListener("click", function (e) {
+        e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (submit form)
+
+        // Lấy giá trị từ các input
+        const mkMoi = document.getElementById("mkMoi").value;
+        const mkXacNhan = document.getElementById("mkXacNhan").value;
+
+        // Lấy các thẻ thông báo lỗi
+        const mkMoiError = document.getElementById("mkMoiError");
+        const mkXacNhanError = document.getElementById("mkXacNhanError");
+
+        // Xóa thông báo lỗi cũ
+        mkMoiError.textContent = "";
+        mkXacNhanError.textContent = "";
+
+        let isValid = true;
+
+        // Kiểm tra mật khẩu mới
+        if (mkMoi.length <= 6) {
+            mkMoiError.textContent = "Mật khẩu phải lớn hơn 6 ký tự.";
+            isValid = false;
+        }
+
+        // Kiểm tra mật khẩu xác nhận
+        if (mkXacNhan !== mkMoi) {
+            mkXacNhanError.textContent = "Mật khẩu xác nhận không khớp.";
+            isValid = false;
+        }
+
+        // Nếu hợp lệ, thực hiện hành động (submit form hoặc xử lý khác)
+        if (isValid) {
+            alert("Mật khẩu hợp lệ!");
+        }
+    });
+</script>

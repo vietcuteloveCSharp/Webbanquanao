@@ -59,9 +59,14 @@
             <h5>Phương thức thanh toán</h5>
             <div>
                 <div class="d-flex align-items-center">
-                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" checked>
+                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" onclick="changePaymentMethod()" checked>
                     <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="">
                     <label for="vnpay">Thẻ ATM qua VNPAY</label>
+                </div>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="payment_method" id="cod" value="cod" onclick="changePaymentMethod()">
+                    <img src="https://www.vietcargo.vn/wp-content/uploads/2024/05/hinh-thuc-thanh-toan-cod-la-gi-2-800x400.jpg" style="height: 30px; margin-right:10px;" alt="">
+                    <label for="cod">Thanh toán khi nhận hàng (COD)</label>
                 </div>
             </div>
             <hr>
@@ -69,7 +74,7 @@
             <h5>Phương thức giao hàng</h5>
             <div>
                 <div class="d-flex align-items-center">
-                    <input type="radio" class="me-3" name="ship_method" id="ptgh" value="giaohangnhanh" checked>
+                    <input type="radio" class="me-3" name="ship_method" id="ptgh"  value="giaohangnhanh" checked>
                     <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;" alt="">
                     <label for="ptgh">Giao hàng nhanh GHN</label>
                 </div>
@@ -95,6 +100,8 @@
                 <div>
                     <input type="hidden" name="PhiVanChuyen" value=0 id="phivanchuyen-order" hidden />
                     <input type="hidden" name="IdMaGiamGia" value=0 id="idmagiamgia-order" hidden />
+                    <input type="hidden" name="DiaChiGiaoHang" value="" id="diachigiaohang-order" hidden />
+                    <input type="hidden" name="PhuongThucThanhToan" value="vnpay" id="phuongthucthanhtoan-order" hidden />
                     <p><strong>Tạm tính:</strong> <span id="subtotal">0 vn₫</span></p>
                     <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vn₫</span></p>
                     <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vn₫</span></p>
@@ -223,6 +230,8 @@
     const discountAmount = document.getElementById('discount-amount');
     const totalAmount = document.getElementById('total-amount');
 
+    const diachigiaohangOrder = document.getElementById('diachigiaohang-order');
+
     function changeVndToNumber(params) {
         let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
@@ -279,7 +288,7 @@
                                 <td>${giatrigiam} %</td>
                                 <td>${discount.dieuKienGiamGia} vnd</td>
                                 <td>${giatritoida} vnd</td>
-                                <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
+                                    <td>${discount.thoiGianKetThuc == null ? "" : discount.thoiGianKetThuc}</td>
                                 <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
                             `;
                 // console.log(newRow);
@@ -443,6 +452,8 @@
         districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
         feeResult.textContent = '0 vnđ';
         const provinceId = provinceSelect.value;
+        // lấy giá trị text trong thẻ option được chọn
+        diachigiaohangOrder.value ="Thành phố: " + provinceSelect.options[provinceSelect.selectedIndex].innerHTML+ ", ";
         if (provinceSelect.value) {
             loadDistricts(provinceId)
         }
@@ -452,6 +463,7 @@
         wardSelect.disabled = true;
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
         const districtId = districtSelect.value;
+        diachigiaohangOrder.value += `Huyện: ${districtSelect.options[districtSelect.selectedIndex].innerHTML}, `;
         if (districtId) loadWards(districtId);
     });
 
@@ -461,9 +473,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-       
-
-
+        diachigiaohangOrder.value += `Xã: ${wardSelect.options[wardSelect.selectedIndex].innerHTML}.`;
         const requestData = {
             "service_type_id": 5,
             "from_district_id": 3440,
@@ -503,7 +513,16 @@
         document.getElementById("phivanchuyen-order").value = totalFee;
             totalThanhToan();
     });
-
+    // Phương thức thực hiện khi input payment thay đổi
+    function changePaymentMethod(){
+        var lstInputRadioPayment = document.getElementsByName('payment_method');
+        for (let item of lstInputRadioPayment) {
+            if (item.checked) {
+                document.getElementById('phuongthucthanhtoan-order').value = item.value;
+                console.log(document.getElementById('phuongthucthanhtoan-order').value)
+            }
+        }
+    }
     // Tải danh sách tỉnh khi trang được load
     loadProvinces();
 </script>
