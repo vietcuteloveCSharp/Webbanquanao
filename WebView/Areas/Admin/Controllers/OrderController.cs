@@ -132,8 +132,8 @@ namespace WebView.Areas.Admin.Controllers
                 }
                 else
                 {
-                   await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(response.StatusCode.ToString(), "Error");
+                   var errorMessage = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(string.Empty, "Cập nhật trạng thái đơn hàng thất bại!");
                 }
             }
             return View(hoadonView);
@@ -178,8 +178,6 @@ namespace WebView.Areas.Admin.Controllers
                     Ten = khachhang.Ten,
                     Sdt = khachhang.Sdt
                 };
-
-
                 // Khai báo thuộc tính sản phẩm trong HoaDonView (Sanpham là một list các đối tượng SanPhamview)
                 List<SanPhamView> lstsanphamview = new List<SanPhamView>();
 
@@ -219,49 +217,65 @@ namespace WebView.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
              listHoaDonView = await LoadData();
-            if (listHoaDonView == null)
-            {
-                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào");
-                return View();
-            }
-            return View(listHoaDonView);    
-        }
+             listHoaDonView = listHoaDonView.Where(x => x.TrangThai != ETrangThaiHD.HuyDon ).ToList();
+             listHoaDonView = listHoaDonView.Where(x => x.TrangThai != ETrangThaiHD.HoanThanhDon ).ToList();
+             listHoaDonView = listHoaDonView.OrderBy(x => x.NgayTao ).ToList();
 
-        public async Task<IActionResult> FilterByStatus(ETrangThaiHD filterorder)
-        {
-            listHoaDonView = await LoadData();
-            if (filterorder.GetHashCode()==0)
+            if (!listHoaDonView.Any())
             {
-                return View("Index", listHoaDonView);
+                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào 1");
+                return View();
             }
             else
             {
-                var list = listHoaDonView.Where(x => x.TrangThai == filterorder).ToList();
-                if (list.Count == 0)
-                {
-                    ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn có trạng thái này.");
-                }
-                return View("Index", list);
+                return View(listHoaDonView);
             }
         }
-        public async Task<IActionResult> SearchById(int id)
+        [HttpPost("FilterStatus")]
+        public async Task<IActionResult> FilterStatus(int FilterStatus)
         {
             listHoaDonView = await LoadData();
-            var viewDetail = listHoaDonView.FirstOrDefault(x => x.Id == id);
-            // Xử lý khi không tìm thấy hóa đơn
-            if (viewDetail == null)
+            if (listHoaDonView == null || !listHoaDonView.Any())
             {
-                ModelState.AddModelError(string.Empty, "Không tìm thấy hóa đơn với ID này.");
+                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào.");
+                return View("Index");
             }
-            // Tạo danh sách chứa thông tin hóa đơn tìm thấy
-            var list = new List<HoaDonView>();
-            if (viewDetail != null)
+            if (FilterStatus != 0)
             {
-                list.Add(viewDetail);
+                //ModelState.AddModelError(string.Empty, $"Không tìm thấy hóa đơn với trạng thái khac 0 {(ETrangThaiHD)FilterStatus}.");
+                listHoaDonView = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == FilterStatus).ToList();
+                return View("Index", listHoaDonView);
             }
-
-            return View("Index", list);
+            if (!listHoaDonView.Any())
+            {
+                ModelState.AddModelError(string.Empty, $"Không tìm thấy hóa đơn với trạng thái {FilterStatus}.");
+                return View("Index");
+            }
+            
+            return View("Index", listHoaDonView);
         }
+
+        [HttpGet("SearchById")]
+        public async Task<IActionResult> SearchById(int orderid)
+        {
+            listHoaDonView = await LoadData();
+            // Tìm hóa đơn theo ID
+            HoaDonView hoaDonView = listHoaDonView?.Find(x => x.Id == orderid);
+            // Xử lý khi không tìm thấy hóa đơn
+            if (hoaDonView == null)
+            {
+                ModelState.AddModelError(string.Empty, $"Không tìm thấy hóa đơn với ID {orderid}.");
+                listHoaDonView = listHoaDonView.Where(x => x.TrangThai != ETrangThaiHD.HuyDon && x.TrangThai != ETrangThaiHD.HoanThanhDon)
+                                            .OrderBy(x => x.NgayTao)
+                                            .ToList();
+                return View("Index", listHoaDonView); // Trả về toàn bộ danh sách nếu hóa đơn không tìm thấy.
+            }
+            
+            // Chuẩn bị danh sách chứa hóa đơn tìm thấy
+            List<HoaDonView> listHoaDonView1 = new List<HoaDonView> { hoaDonView };
+            return View("Index", listHoaDonView1);
+        }
+
         public async Task<IActionResult> OrderDetail(int id)
         {
             listHoaDonView = await LoadData();

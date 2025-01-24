@@ -27,14 +27,7 @@
     </style>
 </head>
 <body>
-    <h2>Tìm kiếm</h2>
-    <form asp-action="SearchById" method="post"> 
-        <label for="orderID">Mã hóa đơn:</label> 
-        <input type="number" name="orderID" id="searchId" class="form-control" />
-        <br />
-        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </form>
-    <h2>Lọc trạng thái</h2>
+    
     @* HoanThanhDon = 5,      // Đơn hàng đã hoàn thành
 
     // Trạng thái dành riêng cho bán online
@@ -43,10 +36,19 @@
     DaXacNhan = 3,     // Đơn hàng đang được vận chuyển (đã thanh toán trước)
     DangVanChuyen = 4,  // Đơn hàng đang được vận chuyển
     HuyDon = 6,            // Đơn hàng bị hủy *@
-    <form asp-action="FilterByStatus" method="post">
+    
+    <h2>Tìm kiếm</h2>
+    <form asp-action="SearchById" asp-controller="Order" method="get"> 
+        <label for="orderID">Mã hóa đơn:</label> 
+        <input type="number" name="orderID" id="orderID" class="form-control" />
+        <br />
+        <button type="submit" class="btn btn-sm btn-primary">Tìm Kiếm</button>
+    </form>
+    <h2>Lọc trạng thái</h2>
+    <form asp-action="FilterStatus" asp-controller="Order" method="post">
         <label for="FilterStatus">Trạng thái:</label>
         <select id="FilterStatus" name="FilterStatus" class="form-control">
-            <option value="0" selected >Tất cả</option>
+            <option value="0">Tất cả</option>
             <option value="1">Chờ xác nhận </option>
             <option value="2">Chờ thanh toán </option>
             <option value="3">Đã xác nhận</option>
@@ -55,8 +57,8 @@
             <option value="6">Hủy đơn</option>
         </select>
         <br />
-        <button type="submit" class="btn btn-primary">Lọc</button>
-    </form>
+        <button type="submit" class="btn btn-sm btn-primary">Lọc</button>
+    </form>  
     <h1>Thông Tin Đơn Hàng</h1>
     @if (!ViewData.ModelState.IsValid)
     {

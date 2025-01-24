@@ -31,7 +31,6 @@ namespace WebView.Areas.Admin.Controllers
                 TaiKhoan = data.TaiKhoan,
                 MatKhau = data.MatKhau,
             };
-
             // Gọi API đăng nhập để lấy JWT
             var response = await _apiService.PostAsync(apiUrl, loginRequest, string.Empty);
             if (response.IsSuccessStatusCode)
@@ -51,7 +50,7 @@ namespace WebView.Areas.Admin.Controllers
                 return View();
             }
             ModelState.AddModelError(string.Empty, "Error logging in");
-            return RedirectToAction("Index", "Order");
+            return View();
         }
 
     }
