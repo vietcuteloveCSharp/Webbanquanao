@@ -276,7 +276,7 @@ namespace WebView.Areas.Admin.Controllers
             listHoaDonView = await LoadData();
 
             // Kiểm tra nếu trạng thái là "Tất cả"
-            if (filterorder == ETrangThaiHD.None) // Giả sử `None` là trạng thái tương ứng với "Tất cả"
+            if (FilterStatus == ETrangThaiHD.None.GetHashCode()) // Giả sử `None` là trạng thái tương ứng với "Tất cả"
             {
                 ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào.");
                 return View("Index");
@@ -289,7 +289,7 @@ namespace WebView.Areas.Admin.Controllers
             }
 
             // Lọc danh sách theo trạng thái
-            var filteredList = listHoaDonView.Where(x => x.TrangThai == filterorder).ToList();
+            var filteredList = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == FilterStatus).ToList();
             // Trả về View với danh sách được lọc
             return View("Index", filteredList);
         }
