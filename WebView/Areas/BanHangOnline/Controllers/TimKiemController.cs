@@ -26,14 +26,15 @@ namespace WebView.Areas.BanHangOnline.Controllers
         public async Task<IActionResult> GetTimKiemSanPham(string? str = "")
         {
             var resp = new List<SanPhamTimKiemResp>();
-            //if (string.IsNullOrEmpty(str))
-            //{
-            //    return View("Index", resp);
-            //}
+            if (string.IsNullOrEmpty(str))
+            {
+                ViewData["ClientSessionData"] = null;
+                return View("Index", resp);
+            }
             // tìm toàn bộ sản phâm có tên chứa ký tự str, trạng thái hoạt động, số lượng >=1
             // ưu tiên: sản phẩm mới, đang trong đợt khuyến mại
             var lstSp = await _context.SanPhams.AsNoTracking().Where(x => x.TrangThai == true)
-                                                                .Where(x => string.IsNullOrEmpty(str) || x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
+                                                                .Where(x =>x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
                                                                 .Include(x => x.DanhMuc).Include(x => x.ChiTietSanPhams).ThenInclude(a => a.KichThuoc)
                                                                 .Include(x => x.ChiTietSanPhams).ThenInclude(a => a.MauSac)
                                                                 .Where(x => x.TrangThai == true && x.ChiTietSanPhams.Any(a => a.SoLuong >= 1)).ToListAsync();

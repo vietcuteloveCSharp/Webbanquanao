@@ -152,8 +152,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             }
             if (spct.SoLuong == 0)
             {
-                _context.GioHangs.Remove(spGioHang);
-                _context.SaveChanges();
+                //_context.GioHangs.Remove(spGioHang);
+                //_context.SaveChanges();
                 return Json(new { status = 400, success = false, message = "Sản phẩm đã hết hàng. Xóa sản phẩm khỏi giỏ hàng" });
             }
             if (spct.SoLuong == 1)

@@ -47,11 +47,12 @@ namespace WebView.Areas.BanTaiQuay.Controllers
                         var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.Id_DanhMuc);
                         decimal giaBan = 0;
 
-                        giaBan = khuyenMai?.KhuyenMai != null && item.Gia >= khuyenMai?.KhuyenMai?.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+                        giaBan = khuyenMai != null && item.Gia >= khuyenMai?.KhuyenMai?.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
 
                         // lấy màu sắc + kích thước + số lượng trong Sản phẩm chi tiết
                         var lstSpCt = _dbContext.ChiTietSanPhams.Where(x => x.Id_SanPham == item.Id)
                             .Include(x => x.MauSac).Include(x => x.KichThuoc)
+                            .Where(x=> x.SoLuong > 0)
                             .ToList();
                         if (lstSpCt != null && lstSpCt.Count > 0)
                         {
