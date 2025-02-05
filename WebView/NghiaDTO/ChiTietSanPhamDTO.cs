@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -26,7 +27,10 @@ namespace WebView.NghiaDTO{
         public string TenThuongHieu { get; set; } = string.Empty;
          public string HinhAnh { get; set; } = string.Empty;  // Thêm trường HinhAnh
                                                               // Thêm trường Gia
-        public decimal Gia { get; set; }  
+        public decimal Gia { get; set; }
+        public virtual MauSac MauSac{ get; set; }
+        public virtual KichThuoc KichThuoc { get; set; }
+
         public List<SanPhamDTO> sanPhamDTOs{ get; set; }
         public List<string> HinhAnhList { get; set; } = new List<string>();
 

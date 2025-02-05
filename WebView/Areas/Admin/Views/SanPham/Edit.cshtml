@@ -18,7 +18,7 @@
         <input class="form-control typing-price"
                id="Gia"
                name="Gia"
-               value="@($"{Model.Gia:#,##0} VNĐ")"
+               value="@($"{Model.Gia:#,##0}")"
                 />
         <span asp-validation-for="Gia" class="text-danger"></span>
     </div>
@@ -189,38 +189,52 @@
                 container.style.display = container.style.display === 'none' ? 'block' : 'none';
                 this.textContent = container.style.display === 'none' ? 'Hiển Thị Màu & Kích Thước' : 'Ẩn Màu & Kích Thước';
             });
-
-            // Thêm chi tiết sản phẩm
             document.getElementById('addChiTiet').addEventListener('click', function () {
                 const container = document.getElementById('chiTietSanPhamContainer');
-                const index = container.getElementsByClassName('chiTietSanPham-item').length;
+                const index = container.querySelectorAll('.chiTietSanPham-item').length;
+                const mauSac = document.querySelector(`select[name="ChiTietSanPhams[${index - 1}].Id_MauSac"]`).value;
+                const kichThuoc = document.querySelector(`select[name="ChiTietSanPhams[${index - 1}].Id_KichThuoc"]`).value;
+
+                const isDuplicate = Array.from(container.querySelectorAll('.chiTietSanPham-item')).some(item => {
+                    return (
+                        item.querySelector('select[name$=".Id_MauSac"]').value === mauSac &&
+                        item.querySelector('select[name$=".Id_KichThuoc"]').value === kichThuoc
+                    );
+                });
+
+                if (isDuplicate) {
+                    alert('Chi tiết sản phẩm với màu sắc và kích thước này đã tồn tại!');
+                    return;
+                }
+
+                // Thêm chi tiết nếu không trùng lặp
                 const newItem = document.createElement('div');
                 newItem.className = 'chiTietSanPham-item';
                 newItem.innerHTML = `
-                                    <div class="form-group">
-                                        <label>Màu Sắc</label>
-                                        <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
+                <div class="form-group">
+                    <label>Màu Sắc</label>
+                    <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
         @foreach (var item in ViewBag.MauSacs as SelectList)
         {
-                                                    <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value">@item.Text</option>
         }
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Kích Thước</label>
-                                        <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kích Thước</label>
+                    <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
         @foreach (var item in ViewBag.KichThuocs as SelectList)
         {
-                                                    <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value">@item.Text</option>
         }
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Số Lượng</label>
-                                        <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
-                                    </div>
-                                    <button type="button" class="btn btn-danger remove-item">Xóa</button>
-                                `;
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Số Lượng</label>
+                    <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
+                </div>
+                <button type="button" class="btn btn-danger remove-item">Xóa</button>
+            `;
                 container.appendChild(newItem);
             });
 
@@ -230,21 +244,7 @@
                     e.target.closest('.chiTietSanPham-item').remove();
                 }
             });
-
-            // // Thêm nhiều URL hình ảnh
-            // document.getElementById('addMultipleImageUrls').addEventListener('click', function () {
-            //     const textarea = document.getElementById('NewImageUrls');
-            //     const links = textarea.value.split('\n').map(link => link.trim()).filter(link => link !== '');
-            //     const container = document.getElementById('newImageLinksList');
-
-            //     links.forEach(link => {
-            //         const li = document.createElement('li');
-            //         li.innerHTML = `<input type="text" class="form-control" name="ImageUrls" value="${link}" readonly />`;
-            //         container.appendChild(li);
-            //     });
-            //     textarea.value = '';
-            // });
-
+         
             // Hiển thị giá dạng tiền tệ
             $(".typing-price").on("input", function () {
                 const value = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
