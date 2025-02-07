@@ -243,8 +243,18 @@
         let tamTinh = changeVndToNumber(subtotal.innerText.trim());
         let phivanchuyen = changeVndToNumber(feeResult.innerText.trim());
         let discountamount = changeVndToNumber(discountAmount.innerText.trim());
-
-        let total = tamTinh + phivanchuyen - discountamount;
+        let total = 0;
+       
+        if (isNaN(phivanchuyen)) {
+            phivanchuyen = 0;
+        }
+        if (isNaN(discountamount)) {
+            discountamount = 0;
+        }
+        if (isNaN(tamTinh)) {
+            tamTinh = 0;
+        }
+        total = tamTinh + phivanchuyen - discountamount;
         totalAmount.innerText = `${formatCurrency(total)}`;
     }
     function tamTinhTotal() {
@@ -385,6 +395,9 @@
             discountAmountNumber = maGiamGia.menhGia;
         }
         discountAmountNumber = Math.round(discountAmountNumber);
+        if (discountAmountNumber > total) {
+            discountAmountNumber = total;
+        }
         discountAmount.innerText = `- ${discountAmountNumber} vnd`;
 
         document.getElementById("idmagiamgia-order").value = maGiamGia.id;
@@ -405,6 +418,7 @@
             option.textContent = province.ProvinceName;
             provinceSelect.appendChild(option);
         });
+        totalThanhToan();
     }
 
     // Hàm lấy danh sách quận
@@ -424,6 +438,7 @@
             districtSelect.appendChild(option);
         });
         districtSelect.disabled = false;
+        totalThanhToan();
     }
 
     // Hàm lấy danh sách phường
@@ -443,6 +458,7 @@
             wardSelect.appendChild(option);
         });
         wardSelect.disabled = false;
+        totalThanhToan();
     }
 
     provinceSelect.addEventListener('change', () => {
@@ -457,6 +473,7 @@
         if (provinceSelect.value) {
             loadDistricts(provinceId)
         }
+        totalThanhToan();
     });
     // Sự kiện thay đổi quận
     districtSelect.addEventListener('change', () => {
@@ -465,6 +482,7 @@
         const districtId = districtSelect.value;
         diachigiaohangOrder.value += `Huyện: ${districtSelect.options[districtSelect.selectedIndex].innerHTML}, `;
         if (districtId) loadWards(districtId);
+        totalThanhToan();
     });
 
     // Sự kiện submit form

@@ -36,6 +36,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var lstIdSp = lstSpTheoDm.Select(x => x.Id)?.Distinct()?.ToList();
             var lstSp = await _context.SanPhams.Include(x => x.ChiTietSanPhams)
                 .Where(x => lstIdSp.Contains(x.Id))
+                .Where(x => x.SoLuong > 0)
                 .Where(x => x.ChiTietSanPhams != null && x.ChiTietSanPhams.Count != 0)
                 .ToListAsync();
             var lstHinhAnh = await _context.HinhAnhs.Where(x => lstIdSp.Contains((int)x.Id_SanPham)).ToListAsync();
