@@ -149,9 +149,9 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["message"] = "Thanh toán thất bại";
                 return View("ThanhToanThatBai");
             }
-            if (!_context.KhachHangs.Any(x => x.Id == tk.Id && x.TrangThai == true))
+            if (_context.KhachHangs.Any(x => x.Id == tk.Id && x.TrangThai == false))
             {
-                ViewData["message"] = "Thanh toán thất bại";
+                ViewData["message"] = "Tài khoản khách hàng bị khóa. Hiện không thể thực hiện thanh toán";
                 return View("ThanhToanThatBai");
             }
             if (string.IsNullOrEmpty(req.DiaChiGiaoHang))
@@ -160,7 +160,12 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 return View("ThanhToanThatBai");
             }
             // Xác định số lượng trong giỏ hàng <= so lượng trong sản phẩm chi tiết
-            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham).Where(x => x.Id_KhachHang == tk.Id).ToListAsync();
+            var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham)
+                .Where(x => x.ChiTietSanPham != null && x.ChiTietSanPham.SanPham != null)
+                .Where(x => x.ChiTietSanPham.SoLuong > 0)
+                .Where(x => x.SoLuong > 0 && x.SoLuong <= x.ChiTietSanPham.SoLuong)
+                .Where(x => x.Id_KhachHang == tk.Id).ToListAsync();
+
             if (lstGioHang == null || lstGioHang.Count <= 0)
             {
                 ViewData["message"] = "Thanh toán thất bại";
@@ -253,11 +258,21 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 //trừ số lượng sản phẩm chi tiết theo số lượng giỏ hàng
                 foreach (var item in lstGioHang)
                 {
-                    item.ChiTietSanPham.SoLuong = item.ChiTietSanPham.SoLuong - item.SoLuong;
+                    if (item.ChiTietSanPham != null && item.ChiTietSanPham.SanPham != null)
+                    {
+                        item.ChiTietSanPham.SanPham.SoLuong = item.ChiTietSanPham.SanPham.SoLuong - item.SoLuong;
+                        item.ChiTietSanPham.SoLuong = item.ChiTietSanPham.SoLuong - item.SoLuong;
+                    }
+                    else
+                    {
+                        ViewData["message"] = "Lỗi số lượng sản phẩm";
+                        return View("ThanhToanThatBai");
+                    }
+
                 }
                 _context.SaveChanges();
 
-                // thêm  chi tiết hóa đơn
+                // thêm chi tiết hóa đơn
                 foreach (var spctgh in lstGioHang)
                 {
                     var chiTietHD = _context.ChiTietHoaDons.Add(new ChiTietHoaDon
@@ -279,7 +294,6 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     {
                         giamGia.TrangThai = 2;
                     }
-
 
                     // thêm chi tiết mã giảm giá
                     _context.ChiTietMaGiamGias.Add(new ChiTietMaGiamGia
@@ -465,17 +479,19 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     IdSpCt = x.Id_ChiTietSanPham,
                     SoLuong = x.SoLuong,
                 }).ToList();
-                var lstSpChiTiet = await _context.ChiTietSanPhams.Where(x => lstIdCTSP.Contains(x.Id)).ToListAsync();
+                var lstSpChiTiet = await _context.ChiTietSanPhams.Where(x => lstIdCTSP.Contains(x.Id)).Include(x => x.SanPham).ToListAsync();
                 foreach (var item in lstSpChiTiet)
                 {
                     if (lstIdspctAndSoLuong.Any(x => x.IdSpCt == item.Id))
                     {
-                        item.SoLuong = item.SoLuong - lstIdspctAndSoLuong.First(x => x.IdSpCt == item.Id).SoLuong;
+                        var soLuongDaBan = lstIdspctAndSoLuong.First(x => x.IdSpCt == item.Id).SoLuong;
+                        item.SoLuong = item.SoLuong - soLuongDaBan;
                         if (item.SoLuong < 0)
                         {
                             item.SoLuong = 0;
                             item.TrangThai = false;
                         }
+                        item.SanPham.SoLuong = item.SanPham.SoLuong - soLuongDaBan;
                         _context.SaveChanges();
                     }
                 }

@@ -25,6 +25,9 @@
         padding: 10px 0;
     }
 
+    #toast-container {
+        right: 0;
+    }
     .modal-content {
         padding: 20px;
     }
@@ -64,6 +67,7 @@
     }
 </style>
 
+<div class="toast-container" id="toast-container"></div>
 <div class="container my-4 mt-4">
     <div class="row">
         <div class="col-8 bg-light">
@@ -177,7 +181,6 @@
             </div>
         </div>
     </div>
-    <div class="toast-container" id="toast-container"></div>
 </div>
 
 <!-- Modal -->
@@ -297,10 +300,16 @@ foreach (var item in resp)
                     // Update total price
                     $(`#total-price-${index}`).text(formatCurrency(newQuantity * price));
                     updateDonHang()
-                    location.reload();
+                    showToast(response.message, response.success)
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 }else{
-                    showToast(response.message, true);
-                    location.reload();
+                    showToast(response.message, response.success);
+                  
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 }
                 // Xử lý kết quả trả về
             },
@@ -334,11 +343,18 @@ foreach (var item in resp)
                 success: function (response) {
                     console.log('Success:', response.status);
                     if(response.status ==200){
-                        console.log(response.message);
                         updateDonHang();
-                        location.reload();
+                        showToast(response.message, response.success);
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
                     }else{
-                        console.log(response.message);
+                        showToast(response.message, response.success);
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
                     }
                     // Xử lý kết quả trả về
                 },
@@ -440,10 +456,11 @@ foreach (var item in resp)
             ms[i].children[0].style.backgroundColor = getHexColor(spanTen);
         }
     } 
+    const toastContainer = document.getElementById('toast-container');
     // Hiển thị thông báo
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-bg-${isError ? 'danger' : 'success'} border-0 show`;
+        toast.className = `toast align-items-center text-bg-${isError ? 'success' : 'danger' } border - 0 show`;
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
                         <div class="d-flex">

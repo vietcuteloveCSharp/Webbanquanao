@@ -4,81 +4,54 @@
             <h4 class="fw-bold text-uppercase">ĐỔI MẬT KHẨU</h4>
         </div>
         <div class="row">
-               @*  <div class="col-12 mt-3">
-                    <label for="mkMoi" class="form-label">
-                        Mật khẩu mới<span class="text-danger">*</span>
-                    </label>
-                    <input type="password" class="form-control" id="mkMoi"
-                           placeholder="Nhập mật khẩu" required>
-                    <div id="mkMoiError" class="invalid-feedback">
-                        Vui lòng nhập mật khẩu mới của bạn
-                    </div>
-                </div>
-                <div class="col-12 mt-3">
-                    <label for="mkXacNhan" class="form-label">
-                        Xác nhận mật khẩu<span class="text-danger">*</span>
-                    </label>
-                    <input type="password" class="form-control" id="mkXacNhan"
-                           placeholder="Nhập mật khẩu xác nhận" required>
-                    <div id="mkXacNhanError" class="invalid-feedback">
-                        Vui lòng nhập lại mật khẩu của bạn
-                    </div>
-                </div> *@
-                 <div class="mb-3">
+            <form id="registerForm" action="/BanHangOnline/DangNhapdangky/DoiMatKhau" method="post">
+                <div class="mb-3">
                     <label for="registerPassword" class="form-label">
                         Mật khẩu <span class="text-danger">*</span>
                     </label>
-                    <input type="password" class="form-control" name="RegisterPasswordDK" id="registerPassword"
-                           placeholder="Nhập mật khẩu" required>
-                    <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                    <input type="password" class="form-control" name="Password" id="registerPassword"
+                           placeholder="Nhập mật khẩu mới" required>
+                    <div class="invalid-feedback" id="passwordError">Mật khẩu phải có ít nhất 6 ký tự.</div>
                 </div>
                 <div class="mb-3">
                     <label for="confirmPassword" class="form-label">
                         Xác nhận mật khẩu <span class="text-danger">*</span>
                     </label>
-                    <input type="password" class="form-control" id="confirmPassword" name="ConfirmPasswordDK"
-                           placeholder="Nhập lại mật khẩu xác nhận" required>
-                    <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
+                <input type="password" class="form-control" id="confirmPassword"
+                           placeholder="Nhập lại mật khẩu" required>
+                    <div class="invalid-feedback" id="confirmPasswordError">Mật khẩu xác nhận không khớp.</div>
                 </div>
-                <button type="submit" class="btn btn-danger w-100">Đăng ký</button>
-                <div class="col-12 mt-3">
-                    <button class="btn btn-primary mt-3" id="submitBtn">Xác nhận</button>
-                </div>
+                <button type="submit" class="btn btn-danger w-100">Đổi mật khẩu</button>
+            </form>
         </div>
     </div>
 <script>
-    document.getElementById("submitBtn").addEventListener("click", function (e) {
-        e.preventDefault(); // Ngăn chặn hành vi mặc định của nút (submit form)
-
-        // Lấy giá trị từ các input
-        const mkMoi = document.getElementById("mkMoi").value;
-        const mkXacNhan = document.getElementById("mkXacNhan").value;
-
-        // Lấy các thẻ thông báo lỗi
-        const mkMoiError = document.getElementById("mkMoiError");
-        const mkXacNhanError = document.getElementById("mkXacNhanError");
-
-        // Xóa thông báo lỗi cũ
-        mkMoiError.textContent = "";
-        mkXacNhanError.textContent = "";
-
+    document.getElementById("registerForm").addEventListener("submit", function (event) {
+        let password = document.getElementById("registerPassword").value;
+        let confirmPassword = document.getElementById("confirmPassword").value;
+        let passwordError = document.getElementById("passwordError");
+        let confirmPasswordError = document.getElementById("confirmPasswordError");
         let isValid = true;
 
-        // Kiểm tra mật khẩu mới
-        if (mkMoi.length <= 6) {
-            mkMoiError.textContent = "Mật khẩu phải lớn hơn 6 ký tự.";
+        // Kiểm tra độ dài mật khẩu
+        if (password.length < 6) {
+            passwordError.style.display = "block";
             isValid = false;
+        } else {
+            passwordError.style.display = "none";
         }
 
-        // Kiểm tra mật khẩu xác nhận
-        if (mkXacNhan !== mkMoi) {
-            mkXacNhanError.textContent = "Mật khẩu xác nhận không khớp.";
+        // Kiểm tra mật khẩu nhập lại có khớp không
+        if (password !== confirmPassword) {
+            confirmPasswordError.style.display = "block";
             isValid = false;
+        } else {
+            confirmPasswordError.style.display = "none";
         }
 
-        // Nếu hợp lệ, thực hiện hành động (submit form hoặc xử lý khác)
-        if (isValid) {
-            alert("Mật khẩu hợp lệ!");
+        // Nếu có lỗi, chặn gửi form
+        if (!isValid) {
+            event.preventDefault();
         }
     });
 </script>
