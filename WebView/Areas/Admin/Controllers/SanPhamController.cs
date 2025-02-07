@@ -106,7 +106,7 @@ namespace WebView.Areas.Admin.Controllers
                         Ten = sanPhamDTO.Ten,
                         MoTa = sanPhamDTO.MoTa,
                         Gia = sanPhamDTO.Gia,
-                        SoLuong = sanPhamDTO.SoLuong,
+                        //SoLuong = sanPhamDTO.SoLuong,
                         NgayTao = DateTime.Now,
                         Id_ThuongHieu = sanPhamDTO.Id_ThuongHieu,
                         Id_DanhMuc = sanPhamDTO.Id_DanhMuc
@@ -140,7 +140,18 @@ namespace WebView.Areas.Admin.Controllers
                     // Lưu danh sách ChiTietSanPham
                     if (sanPhamDTO.ChiTietSanPhams != null && sanPhamDTO.ChiTietSanPhams.Any())
                     {
-                        foreach (var chiTiet in sanPhamDTO.ChiTietSanPhams)
+                        // Hợp nhất các chi tiết sản phẩm trùng nhau dựa trên Id_MauSac và Id_KichThuoc
+                        var mergedDetails = sanPhamDTO.ChiTietSanPhams
+                            .GroupBy(ct => new { ct.Id_MauSac, ct.Id_KichThuoc })
+                            .Select(group => new ChiTietSanPhamDTO
+                            {
+                                Id_MauSac = group.Key.Id_MauSac,
+                                Id_KichThuoc = group.Key.Id_KichThuoc,
+                                SoLuong = group.Sum(ct => ct.SoLuong),
+                                TrangThai = group.First().TrangThai
+                            }).ToList();
+
+                        foreach (var chiTiet in mergedDetails)
                         {
                             if (chiTiet.Id_MauSac > 0 && chiTiet.Id_KichThuoc > 0 && chiTiet.SoLuong > 0)
                             {
@@ -160,6 +171,7 @@ namespace WebView.Areas.Admin.Controllers
                             }
                         }
                     }
+
 
                     if (!ModelState.IsValid)
                     {
@@ -222,7 +234,6 @@ namespace WebView.Areas.Admin.Controllers
                     Id_MauSac = ct.Id_MauSac,
                     Id_KichThuoc = ct.Id_KichThuoc,
                     SoLuong = ct.SoLuong,
-                    TrangThai = ct.TrangThai
                 }).ToList()
             };
 
@@ -232,22 +243,20 @@ namespace WebView.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteImage(int id)
-        {
-            var hinhAnh = await _context.HinhAnhs.FirstOrDefaultAsync(ha => ha.Id_SanPham == id);
-            if (hinhAnh == null)
-                return NotFound();
-
-            _context.HinhAnhs.Remove(hinhAnh);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SanPhamDTO model, List<string> ImageUrls, List<int> DeletedImageIds)
         {
+            var chiTietSanPhams = await _context.ChiTietSanPhams
+    .Where(ct => ct.Id_SanPham == model.Id)
+    .Select(ct => new ChiTietSanPhamDTO
+    {
+        Id_MauSac = ct.Id_MauSac,
+        Id_KichThuoc = ct.Id_KichThuoc,
+        SoLuong = ct.SoLuong,
+    }).ToListAsync();
+
+            model.ChiTietSanPhams = chiTietSanPhams;
+
             // Kiểm tra tên sản phẩm có bị trùng hay không
             var existingProduct = await _context.SanPhams
                 .FirstOrDefaultAsync(sp => sp.Ten.ToLower() == model.Ten.ToLower() && sp.Id != model.Id);
@@ -390,6 +399,20 @@ namespace WebView.Areas.Admin.Controllers
 
 
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            var hinhAnh = await _context.HinhAnhs.FirstOrDefaultAsync(ha => ha.Id_SanPham == id);
+            if (hinhAnh == null)
+                return NotFound();
+
+            _context.HinhAnhs.Remove(hinhAnh);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
         // Tách xử lý hình ảnh URL
         private void HandleImageUrl(SanPham sanPham, string imageUrl)
         {
@@ -522,6 +545,16 @@ namespace WebView.Areas.Admin.Controllers
                 .Include(ct => ct.MauSac)
                 .Include(ct => ct.KichThuoc)
                 .Where(ct => ct.Id_SanPham == id)
+                .GroupBy(ct => new { ct.Id_MauSac, ct.Id_KichThuoc })
+                .Select(g => new ChiTietSanPhamDTO
+                {
+                    Id_MauSac = g.Key.Id_MauSac,
+                    Id_KichThuoc = g.Key.Id_KichThuoc,
+                    MauSac = g.FirstOrDefault().MauSac,
+                    KichThuoc = g.FirstOrDefault().KichThuoc,
+                    SoLuong = g.Sum(ct => ct.SoLuong),
+                    NgayTao = g.Min(ct => ct.NgayTao) // Hoặc dùng giá trị phù hợp
+                })
                 .ToListAsync();
 
             if (!productDetails.Any())
@@ -553,20 +586,21 @@ namespace WebView.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            product.SoLuong += productQuantityDTO.SoLuong;
-
-            var chiTietSanPham = await _context.ChiTietSanPhams
+            // Kiểm tra nếu sản phẩm với màu sắc và kích thước đã tồn tại
+            var existingDetail = await _context.ChiTietSanPhams
                 .FirstOrDefaultAsync(ct => ct.Id_SanPham == productQuantityDTO.Id_SanPham &&
                                            ct.Id_MauSac == productQuantityDTO.Id_MauSac &&
                                            ct.Id_KichThuoc == productQuantityDTO.Id_KichThuoc);
 
-            if (chiTietSanPham != null)
+            if (existingDetail != null)
             {
-                chiTietSanPham.SoLuong += productQuantityDTO.SoLuong;
+                // Nếu tồn tại, tăng số lượng
+                existingDetail.SoLuong += productQuantityDTO.SoLuong;
             }
             else
             {
-                var newProductQuantity = new ChiTietSanPham
+                // Nếu chưa tồn tại, thêm bản ghi mới
+                var newProductDetail = new ChiTietSanPham
                 {
                     Id_SanPham = productQuantityDTO.Id_SanPham,
                     SoLuong = productQuantityDTO.SoLuong,
@@ -574,14 +608,16 @@ namespace WebView.Areas.Admin.Controllers
                     Id_KichThuoc = productQuantityDTO.Id_KichThuoc,
                     NgayTao = DateTime.Now
                 };
-
-                _context.Add(newProductQuantity);
+                _context.ChiTietSanPhams.Add(newProductDetail);
             }
+
+            // Cập nhật tổng số lượng cho sản phẩm chính
+            product.SoLuong += productQuantityDTO.SoLuong;
 
             await _context.SaveChangesAsync();
 
-            TempData["success"] = "Thêm số lượng sản phẩm thành công";
-            return RedirectToAction("AddQuantity", "SanPham", new { Id = productQuantityDTO.Id_SanPham });
+            TempData["success"] = "Thêm số lượng sản phẩm thành công.";
+            return RedirectToAction("AddQuantity", new { id = productQuantityDTO.Id_SanPham });
         }
 
 

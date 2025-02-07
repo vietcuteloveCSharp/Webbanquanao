@@ -24,14 +24,14 @@
         <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
     </div>
 
-
+    <div class="form-group">
+        <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
+        <input asp-for="DieuKienGiamGia" class="form-control typing-price" id="DieuKienGiamGia" />
+        <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
+    </div>
     @* Trường dành riêng cho Coupon *@
     <div id="coupon-fields" style="@(Model.LoaiGiamGia == 0 ? "display:block" : "display:none")">
-        <div class="form-group">
-            <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
-            <input asp-for="DieuKienGiamGia" class="form-control typing-price" />
-            <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
-        </div>
+       
         <div class="form-group">
             <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
             <input asp-for="GiaTriGiam" class="form-control typing-price" />

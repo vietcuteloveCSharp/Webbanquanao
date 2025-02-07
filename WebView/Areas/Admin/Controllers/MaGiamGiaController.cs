@@ -24,7 +24,7 @@ namespace WebView.Areas.Admin.Controllers
                     Id = m.Id,
                     Ten = m.Ten,
                     LoaiGiamGia = m.LoaiGiamGia,
-                    DieuKienGiamGia = m.LoaiGiamGia == 0 ? m.DieuKienGiamGia : null, // Chỉ áp dụng cho Coupon
+                    DieuKienGiamGia =  m.DieuKienGiamGia,
                     GiaTriGiam = m.LoaiGiamGia == 0 ? m.GiaTriGiam : null,
                     MenhGia = m.LoaiGiamGia == 1 ? m.MenhGia : null, // Chỉ áp dụng cho Voucher
                     NoiDung = m.NoiDung,
