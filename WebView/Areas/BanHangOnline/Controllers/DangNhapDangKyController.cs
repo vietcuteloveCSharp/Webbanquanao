@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using WebView.Areas.BanHangOnline.HoangDTO;
 using WebView.Areas.BanHangOnline.HoangDTO.Param;
+using WebView.Areas.BanHangOnline.HoangDTO.Resp;
 using WebView.Repository;
 
 namespace WebView.Areas.BanHangOnline.Controllers
@@ -169,6 +170,44 @@ namespace WebView.Areas.BanHangOnline.Controllers
             ViewData["type"] = "taikhoan";
             return RedirectToAction("TaiKhoan");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DonHang()
+        {
+            ViewData["type"] = "donhang";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            // lấy id phương thức thanh toán cod và vnpay
+            //var lstIdThanhToan = await _context.PhuongThucThanhToans
+            //    .Where(x => x.Ten.ToLower().Equals("cod") || x.Ten.ToLower().Equals("vnpay"))
+            //    .Select(x => x.Id).ToListAsync();
+            //if (lstIdThanhToan == null || lstIdThanhToan.Count == 0)
+            //{
+            //    lstIdThanhToan.Add(0);
+            //}
+
+            // lấy danh sách hóa đơn
+            var lstHoaDon = await _context.HoaDons.Where(x => x.Id_KhachHang == tk.Id)
+                .Include(x => x.ChiTietHoaDons)
+                //.Where(x => x.ThanhToanHoaDons.Any(a => lstIdThanhToan.Contains(a.Id_PhuongThucThanhToan)))
+                .ToListAsync();
+
+            var resp = lstHoaDon.Select(x => new HoaDonKhachHangResp
+            {
+                Id = x.Id,
+                TongTien = x.TongTien + x.PhiVanChuyen,
+                NgayMua = x.NgayTao,
+                SoLuongSp = x.ChiTietHoaDons.Count,
+                TrangThai = (int)x.TrangThai,
+            }).ToList();
+            ViewData["lstHoaDon"] = resp;
+            return View("TaiKhoan", tk);
+        }
+
+
         public IActionResult DoiMatKhau()
         {
             ViewData["type"] = "doimatkhau";
@@ -183,6 +222,27 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 return View("ChuaDangNhap");
 
             }
+            return View("TaiKhoan", kh);
+        }
+
+        [HttpPost]
+        public IActionResult DoiMatKhau(DoiMatKhauParam request)
+        {
+            ViewData["type"] = "doimatkhau";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.Id == tk.Id);
+            if (kh == null)
+            {
+                return View("ChuaDangNhap");
+            }
+
+            kh.MatKhau = request.Password;
+            _context.SaveChanges();
+            ViewData["message"] = "Đổi mật khẩu thành công";
             return View("TaiKhoan", kh);
         }
         public IActionResult DangXuat()

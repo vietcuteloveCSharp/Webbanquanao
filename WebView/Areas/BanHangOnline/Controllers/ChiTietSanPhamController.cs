@@ -31,7 +31,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 return View("SanPhamKhongTonTai");
             }
-            var sp = await _context.SanPhams.Include(x => x.ThuongHieu).FirstOrDefaultAsync(x => x.Id == id);
+            var sp = await _context.SanPhams.Include(x => x.ThuongHieu).Where(x => x.SoLuong > 0).FirstOrDefaultAsync(x => x.Id == id);
             if (sp == null)
             {
                 return View("SanPhamKhongTonTai");
@@ -63,7 +63,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }).ToList(),
             };
             // list sp chi tiet 
-            var lstSpCT = await _context.ChiTietSanPhams.Include(x => x.MauSac).Include(x => x.KichThuoc).Where(x=> x.SoLuong > 0).Where(x => x.Id_SanPham == sp.Id)?.ToListAsync();
+            var lstSpCT = await _context.ChiTietSanPhams.Include(x => x.MauSac).Include(x => x.KichThuoc).Where(x => x.SoLuong > 0).Where(x => x.Id_SanPham == sp.Id)?.ToListAsync();
             if (lstSpCT != null && lstSpCT.Count > 0)
             {
                 // list mau sac
@@ -109,7 +109,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // Kiểm tra kh đã thêm sản phẩm này vào giỏ hàng hay chưa -> chưa : thêm mới sản phẩm vào giỏ hàng với sp =1 || rồi : tăng số số lượng thêm 1 trong giỏ hàng của kh
             // toàn bộ có trạng thái là 1 == hiển thị
             // tìm sản phẩm chi tiết
-            var spct = await _context.ChiTietSanPhams.FirstOrDefaultAsync(x => x.Id_SanPham == spReq.idSP && x.Id_MauSac == spReq.idMs && x.Id_KichThuoc == spReq.idKt);
+            var spct = await _context.ChiTietSanPhams.Where(x => x.SoLuong > 0)
+                .FirstOrDefaultAsync(x => x.Id_SanPham == spReq.idSP && x.Id_MauSac == spReq.idMs && x.Id_KichThuoc == spReq.idKt);
             if (spct == null)
             {
                 return Json(new { status = 404, success = false, message = "Không tìm thấy sản phẩm" });
@@ -132,10 +133,17 @@ namespace WebView.Areas.BanHangOnline.Controllers
             }
             else
             {
-                // có rồi thì tăng số lượng thêm 1
-                spGioHang.SoLuong += 1;
-                _context.SaveChanges();
-                mess = "Sản phẩm này đã có trong giỏ hàng. Tăng số lượng thêm 1";
+                //if (spct.SoLuong == spGioHang.SoLuong)
+                //{
+                //    mess = "Số lượng sản phẩm đã đạt tối đa, không thể tăng thêm số lượng";
+                //    return Json(new { status = 404, success = false, message = mess });
+                //}
+                //// có rồi thì tăng số lượng thêm 1
+                //spGioHang.SoLuong += 1;
+                //_context.SaveChanges();
+                mess = "Sản phẩm này đã có trong giỏ hàng. Không thể thêm vào giỏ hàng nữa";
+                return Json(new { status = 400, success = false, message = mess });
+
             }
             return Json(new { status = 200, success = true, message = mess });
         }
