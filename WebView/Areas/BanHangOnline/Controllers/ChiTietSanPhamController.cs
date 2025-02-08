@@ -105,11 +105,12 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 idSP = int.Parse(param.IdSanPham),
                 idMs = int.Parse(param.IdMauSac),
                 idKt = int.Parse(param.IdKichThuoc),
+                soLuongSp = int.Parse(param.SoLuong)
             };
             // Kiểm tra kh đã thêm sản phẩm này vào giỏ hàng hay chưa -> chưa : thêm mới sản phẩm vào giỏ hàng với sp =1 || rồi : tăng số số lượng thêm 1 trong giỏ hàng của kh
             // toàn bộ có trạng thái là 1 == hiển thị
             // tìm sản phẩm chi tiết
-            var spct = await _context.ChiTietSanPhams.Where(x => x.SoLuong > 0)
+            var spct = await _context.ChiTietSanPhams.Where(x => x.SoLuong > 0 && spReq.soLuongSp > 0 && x.SoLuong >= spReq.soLuongSp)
                 .FirstOrDefaultAsync(x => x.Id_SanPham == spReq.idSP && x.Id_MauSac == spReq.idMs && x.Id_KichThuoc == spReq.idKt);
             if (spct == null)
             {
@@ -129,20 +130,19 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     TrangThai = true
                 });
                 _context.SaveChanges();
-                mess = "Thêm sản phẩm thành công vào giỏ hàng";
+                mess = "Thêm thành công.";
             }
             else
             {
-                //if (spct.SoLuong == spGioHang.SoLuong)
-                //{
-                //    mess = "Số lượng sản phẩm đã đạt tối đa, không thể tăng thêm số lượng";
-                //    return Json(new { status = 404, success = false, message = mess });
-                //}
-                //// có rồi thì tăng số lượng thêm 1
-                //spGioHang.SoLuong += 1;
-                //_context.SaveChanges();
-                mess = "Sản phẩm này đã có trong giỏ hàng. Không thể thêm vào giỏ hàng nữa";
-                return Json(new { status = 400, success = false, message = mess });
+                if ((spGioHang.SoLuong + spReq.soLuongSp) > spct.SoLuong)
+                {
+                    mess = "Hết hàng.";
+                    return Json(new { status = 400, success = false, message = mess });
+                }
+                // có rồi thì tăng số lượng thêm 1
+                spGioHang.SoLuong += spReq.soLuongSp;
+                _context.SaveChanges();
+                mess = "Thêm thành công.";
 
             }
             return Json(new { status = 200, success = true, message = mess });
