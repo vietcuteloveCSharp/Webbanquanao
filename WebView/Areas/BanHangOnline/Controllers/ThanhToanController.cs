@@ -589,15 +589,15 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 return Json(new { status = 200, data = "", message = "Thành công" });
             }
             // kiểm tra tổng hóa đơn > đk giảm giá hóa đơn
-            var lstIdSpCTTrongGioHang = lstGioHang.Select(x => x.Id_ChiTietSanPham).ToList();
-            var lstSpCT = await _context.ChiTietSanPhams.Where(x => lstIdSpCTTrongGioHang.Contains(x.Id)).Include(x => x.SanPham).ToListAsync();
-            decimal tongTienHang = 0;
-            foreach (var gh in lstGioHang)
-            {
-                tongTienHang += gh.SoLuong * (lstSpCT.Where(x => x.Id == gh.Id_ChiTietSanPham).FirstOrDefault().SanPham.Gia);
-            }
+            //var lstIdSpCTTrongGioHang = lstGioHang.Select(x => x.Id_ChiTietSanPham).ToList();
+            //var lstSpCT = await _context.ChiTietSanPhams.Where(x => lstIdSpCTTrongGioHang.Contains(x.Id)).Include(x => x.SanPham).ToListAsync();
+            //decimal tongTienHang = 0;
+            //foreach (var gh in lstGioHang)
+            //{
+            //    tongTienHang += gh.SoLuong * (lstSpCT.Where(x => x.Id == gh.Id_ChiTietSanPham).FirstOrDefault().SanPham.Gia);
+            //}
             // Lọc xem tổng tiền hàng đủ đk hóa đơn -> tìm các phiếu giảm giá
-            lstPhieuGiamGia = lstPhieuGiamGia.Where(x => x.DieuKienGiamGia <= tongTienHang).ToList();
+            //lstPhieuGiamGia = lstPhieuGiamGia.Where(x => x.DieuKienGiamGia <= tongTienHang).ToList();
             // kiểm tra khách hàng đã sử dụng hóa đơn -> đã sử dụng thì bỏ hóa đơn này ra
             var lstIdPhieuGiamGia = lstPhieuGiamGia.Select(x => x.Id).ToList();
             // xem khách hàng đã sử dụng phiếu giảm giá này chưa
