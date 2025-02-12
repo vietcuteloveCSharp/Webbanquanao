@@ -240,6 +240,10 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // tổng tiền hóa đơn - tiền phí vận chuyển
             tongTienHoaDon = tongTienHoaDon + req.PhiVanChuyen;
             // tạo mới hóa đơn vào db nhưng chưa thực hiện lưu vào db
+            if (tongTienHoaDon < 0)
+            {
+                tongTienHoaDon = 0;
+            }
             var hoaDonDb = _context.HoaDons.Add(new HoaDon
             {
                 Id_KhachHang = tk.Id,
