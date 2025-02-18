@@ -404,7 +404,7 @@
                 productPrice = parseFloat(productPrice.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd','').trim())
                 const productId = row.cells[0].children[0].value;
                 const existingProduct = cart.find(item => item.id == productId);
-
+                const totalQuantity = parseInt(row.cells[4].textContent.trim());
                 if (existingProduct) {
                      var ishave = allProduct.find(x => x.id == existingProduct.id);
                     if (ishave != null) {
@@ -432,6 +432,7 @@
                         color: childrenColor,
                         price: productPrice,
                         quantity: 1,
+                        totalquantity:totalQuantity,
                         total: productPrice,
                     });
                     showToast(`Thêm sản phẩm: ${productName} thành công!`);
@@ -497,16 +498,28 @@
                 input.addEventListener('input', function () {
                     const index = parseInt(this.getAttribute('data-index'));
                     const newQuantity = parseInt(this.value);
-
+                    
                     if (newQuantity > 0) {
-                        cart[index].quantity = newQuantity;
-                        cart[index].total = newQuantity * cart[index].price;
-                        renderCart();
-                        showToast(`Cập nhật số lượng: ${cart[index].name}`);
-                        saveHoaDonToSession();
+                        if (cart[index].totalquantity < newQuantity){
+                            this.value = cart[index].totalquantity;
+                            cart[index].quantity = cart[index].totalquantity;
+                            cart[index].total = cart[index].totalquantity * cart[index].price;
+                            showToast(`Hết hàng`,true);
+                        }else{
+                            cart[index].quantity = newQuantity;
+                            cart[index].total = newQuantity * cart[index].price;
+                            showToast(`Cập nhật số lượng: ${cart[index].name}`);
+                            
+
+                        }
                     } else {
-                        showToast('Số lượng không hợp lệ!', true);
+                        this.value = 1;
+                        cart[index].quantity = 1;
+                        cart[index].total = 1 * cart[index].price;
+                        
                     }
+                    renderCart();
+                    saveHoaDonToSession();
                 });
             });
         }
