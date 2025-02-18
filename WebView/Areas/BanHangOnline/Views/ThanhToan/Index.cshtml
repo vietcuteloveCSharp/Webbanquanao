@@ -508,7 +508,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-        diachigiaohangOrder.value += `Xã: ${wardSelect.options[wardSelect.selectedIndex].innerHTML}.` + `Huyện: ${districtSelect.options[districtSelect.selectedIndex].innerHTML}, ` + "Thành phố: " + provinceSelect.options[provinceSelect.selectedIndex].innerHTML + ", ";
+        diachigiaohangOrder.value += `${wardSelect.options[wardSelect.selectedIndex].innerHTML}, ` + `${districtSelect.options[districtSelect.selectedIndex].innerHTML}, ` + provinceSelect.options[provinceSelect.selectedIndex].innerHTML + ".";
         const requestData = {
             "service_type_id": 5,
             "from_district_id": 3440,

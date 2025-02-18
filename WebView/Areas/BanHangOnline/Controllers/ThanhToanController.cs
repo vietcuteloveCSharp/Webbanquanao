@@ -235,10 +235,10 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
                 }
                 // tổng tiền hóa đơn - tổng tiền được giảm với mã giảm giá
-                tongTienHoaDon = tongTienHoaDon - tongTienGiam;
+                tongTienHoaDon = tongTienHoaDon - Math.Round(tongTienGiam);
             }
             // tổng tiền hóa đơn - tiền phí vận chuyển
-            tongTienHoaDon = tongTienHoaDon + req.PhiVanChuyen;
+            tongTienHoaDon = Math.Round(tongTienHoaDon + req.PhiVanChuyen);
             // tạo mới hóa đơn vào db nhưng chưa thực hiện lưu vào db
             if (tongTienHoaDon < 0)
             {
@@ -284,7 +284,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                         Id_HoaDon = hoaDonDb.Id,
                         SoLuong = spctgh.SoLuong,
                         Id_ChiTietSanPham = spctgh.Id_ChiTietSanPham,
-                        Gia = spctgh.ChiTietSanPham.SanPham.Gia, // giá này chưa được giảm khi có đợt khuyến mại
+                        Gia = Math.Round(spctgh.ChiTietSanPham.SanPham.Gia), // giá này chưa được giảm khi có đợt khuyến mại
                         TrangThai = true
                     });
                 }
