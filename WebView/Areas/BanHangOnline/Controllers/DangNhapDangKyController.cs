@@ -274,8 +274,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 DiaChiGiaoHang = hoadon.DiaChiGiaoHang,
                 NgayMua = hoadon.NgayTao,
-                PhiVanChuyen = hoadon.PhiVanChuyen,
-                TongTien = hoadon.TongTien,
+                PhiVanChuyen = Math.Round(hoadon.PhiVanChuyen),
+                TongTien = Math.Round(hoadon.TongTien),
                 TrangThai = trangthai,
                 SanPhamResp = hoadon.ChiTietHoaDons.Select(x => new HoaDonSanPhamChiTietResp
                 {

@@ -126,7 +126,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 {
                     Id_ChiTietSanPham = spct.Id,
                     Id_KhachHang = tk.Id,
-                    SoLuong = 1,
+                    SoLuong = spReq.soLuongSp,
                     TrangThai = true
                 });
                 _context.SaveChanges();
@@ -139,7 +139,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     mess = "Hết hàng.";
                     return Json(new { status = 400, success = false, message = mess });
                 }
-                // có rồi thì tăng số lượng thêm 1
+                // có rồi thì tăng số lượng
                 spGioHang.SoLuong += spReq.soLuongSp;
                 _context.SaveChanges();
                 mess = "Thêm thành công.";
@@ -161,6 +161,74 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 }
             }
             return null;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LayDanhSachSanPhamDaXem([FromBody] string[] param)
+        {
+            var resp = new List<SanPhamDaXemResp>();
+            if (param.Length <= 0)
+            {
+                return Json(new { status = 200, data = "" });
+
+            }
+            var lstIdSp = param.Select(x => new
+            {
+                x = int.Parse(x)
+            }).Distinct().Select(x => x.x).ToList();
+            var lstSp = await _context.SanPhams.Where(x => lstIdSp.Contains(x.Id))
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Img = _context.HinhAnhs.FirstOrDefault(a => a.Id_SanPham == x.Id).Url ?? "",
+                    Ten = x.Ten,
+                    GiaBan = Math.Round(x.Gia),
+                    GiaBanDau = 0,
+                    PhamTramGiamGia = 0,
+                    Id_DanhMuc = x.Id_DanhMuc
+                }).ToListAsync();
+            var lstIdDm = lstSp.Select(x => x.Id_DanhMuc).Distinct().ToList();
+
+            // Kiểm tra các sản phẩm có khuyến mại hay ko
+            var timeNow = DateTime.Now;
+            var lstKhuyenMaiCT = await _context.ChiTietKhuyenMais.Where(x => lstIdDm.Contains((int)x.Id_DanhMuc))
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timeNow && timeNow <= x.KhuyenMai.NgayKetThuc)
+                .ToListAsync();
+
+            foreach (var item in lstSp)
+            {
+                var khuyenMai = lstKhuyenMaiCT.FirstOrDefault(x => x.Id_DanhMuc == item.Id_DanhMuc) ?? null;
+                if (khuyenMai == null)
+                {
+                    resp.Add(new SanPhamDaXemResp
+                    {
+                        Id = item.Id,
+                        Ten = item.Ten,
+                        Img = item.Img,
+                        GiaBan = item.GiaBan,
+                        GiaBanDau = item.GiaBanDau,
+                        PhamTramGiamGia = item.PhamTramGiamGia,
+                    });
+                    continue;
+                }
+                var giaBan = khuyenMai != null && item.GiaBan >= khuyenMai?.KhuyenMai.DieuKienGiamGia ? item.GiaBan - (item.GiaBan * khuyenMai.KhuyenMai.GiaTriGiam / 100) : item.GiaBan;
+                var giaBanDau = item.GiaBan;
+                var phanTram = khuyenMai.KhuyenMai.GiaTriGiam;
+                resp.Add(new SanPhamDaXemResp
+                {
+                    Id = item.Id,
+                    Ten = item.Ten,
+                    Img = item.Img,
+                    GiaBan = Math.Round(giaBan),
+                    GiaBanDau = Math.Round(giaBanDau),
+                    PhamTramGiamGia = phanTram,
+                });
+            }
+
+            return Json(new { status = 200, data = resp });
         }
         public IActionResult ClearSession()
         {
