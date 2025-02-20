@@ -145,10 +145,95 @@
         text-decoration: line-through;
     }
 </style>
+<style>
+    
+    .box{
+        padding: 10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px -5px 10px rgba(204, 204, 204, 0.5), 0px 5px 10px rgba(204, 204, 204, 0.5);
+        transition: box-shadow 0.3s ease-in-out;
+        /* align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold; */
+        margin: 50px auto;
+        /* text-align: center; */
+    }
+    .box:hover{
+            box-shadow: 0px -8px 15px rgba(204, 204, 204, 0.8), 0px 8px 15px rgba(204, 204, 204, 0.8);
+    }
+
+    .product-slider {
+        margin: 25px auto;
+    }
+    .product-item {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .product-item-name {
+        display: flex;
+        color: #333f48;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.43;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+        .product-item img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+    .product-item-price{
+        width: 100%;
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 22px;
+        display: block;
+        margin-bottom: 0;
+        margin-left: 0;
+        display: flex;
+        justify-content: start;
+    }
+    .slick-prev, .slick-next {
+        font-size: 24px;
+        color: black;
+    }
+    /* Tùy chỉnh vị trí mũi tên */
+    .custom-prev, .custom-next {
+        position: absolute;
+        top: 40%;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        font-size: 24px;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 100;
+        transition: 0.3s;
+    }
+
+    .custom-prev {
+        left: -40px;
+    }
+
+    .custom-next {
+        right: -45px;
+    }
+
+        /* Hiệu ứng hover */
+        .custom-prev:hover, .custom-next:hover {
+            background: black;
+        }
+</style>
 <div class="toast-container" id="toast-container"></div>
 <div class="content mt-5">
     <!-- Slider chính -->
-    <div class="row">
+    <div class="row box">
         @if (spChiTiet != null && spChiTiet.SanPham.Id != null)
         {
             <div class="col-7 row">
@@ -254,8 +339,103 @@
 
         }
     </div>
+    <div class="mt-5 position-relative">
+        <h4><strong>Sản phẩm đã xem</strong></h4>
+
+        <!-- Nút điều hướng (ban đầu ẩn) -->
+        <button class="custom-prev d-none">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button class="custom-next d-none">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <div class="product-slider box" id="viewed-products">
+        </div>
+    </div>
+
     
 </div>
+<script>
+    function getSlick() {
+            var productCount = $('.product-item').length;
+            if (productCount >= 4) {
+                $(".custom-prev, .custom-next").removeClass("d-none"); // Hiện nút điều hướng nếu có 4 sản phẩm trở lên
+            }
+            $(".product-slider").slick({
+                slidesToShow: 4,
+                centerMode: false,
+                slidesToScroll: 1,
+                infinite: productCount >= 4,  // Nếu đủ 4 sản phẩm trở lên thì có loop
+                arrows: false,   // Nếu đủ 4 sản phẩm thì có mũi tên
+                dots: false
+            });
+
+        // Xử lý sự kiện click cho mũi tên tùy chỉnh
+        $(".custom-prev").click(function () {
+            $(".product-slider").slick("slickPrev");
+        });
+
+        $(".custom-next").click(function () {
+            $(".product-slider").slick("slickNext");
+        });
+    }
+    function saveProductId() {
+        const url = window.location.href;
+        const urlParams = new URL(url);
+        const productId = urlParams.searchParams.get("id"); // Lấy giá trị 'id' từ URL
+
+        if (!productId) return; // Nếu không có ID thì thoát
+
+        let viewedProducts = JSON.parse(localStorage.getItem("sanphamdaxem")) || [];
+
+        if (!viewedProducts.includes(productId)) {
+            viewedProducts.push(productId); // Thêm ID mới vào danh sách
+            localStorage.setItem("sanphamdaxem", JSON.stringify(viewedProducts)); // Lưu lại LocalStorage
+        }
+    }
+
+    function fetchViewedProducts() {
+        let viewedProducts = JSON.parse(localStorage.getItem("sanphamdaxem")) || [];
+
+        if (viewedProducts.length === 0) return; // Nếu không có sản phẩm nào đã xem thì thoát
+
+        $.ajax({
+            url: "https://localhost:7043/BanHangOnline/ChiTietSanPham/LayDanhSachSanPhamDaXem",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(viewedProducts),
+            success: function (response) {
+                let htmlContent = "";
+
+                response.data.forEach(product => {
+                    htmlContent += `
+                       <div class="product-item " >
+                            <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${product.id}">
+                                <img src="${product.img}" alt="${product.ten}">
+                            </a>
+                            <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=${product.id}">
+                                <p class="product-item-name">${product.ten}</p>
+                            </a>
+                            <span class="product-item-price">${product.giaBan} đ</span>
+                        </div>
+                    `;
+                });
+
+                $("#viewed-products").html(htmlContent); // Hiển thị sản phẩm trong phần tử có id "viewed-products"
+                getSlick();
+            },
+            error: function () {
+                console.error("Lỗi khi tải danh sách sản phẩm đã xem.");
+            }
+        });
+    }
+    $(document).ready(function () {
+        saveProductId();      // Lưu sản phẩm vào LocalStorage
+        fetchViewedProducts(); // Lấy danh sách sản phẩm đã xem và hiển thị
+    });
+
+</script>
 <script defer>
           async function fetchProductDetails(id_mausac) {
                     try {
@@ -401,7 +581,9 @@
             slidesToShow: 1,
             slidesToScroll: 1,
             arrows: false,
+            dots:false,
             fade: true,
+            accessibility:false,
             asNavFor: '.slider-nav' // Liên kết với slider điều hướng
         });
 

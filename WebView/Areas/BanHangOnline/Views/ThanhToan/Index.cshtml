@@ -287,7 +287,6 @@
     sessionStorage.removeItem("ListGiamGia");
     function GetMaGiamGia() {
         let keyword = document.getElementById('search-voucher').value;
-        keyword = keyword == null ? null : keyword;
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         // Tìm đối tượng giảm giá có `ten` chứa ký tự biến keyword
 

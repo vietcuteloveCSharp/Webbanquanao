@@ -235,14 +235,14 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
                 }
                 // tổng tiền hóa đơn - tổng tiền được giảm với mã giảm giá
-                tongTienHoaDon = tongTienHoaDon - Math.Round(tongTienGiam);
+                tongTienHoaDon = Math.Round(tongTienHoaDon) - Math.Round(tongTienGiam);
             }
             // tổng tiền hóa đơn - tiền phí vận chuyển
             tongTienHoaDon = Math.Round(tongTienHoaDon + req.PhiVanChuyen);
             // tạo mới hóa đơn vào db nhưng chưa thực hiện lưu vào db
-            if (tongTienHoaDon < 0)
+            if (tongTienHoaDon <= 0)
             {
-                tongTienHoaDon = 0;
+                tongTienHoaDon = Math.Round(req.PhiVanChuyen);
             }
             var hoaDonDb = _context.HoaDons.Add(new HoaDon
             {
@@ -582,7 +582,10 @@ namespace WebView.Areas.BanHangOnline.Controllers
             }
             // lấy danh sách phiếu giảm giá
             DateTime timeNow = DateTime.Now;
-            var lstPhieuGiamGia = await _context.MaGiamGias.Where(x => string.IsNullOrEmpty(tenPhieu) || x.Ten.ToLower().Contains(tenPhieu.ToLower())).Where(x => !string.IsNullOrEmpty(x.Ten)).Where(x => x.TrangThai == 1 && x.SoLuong >= 1).Where(x => x.ThoiGianTao.CompareTo(timeNow) <= 0).Where(x => !(x.ThoiGianKetThuc != null) || timeNow <= x.ThoiGianKetThuc).ToListAsync();
+            var lstPhieuGiamGia = await _context.MaGiamGias.Where(x => string.IsNullOrEmpty(tenPhieu) || x.Ten.ToLower().Contains(tenPhieu.ToLower()))
+                .Where(x => !string.IsNullOrEmpty(x.Ten)).Where(x => x.TrangThai == 1 && x.SoLuong >= 1)
+                .Where(x => x.ThoiGianTao.CompareTo(timeNow) <= 0)
+                .Where(x => !(x.ThoiGianKetThuc != null) || timeNow <= x.ThoiGianKetThuc).ToListAsync();
 
             if (lstPhieuGiamGia == null || lstPhieuGiamGia.Count <= 0)
             {
