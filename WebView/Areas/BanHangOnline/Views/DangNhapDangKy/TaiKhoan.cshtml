@@ -1,7 +1,31 @@
-﻿@{
-    var type = ViewData["type"] as string;
+﻿@using DAL.Entities
+@{
+    var type = ViewData["type"] ;
 }
+@model KhachHang;
+@if (ViewData["message"] != null)
+{
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+  <!-- Position it: -->
+  <!-- - `.toast-container` for spacing between toasts -->
+  <!-- - `.position-absolute`, `top-0` & `end-0` to position the toasts in the upper right corner -->
+  <!-- - `.p-3` to prevent the toasts from sticking to the edge of the container  -->
+  <div class="toast-container position-absolute top-0 end-0 p-3">
 
+    <!-- Then put toasts within -->
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+      <div class="toast-header">
+        <strong class="me-auto">Thông báo</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body text-success">
+        @ViewData["message"]
+      </div>
+    </div>
+
+  </div>
+</div>
+}
 <div class="container mb-5 mt-5">
     <div class="d-flex">
         <div style="width: 62px;height: 62px; border-radius: 50%;overflow: hidden;align-items: center;position: relative;display: flex;justify-content: center;">
@@ -15,7 +39,7 @@
         </div>
         <div class="ms-3">
             <p class="mb-1">Xin chào,</p>
-            <span class="fw-bold">HHH</span>
+            <span class="fw-bold">@Model.Ten</span>
         </div>
     </div>
     <div class="row mt-3 gap-3">
@@ -24,110 +48,70 @@
                 @{
                     switch (type)
                     {
-                        case "donhang":
-                            <div class="mb-3 ">
-                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-danger">
-                                    Đơn hàng của tôi
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
-                                    Tài khoản của tôi
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
-                                    Sổ địa chỉ
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
-                                    Đổi mật khẩu
-                                </a>
-                            </div>
-                            <div class="mb-3">
-                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
-                                    Đăng xuất
-                                </a>
-                            </div>
-                            break;
                         case "taikhoan":
-                            <div class="mb-3 ">
-                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
-                                    Đơn hàng của tôi
-                                </a>
-                            </div>
                             <div class="mb-3">
-                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-danger ">
                                     Tài khoản của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
-                                    Sổ địa chỉ
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Đơn hàng của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn btn-outline-danger ">
                                     Đổi mật khẩu
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
                                     Đăng xuất
                                 </a>
                             </div>
                             break;
-                        case "sodiachi":
-                            <div class="mb-3 ">
-                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
-                                    Đơn hàng của tôi
-                                </a>
-                            </div>
+                        case "donhang":
+
                             <div class="mb-3">
-                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
                                     Tài khoản của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn  btn-danger">
-                                    Sổ địa chỉ
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-danger ">
+                                    Đơn hàng của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-outline-danger ">
                                     Đổi mật khẩu
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
                                     Đăng xuất
                                 </a>
                             </div>
                             break;
                         case "doimatkhau":
-                            <div class="mb-3 ">
-                                <a asp-action="Index" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
-                                    Đơn hàng của tôi
-                                </a>
-                            </div>
+                          
                             <div class="mb-3">
-                                <a asp-action="TaiKhoanCuaToi" asp-controller="TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
                                     Tài khoản của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="SoDiaChi" asp-controller="TaiKhoan" class="w-100 h-100  btn btn-outline-danger">
-                                    Sổ địa chỉ
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                   Đơn hàng của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="DoiMatKhau" asp-controller="TaiKhoan" class="w-100 h-100  btn  btn-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-danger ">
                                     Đổi mật khẩu
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a asp-action="logout" asp-controller="Authen" class="w-100 h-100  btn btn-outline-danger ">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
                                     Đăng xuất
                                 </a>
                             </div>
@@ -143,17 +127,14 @@
                 @{
                     switch (type)
                     {
-                        case "donhang":
-                            @Html.Partial("DonHangPartial")
-                            break;
                         case "taikhoan":
                             @Html.Partial("TaiKhoanCuaToiPartial")
-                            break;
-                        case "sodiachi":
-                            @Html.Partial("SoDiaChiPartial")
-                            break;
+                             break;
                         case "doimatkhau":
                             @Html.Partial("DoiMatKhauPartial")
+                            break;
+                        case "donhang":
+                            @Html.Partial("DonHangPartial")
                             break;
 
                     }

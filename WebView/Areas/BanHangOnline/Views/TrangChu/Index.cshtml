@@ -133,6 +133,28 @@
         margin-left: 5px;
         color: red;
     }
+
+    .box {
+       /*  width: 300px;
+        height: 150px; */
+        padding:10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px -5px 10px rgba(204, 204, 204, 0.5), 0px 5px 10px rgba(204, 204, 204, 0.5);
+        transition: box-shadow 0.3s ease-in-out;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 50px auto;
+        text-align: center;
+    }
+
+        /* Khi di chuột vào, shadow sẽ đậm hơn */
+        .box:hover {
+            box-shadow: 0px -8px 15px rgba(204, 204, 204, 0.8), 0px 8px 15px rgba(204, 204, 204, 0.8);
+        }
 </style>
 @* Slider show *@
 <div id="fullScreenCarousel" class="carousel slide" data-bs-ride="false">
@@ -166,7 +188,7 @@
     {
        foreach (var item in lstSanPham.DictionarySanPham)
         {
-            <div class="mt-3 mb-3">
+            <div class="mt-3 mb-3 box">
                 <div class="d-flex justify-content-between">
                     <span class="ten-danhmuc">@item.Key.TenDanhMuc</span>
                    @*  <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span> *@
@@ -300,7 +322,7 @@
             infinite: true,
             speed: 300,
             slidesToShow: 2,
-            centerMode: true,
+            centerMode: false,
             variableWidth: true
         });
     });

@@ -15,30 +15,32 @@ namespace WebView.Areas.Admin.Controllers
             _context = dbcontext;
         }
         // GET: Admin/MaGiamGia
-      // GET: Admin/MaGiamGia
-public async Task<IActionResult> Index()
-{
-    var maGiamGiaList = await _context.MaGiamGias
-        .Select(m => new MaGiamGiaDTO
+        // GET: Admin/MaGiamGia
+        public async Task<IActionResult> Index()
         {
-            Id = m.Id,
-            Ten = m.Ten,
-            LoaiGiamGia = m.LoaiGiamGia,
-            DieuKienGiamGia = m.LoaiGiamGia == 0 ? m.DieuKienGiamGia : null, // Chỉ áp dụng cho Coupon
-            GiaTriGiam = m.LoaiGiamGia == 0 ? m.GiaTriGiam : null,
-            MenhGia = m.LoaiGiamGia == 1 ? m.MenhGia : null, // Chỉ áp dụng cho Voucher
-            NoiDung = m.NoiDung,
-            GiaTriToiDa = m.GiaTriToiDa,
-            TrangThai = m.TrangThai,
-            ThoiGianTao = m.ThoiGianTao,
-            ThoiGianKetThuc = m.ThoiGianKetThuc,
-            SoLuong = m.SoLuong,
-            SoLuongDaSuDung = m.SoLuongDaSuDung
-        })
-        .ToListAsync();
+            var maGiamGiaList = await _context.MaGiamGias
+                .Select(m => new MaGiamGiaDTO
+                {
+                    Id = m.Id,
+                    Ten = m.Ten,
+                    LoaiGiamGia = m.LoaiGiamGia,
+                    DieuKienGiamGia =  m.DieuKienGiamGia,
+                    GiaTriGiam = m.LoaiGiamGia == 0 ? m.GiaTriGiam : null,
+                    MenhGia = m.LoaiGiamGia == 1 ? m.MenhGia : null, // Chỉ áp dụng cho Voucher
+                    NoiDung = m.NoiDung,
+                    GiaTriToiDa = m.GiaTriToiDa,
+                    TrangThai = m.TrangThai,
+                    ThoiGianTao = m.ThoiGianTao,
+                    ThoiGianKetThuc = m.ThoiGianKetThuc,
+                    SoLuong = m.SoLuong,
+                    SoLuongDaSuDung = m.SoLuongDaSuDung,
+                     // Kiểm tra xem mã giảm giá đã được áp dụng chưa
+            IsApplied = _context.ChiTietMaGiamGias.Any(ct => ct.Id_MaGiamGia == m.Id)
+                })
+                .ToListAsync();
 
-    return View(maGiamGiaList);
-}
+            return View(maGiamGiaList);
+        }
 
         [HttpGet]
 
@@ -62,6 +64,12 @@ public async Task<IActionResult> Index()
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra điều kiện đối với coupon hoặc voucher
+                if (!maGiamGiaDto.ValidateCouponOrVoucher())
+                {
+                    ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin cho loại giảm giá đã chọn.");
+                    return View(maGiamGiaDto);
+                }
                 // Kiểm tra trùng tên mã giảm giá
                 var existingCoupon = await _context.MaGiamGias
                     .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten);
@@ -123,7 +131,16 @@ public async Task<IActionResult> Index()
             {
                 return NotFound(); // Nếu không tìm thấy mã giảm giá
             }
+            // Kiểm tra xem mã giảm giá có được áp dụng trong ChiTietMaGiamGias không
+            var hasApplied = await _context.ChiTietMaGiamGias
+                                           .AnyAsync(ct => ct.Id_MaGiamGia == id);
 
+            if (hasApplied)
+            {
+                // Nếu mã giảm giá đã được áp dụng, không cho phép sửa và thông báo lỗi
+                TempData["error"] = "Không thể sửa mã giảm giá này vì nó đã được áp dụng.";
+                return RedirectToAction(nameof(Index)); // Trở lại trang danh sách
+            }
             var maGiamGiaDto = new MaGiamGiaDTO
             {
                 Id = maGiamGia.Id,
@@ -151,6 +168,17 @@ public async Task<IActionResult> Index()
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra xem mã giảm giá có đang được áp dụng trong ChiTietMaGiamGias không
+                var hasApplied = await _context.ChiTietMaGiamGias
+                                               .AnyAsync(ct => ct.Id_MaGiamGia == maGiamGiaDto.Id);
+
+                if (hasApplied)
+                {
+                    // Nếu mã giảm giá đã được áp dụng, không cho phép sửa và thông báo lỗi
+                    TempData["error"] = "Không thể sửa mã giảm giá này vì nó đã được áp dụng.";
+                    return RedirectToAction(nameof(Index)); // Trở lại trang danh sách
+                }
+
                 // Kiểm tra xem tên mã giảm giá đã tồn tại chưa
                 var existingCoupon = await _context.MaGiamGias
                     .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten && m.Id != maGiamGiaDto.Id);
@@ -204,19 +232,35 @@ public async Task<IActionResult> Index()
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            // Tìm mã giảm giá theo id
             var maGiamGia = await _context.MaGiamGias.FindAsync(id);
 
+            // Kiểm tra xem mã giảm giá có tồn tại không
             if (maGiamGia == null)
             {
                 return NotFound(); // Nếu không tìm thấy mã giảm giá
             }
 
+            // Kiểm tra xem mã giảm giá này có được áp dụng trong ChiTietMaGiamGias hay không
+            var hasApplied = await _context.ChiTietMaGiamGias
+                                           .AnyAsync(ct => ct.Id_MaGiamGia == id);
+
+            if (hasApplied)
+            {
+                // Nếu mã giảm giá đã được áp dụng, không cho phép xóa và thông báo lỗi
+                TempData["error"] = "Không thể xóa mã giảm giá này vì nó đã được áp dụng.";
+                return RedirectToAction(nameof(Index)); // Trở lại trang danh sách
+            }
+
+            // Nếu mã giảm giá chưa được áp dụng, thực hiện xóa
             _context.MaGiamGias.Remove(maGiamGia);
             await _context.SaveChangesAsync();
 
+            // Thông báo thành công
             TempData["success"] = "Mã giảm giá đã được xóa thành công!";
             return RedirectToAction(nameof(Index)); // Trở lại trang danh sách
         }
-      
+
+
     }
 }

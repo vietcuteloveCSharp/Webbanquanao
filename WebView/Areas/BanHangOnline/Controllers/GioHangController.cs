@@ -27,14 +27,56 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 return Redirect("/BanHangOnline/DangNhapDangKy/ChuaDangNhap");
             }
-            // list giỏ hàng của khách hàng
-            var lstGioHang = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0).Include(x => x.ChiTietSanPham).ToListAsync();
+            // rà soát lại các sản phẩm trong giỏ hàng
+            // số lượng > 0 , số lượng(giohang) <= số lượng(chitietsanpham), số lượng == 0 -> xóa sản phẩm khỏi giỏ hàng
+            var lstGioHangBanDau = _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id)
+                .Include(x => x.ChiTietSanPham)
+                .Where(x => x.ChiTietSanPham != null)
+                .ToList();
+            if (lstGioHangBanDau != null || lstGioHangBanDau.Count > 0)
+            {
+                foreach (var item in lstGioHangBanDau)
+                {
+                    // nếu số lượng(chitietsanpham) == 0 -> sản phẩm trong giỏ hàng sẽ xóa khỏi giỏ hàng
+                    if (item.ChiTietSanPham.SoLuong == 0)
+                    {
+                        _context.GioHangs.Remove(item);
+                    }
+                    else if (item.ChiTietSanPham.SoLuong > 0)
+                    {
+                        // nếu số lượng(chitietsanpham) > 0 
+                        // số lượng(giohang) > số lượng(chitietsanpham) -> thay đổi số lượng(giohang) == số lượng(chitietsanpham)
+                        if (item.SoLuong <= 0)
+                        {
+                            _context.GioHangs.Remove(item);
+                        }
+                        if (item.SoLuong > item.ChiTietSanPham.SoLuong)
+                        {
+                            item.SoLuong = item.ChiTietSanPham.SoLuong;
 
-            if (lstGioHang == null || lstGioHang.Count <= 0)
+                        }
+                    }
+                    else
+                    {
+                        // nếu số lượng(chitietsanpham) < 0 
+                        item.ChiTietSanPham.SoLuong = 0;
+                        _context.GioHangs.Remove(item);
+                    }
+
+                }
+                _context.SaveChanges();
+            }
+            else
             {
                 ViewData["SpGioHang"] = new List<GioHangResp>();
                 return View();
             }
+            // list giỏ hàng của khách hàng
+            var lstGioHang = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0)
+                .Include(x => x.ChiTietSanPham)
+                .Where(x => x.ChiTietSanPham != null && x.ChiTietSanPham.SoLuong > 0)
+                .ToListAsync();
+
             // list id san pham chi tiet trong giỏ hàng
             var lstIdSpCT = lstGioHang.Select(x => x.Id_ChiTietSanPham).Distinct().ToList();
             // list san pham theo id spct có trong giỏ hàng
@@ -97,8 +139,20 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 });
             }
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
+            foreach (var item in lstGioHang)
+            {
+                if (item.SoLuong > item.ChiTietSanPham.SoLuong)
+                {
+                    item.SoLuong = item.ChiTietSanPham.SoLuong;
+                }
+            }
+            _context.SaveChanges();
+            var lstGioHangResp = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0)
+              .Include(x => x.ChiTietSanPham)
+              .Where(x => x.ChiTietSanPham != null && x.ChiTietSanPham.SoLuong > 0)
+              .ToListAsync();
 
-            resp = lstGioHang.Select(x => new GioHangResp
+            resp = lstGioHangResp.Select(x => new GioHangResp
             {
                 Id = x?.Id,
                 SoLuong = x?.SoLuong,
@@ -150,12 +204,10 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 return Json(new { status = 403, success = false, message = "không tìm thấy sản phẩm" });
             }
-            if (spct.SoLuong == 0)
-            {
-                _context.GioHangs.Remove(spGioHang);
-                _context.SaveChanges();
-                return Json(new { status = 400, success = false, message = "Sản phẩm đã hết hàng. Xóa sản phẩm khỏi giỏ hàng" });
-            }
+            //if (spct.SoLuong == 0)
+            //{
+            //    return Json(new { status = 400, success = false, message = "Sản phẩm đã hết hàng. Xóa sản phẩm khỏi giỏ hàng" });
+            //}
             if (spct.SoLuong == 1)
             {
                 spGioHang.SoLuong = spct.SoLuong;
@@ -165,14 +217,14 @@ namespace WebView.Areas.BanHangOnline.Controllers
             if (isTang)
             {
                 // kiểm tra không tăng quá số lượng sản phẩm trong giỏ hàng so với sản phẩm chi tiết
+                if (spct.SoLuong == spGioHang.SoLuong)
+                {
+                    return Json(new { status = 400, success = false, message = "Tăng sản phẩm không thành công" });
+                }
                 if (spct.SoLuong < spGioHang.SoLuong)
                 {
                     spGioHang.SoLuong = spct.SoLuong;
                     _context.SaveChanges();
-                    return Json(new { status = 400, success = false, message = "Tăng sản phẩm không thành công" });
-                }
-                if (spct.SoLuong == spGioHang.SoLuong)
-                {
                     return Json(new { status = 400, success = false, message = "Tăng sản phẩm không thành công" });
                 }
 

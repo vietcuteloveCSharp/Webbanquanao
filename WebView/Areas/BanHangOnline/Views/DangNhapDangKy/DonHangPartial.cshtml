@@ -1,4 +1,8 @@
-﻿@* <div class="tab-pane fade show active " id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"> *@
+﻿@using System.Globalization
+@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
+    var lstHoaDon = ViewData["lstHoaDon"] as List<HoaDonKhachHangResp>;
+}
     <div>
         <div>
             <h4 class="fw-bold text-uppercase">Tất cả đơn hàng</h4>
@@ -13,21 +17,29 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="wallet-status-tab" data-bs-toggle="tab"
-                            data-bs-target="#wallet" type="button" role="tab" aria-controls="wallet"
+                    <button class="nav-link" id="dhht-status-tab" data-bs-toggle="tab"
+                        data-bs-target="#dhht" type="button" role="tab" aria-controls="dhht"
                             aria-selected="false">
-                        Chở thanh toán
+                        Đơn hàng đã hoàn thành
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dhhuy-status-tab" data-bs-toggle="tab"
+                            data-bs-target="#dhhuy" type="button" role="tab" aria-controls="dhhuy"
+                            aria-selected="false">
+                        Đơn hàng bị hủy
                     </button>
                 </li>
             </ul>
-            <div class="tab-content" id="donHangContentTab">
+            <div class="tab-content">
+                @* show all *@
                 <div class="tab-pane fade show active" id="all" role="tabpanel"
                      aria-labelledby="all-tab">
                     <div>
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">STT</th>
                                     <th scope="col">Sản phẩm</th>
                                     <th scope="col">Ngày mua</th>
                                     <th scope="col">Tổng tiền</th>
@@ -36,38 +48,173 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>SNA6L27VW7</td>
-                                    <td>1 sản phẩm</td>
-                                    <td>05/07/2024</td>
-                                    <td class="text-danger">249,000đ</td>
-                                    <td class="text-danger">Lỗi Thanh toán</td>
-                                    <td>
-                                        <a href="#" class="btn btn-light">Xem chi tiết</a>
-                                    </td>
+                            @{
+                                if (lstHoaDon == null || lstHoaDon.Count == 0)
+                                {
+                                    <tr></tr>
+                                }
+                                else
+                                {
+                                    int count = 1;
+                                    foreach (var item in lstHoaDon)
+                                    {
+                                        <tr>
+                                            <td>@count</td>
+                                            <td>@item.SoLuongSp sản phẩm</td>
+                                            <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
+                                            <td class="text-danger">@item.TongTien.ToString("C", CultureInfo.GetCultureInfo("vi-VN")) </td>
+                                            @switch (item.TrangThai)
+                                            {
+                                                case 1:
+                                                    <td class="text-danger">Đơn hàng chờ xác nhận từ người bán</td>
+                                                    break;
+                                                case 2:
+                                                    <td class="text-danger">Đơn hàng chờ thanh toán</td>
+                                                    break;
+                                                case 3:
+                                                    <td class="text-danger">Đơn hàng đã được xác nhận</td>
+                                                    break;
+                                                case 4:
+                                                    <td class="text-danger">Đơn hàng đang được vận chuyển</td>
+                                                    break;
+                                                case 5:
+                                                    <td class="text-danger">Đơn hàng đã hoàn thành</td>
+                                                    break;
+                                                case 6:
+                                                    <td class="text-danger">Đơn hàng bị hủy</td>
+                                                    break;
+                                                default:
+                                                    <td></td>
+                                                    break;
+                                            }
+                                            <td>
+                                                <a href="/BanHangOnline/DangNhapdangky/DonHangChiTiet/@item.Id" class="btn btn-light">Xem chi tiết</a>
+                                            </td>
 
-                                </tr>
-                                <tr>
-                                    <td>SNA6L27VW7</td>
-                                    <td>1 sản phẩm</td>
-                                    <td>05/07/2024</td>
-                                    <td class="text-danger">249,000đ</td>
-                                    <td class="text-danger">Lỗi Thanh toán</td>
-                                    <td>
-                                        <a href="#" class="btn btn-light">Xem chi tiết</a>
-                                    </td>
+                                        </tr>
 
-                                </tr>
+                                        count++;
+                                    }
+                                }
+                            }
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="wallet" role="tabpanel"
+             </div>
+            <div class="tab-content">
+                @* Đơn hàng đã hoàn thành *@
+                <div class="tab-pane fade" id="dhht" role="tabpanel"
                      aria-labelledby="wallet-status-tab">
-                    Chờ thanh toán status
-                </div>
+                <div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Ngày mua</th>
+                                <th scope="col">Tổng tiền</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (lstHoaDon == null || lstHoaDon.Count == 0)
+                                {
+                                    <tr></tr>
+                                }
+                                else
+                                {
+                                    int count = 1;
+                                    var lstHoaDonHoanThanh = lstHoaDon.Where(x => x.TrangThai == 5).ToList();
+                                    if (lstHoaDonHoanThanh.Count == 0)
+                                    {
+                                        <tr></tr>
+                                    }
+                                    else
+                                    {
+                                        
+                                        foreach (var item in lstHoaDonHoanThanh)
+                                        {
+                                            <tr>
+                                                <td>@count</td>
+                                                <td>@item.SoLuongSp sản phẩm</td>
+                                                <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-danger">@item.TongTien.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                                <td class="text-danger">Đơn hàng đã hoàn thành</td>
+                                                <td>
+                                                    <a href="/BanHangOnline/DangNhapdangky/DonHangChiTiet/@item.Id" class="btn btn-light">Xem chi tiết</a>
+                                                </td>
 
+                                            </tr>
+
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                </div>
             </div>
+             <div class="tab-content">
+                @* Đơn hàng bị hủy *@
+            <div class="tab-pane fade" id="dhhuy" role="tabpanel"
+                 aria-labelledby="wallet-status-tab">
+                <div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Ngày mua</th>
+                                <th scope="col">Tổng tiền</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (lstHoaDon == null || lstHoaDon.Count == 0)
+                                {
+                                    <tr></tr>
+                                }
+                                else
+                                {
+                                    int count = 1;
+                                    var lstHoaDonHoanThanh = lstHoaDon.Where(x => x.TrangThai == 6).ToList();
+                                    if (lstHoaDonHoanThanh.Count == 0)
+                                    {
+                                        <tr></tr>
+                                    }
+                                    else
+                                    {
+
+                                        foreach (var item in lstHoaDonHoanThanh)
+                                        {
+                                            <tr>
+                                                <td>@count</td>
+                                                <td>@item.SoLuongSp sản phẩm</td>
+                                                <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-danger">@item.TongTien..ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                                <td class="text-danger">Đơn hàng bị hủy</td>
+                                                <td>
+                                                    <a href="/BanHangOnline/DangNhapdangky/DonHangChiTiet/@item.Id" class="btn btn-light">Xem chi tiết</a>
+                                                </td>
+
+                                            </tr>
+
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                </div>
         </div>
     </div>
-@* </div> *@

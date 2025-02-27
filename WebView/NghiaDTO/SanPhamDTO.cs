@@ -24,9 +24,9 @@ namespace WebView.NghiaDTO
         [Range(0.01, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
         public decimal Gia { get; set; }
 
-        [Required(ErrorMessage = "Số lượng là bắt buộc")]
-        [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn hoặc bằng 1")]
-        public int SoLuong { get; set; } = 1;
+        //[Required(ErrorMessage = "Số lượng là bắt buộc")]
+        //[Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn hoặc bằng 1")]
+        public int SoLuong { get; set; }
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }
         public bool TrangThai { get; set; } = true;

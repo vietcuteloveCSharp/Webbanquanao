@@ -16,7 +16,7 @@ namespace DAL.Entities
         [Required(ErrorMessage = "Giá là bắt buộc.")]
         [Range(0, double.MaxValue, ErrorMessage = "Giá phải là số dương.")]
         public decimal Gia { get; set; }
-        public int SoLuong { get; set; } = 1;
+        public int SoLuong { get; set; }
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public DateTime NgayCapNhat { get; set; }
         public bool TrangThai { get; set; } = true;
