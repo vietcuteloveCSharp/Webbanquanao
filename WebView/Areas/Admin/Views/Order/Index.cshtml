@@ -216,7 +216,10 @@
                             }
                         </td>
 
-                        <td>Ngày @hoaDon.NgayTao.ToString("d/M/yyyy HH:mm")</td>
+                        <td data-order="@hoaDon.NgayTao.ToString("yyyy-MM-dd HH:mm:ss")">
+                            Ngày @hoaDon.NgayTao.ToString("d/M/yyyy HH:mm")
+                        </td>
+
                         <td>@hoaDon.DiaChiGiaoHang</td>
                         <td>@string.Format("{0:N0} VND", Convert.ToDecimal(hoaDon.TongTien))</td>
 
@@ -274,6 +277,7 @@
     <script>
         $(document).ready(function () {
             var table = $('#hoaDonTable').DataTable({
+                "order": [[3, "desc"]],
                 dom: 'Bfrtip', // Thêm `B` để hiển thị các nút
                 buttons: [
                     {
