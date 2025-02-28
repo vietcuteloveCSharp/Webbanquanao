@@ -23,7 +23,7 @@
         <div class="col-md-4 p-3 border">
             <h6>Hình thức thanh toán</h6>
             <p><strong>@resp.PhuongThucThanhToan</strong></p>
-            <p><strong>@resp.HinhThucMuaHang</strong></p>
+            @* <p><strong>@resp.HinhThucMuaHang</strong></p> *@
         </div>
     </div>
     <h5 class="mt-4">GIỎ HÀNG <small>(@resp.SanPhamResp.Count sản phẩm)</small></h5>
@@ -58,7 +58,8 @@
             <tr>
                 <td>Tạm tính</td>
                 <td class="text-end">
-                    @((resp.TongTien - resp.PhiVanChuyen).ToString("C", CultureInfo.GetCultureInfo("vi-VN"))) </ td >
+                        @((resp.TongTien - resp.PhiVanChuyen).ToString("C", CultureInfo.GetCultureInfo("vi-VN")))
+                </td >
             </tr>
             <tr>
                 <td>Phí vận chuyển</td>
