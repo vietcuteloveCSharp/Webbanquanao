@@ -18,7 +18,7 @@ namespace WebView.Areas.Admin.Controllers
         {
             // Lấy danh sách các hóa đơn đã thanh toán (DaThanhToan = 8)
             var hoaDons = await _context.HoaDons
-                .Where(hd => hd.TrangThai == ETrangThaiHD.DaThanhToan)
+                .Where(hd => hd.TrangThai == ETrangThaiHD.HoanThanhDon)
                 .Select(hd => new HoaDonThongKeDTO
                 {
                     Id = hd.Id,
@@ -45,7 +45,7 @@ namespace WebView.Areas.Admin.Controllers
         public IActionResult ThongKeDoanhThuTheoNgay(DateTime? startDate, DateTime? endDate)
         {
             var query = _context.HoaDons
-                .Where(hd => hd.TrangThai == ETrangThaiHD.DaThanhToan);
+                .Where(hd => hd.TrangThai == ETrangThaiHD.HoanThanhDon);
 
             if (startDate.HasValue)
             {
