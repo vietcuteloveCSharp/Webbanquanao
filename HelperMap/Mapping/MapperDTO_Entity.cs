@@ -3,6 +3,7 @@ using DAL.Entities;
 using DTO.NTTuyen.ChiTietHoaDon;
 //using DTO.NTTuyen.HoaDons;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
+using DTO.VuvietanhDTO.Calamviecs;
 using DTO.VuvietanhDTO.Chucvus;
 using DTO.VuvietanhDTO.Cuahangs;
 using DTO.VuvietanhDTO.Danhmucs;
@@ -247,6 +248,11 @@ namespace HelperMap.Mapping
                 .ForMember(dto => dto.Id_SanPham, opt => opt.MapFrom(src => src.Id_SanPham))
                 .ForMember(dto => dto.Id_MauSac, opt => opt.MapFrom(src => src.Id_MauSac))
                 .ForMember(dto => dto.Id_KichThuoc, opt => opt.MapFrom(src => src.Id_KichThuoc));
+            #endregion
+
+            #region MapCalamviec
+            CreateMap<CreateCaLamViecDTO, CaLamViec>();
+            CreateMap<UpdateCaLamViecDTO, CaLamViec>();
             #endregion
         }
     }
