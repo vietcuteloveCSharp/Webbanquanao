@@ -9,7 +9,6 @@ namespace DAL.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Ten { get; set; } = string.Empty;
-
         public virtual ICollection<ChiTietSanPham> ChiTietSanPhams { get; set; }
     }
 }

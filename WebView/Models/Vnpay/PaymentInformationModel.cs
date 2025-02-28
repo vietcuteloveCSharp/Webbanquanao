@@ -7,5 +7,6 @@
         public string OrderDescription { get; set; }
         public string Name { get; set; }
         public int IdHoaDon { get; set; } = 0;
+        public string PhuongThucThanhToan { get; set; } = "vnpay";
     }
 }

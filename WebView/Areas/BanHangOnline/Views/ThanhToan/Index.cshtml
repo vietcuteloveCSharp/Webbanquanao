@@ -3,8 +3,13 @@
     ViewData["Title"] = "Thanh toán";
     var resp = ViewData["SpThanhToan"] as ThanhToanResp;
 }
+<style>
+    #toast-container {
+        right: 0;
+    }
+</style>
+<div class="toast-container" id="toast-container"></div>
 <div class="container mt-5">
-    
     <div class="row">
 
         <!-- Địa chỉ giao hàng -->
@@ -59,9 +64,14 @@
             <h5>Phương thức thanh toán</h5>
             <div>
                 <div class="d-flex align-items-center">
-                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" checked>
+                    <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" onclick="changePaymentMethod()" checked>
                     <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="">
                     <label for="vnpay">Thẻ ATM qua VNPAY</label>
+                </div>
+                <div class="d-flex align-items-center">
+                    <input type="radio" class="me-3" name="payment_method" id="cod" value="cod" onclick="changePaymentMethod()">
+                    <img src="https://www.vietcargo.vn/wp-content/uploads/2024/05/hinh-thuc-thanh-toan-cod-la-gi-2-800x400.jpg" style="height: 30px; margin-right:10px;" alt="">
+                    <label for="cod">Thanh toán khi nhận hàng (COD)</label>
                 </div>
             </div>
             <hr>
@@ -69,7 +79,7 @@
             <h5>Phương thức giao hàng</h5>
             <div>
                 <div class="d-flex align-items-center">
-                    <input type="radio" class="me-3" name="ship_method" id="ptgh" value="giaohangnhanh" checked>
+                    <input type="radio" class="me-3" name="ship_method" id="ptgh"  value="giaohangnhanh" checked>
                     <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;" alt="">
                     <label for="ptgh">Giao hàng nhanh GHN</label>
                 </div>
@@ -95,6 +105,8 @@
                 <div>
                     <input type="hidden" name="PhiVanChuyen" value=0 id="phivanchuyen-order" hidden />
                     <input type="hidden" name="IdMaGiamGia" value=0 id="idmagiamgia-order" hidden />
+                    <input type="hidden" name="DiaChiGiaoHang" value="" id="diachigiaohang-order" hidden />
+                    <input type="hidden" name="PhuongThucThanhToan" value="vnpay" id="phuongthucthanhtoan-order" hidden />
                     <p><strong>Tạm tính:</strong> <span id="subtotal">0 vn₫</span></p>
                     <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vn₫</span></p>
                     <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vn₫</span></p>
@@ -216,26 +228,49 @@
     const provinceSelect = document.getElementById('province');
     const districtSelect = document.getElementById('district');
     const wardSelect = document.getElementById('ward');
-    const form = document.getElementById('shipping-form');
+    const formshipping = document.getElementById('shipping-form');
 
     const subtotal = document.getElementById('subtotal');
     const feeResult = document.getElementById('shipping-fee');
     const discountAmount = document.getElementById('discount-amount');
     const totalAmount = document.getElementById('total-amount');
 
+    const diachigiaohangOrder = document.getElementById('diachigiaohang-order');
+    diachigiaohangOrder.value = "";
+
+    //Event bắt sự kiện submit
+    document.getElementById("shipping-form").addEventListener("submit", function (event) {
+        let addressInput = document.getElementById("diachigiaohang-order");
+
+        // Kiểm tra nếu giá trị rỗng hoặc null
+        if (!addressInput.value.trim()) {
+            showToast("Vui lòng chọn địa chỉ giao hàng",true);
+            event.preventDefault(); // Ngăn submit form
+        } 
+    });
     function changeVndToNumber(params) {
         let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
     }
-
+    
     const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
     function totalThanhToan() {
         let tamTinh = changeVndToNumber(subtotal.innerText.trim());
         let phivanchuyen = changeVndToNumber(feeResult.innerText.trim());
         let discountamount = changeVndToNumber(discountAmount.innerText.trim());
-
-        let total = tamTinh + phivanchuyen - discountamount;
+        let total = 0;
+       
+        if (isNaN(phivanchuyen)) {
+            phivanchuyen = 0;
+        }
+        if (isNaN(discountamount)) {
+            discountamount = 0;
+        }
+        if (isNaN(tamTinh)) {
+            tamTinh = 0;
+        }
+        total = tamTinh + phivanchuyen - discountamount;
         totalAmount.innerText = `${formatCurrency(total)}`;
     }
     function tamTinhTotal() {
@@ -252,7 +287,6 @@
     sessionStorage.removeItem("ListGiamGia");
     function GetMaGiamGia() {
         let keyword = document.getElementById('search-voucher').value;
-        keyword = keyword == null ? null : keyword;
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         // Tìm đối tượng giảm giá có `ten` chứa ký tự biến keyword
 
@@ -279,7 +313,7 @@
                                 <td>${giatrigiam} %</td>
                                 <td>${discount.dieuKienGiamGia} vnd</td>
                                 <td>${giatritoida} vnd</td>
-                                <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
+                                    <td>${discount.thoiGianKetThuc == null ? "" : discount.thoiGianKetThuc}</td>
                                 <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
                             `;
                 // console.log(newRow);
@@ -357,12 +391,15 @@
     GetMaGiamGia();
 
     function ThemPhieuGiamGia(idPhieuGiamGia) {
-        alert("Thêm thành công phiếu giảm giá: " + idPhieuGiamGia);
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         const result = getSessionGiamGia.filter(item => item.id == idPhieuGiamGia);
         console.log(result);
         var total = changeVndToNumber(subtotal.innerText.trim());
         var maGiamGia = result[0];
+        if(total < result[0].dieuKienGiamGia){
+            showToast("Thêm mã giảm giá không thành công",true);
+            return;
+        }
         //  0 - coupon || 1 - voucher
         let discountAmountNumber = 0;
         if (maGiamGia.loaiGiamGia == 0){
@@ -376,12 +413,16 @@
             discountAmountNumber = maGiamGia.menhGia;
         }
         discountAmountNumber = Math.round(discountAmountNumber);
+        if (discountAmountNumber > total) {
+            discountAmountNumber = total;
+        }
         discountAmount.innerText = `- ${discountAmountNumber} vnd`;
 
         document.getElementById("idmagiamgia-order").value = maGiamGia.id;
         document.getElementById('delete-discount').style = "display: block !important;";
         document.getElementById("discount-code").value = maGiamGia.ten;
         totalThanhToan();
+        showToast("Thêm mã giảm giá thành công");
     }
 
     // Hàm lấy danh sách tỉnh
@@ -396,6 +437,7 @@
             option.textContent = province.ProvinceName;
             provinceSelect.appendChild(option);
         });
+        totalThanhToan();
     }
 
     // Hàm lấy danh sách quận
@@ -415,6 +457,7 @@
             districtSelect.appendChild(option);
         });
         districtSelect.disabled = false;
+        totalThanhToan();
     }
 
     // Hàm lấy danh sách phường
@@ -434,6 +477,7 @@
             wardSelect.appendChild(option);
         });
         wardSelect.disabled = false;
+        totalThanhToan();
     }
 
     provinceSelect.addEventListener('change', () => {
@@ -446,6 +490,7 @@
         if (provinceSelect.value) {
             loadDistricts(provinceId)
         }
+        totalThanhToan();
     });
     // Sự kiện thay đổi quận
     districtSelect.addEventListener('change', () => {
@@ -453,6 +498,7 @@
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
         const districtId = districtSelect.value;
         if (districtId) loadWards(districtId);
+        totalThanhToan();
     });
 
     // Sự kiện submit form
@@ -461,9 +507,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-       
-
-
+        diachigiaohangOrder.value += `${wardSelect.options[wardSelect.selectedIndex].innerHTML}, ` + `${districtSelect.options[districtSelect.selectedIndex].innerHTML}, ` + provinceSelect.options[provinceSelect.selectedIndex].innerHTML + ".";
         const requestData = {
             "service_type_id": 5,
             "from_district_id": 3440,
@@ -495,6 +539,7 @@
             body: JSON.stringify(requestData)
         });
         const data = await response.json();
+        
         let numberRan = Math.random() * 0.09;
         let totalFee = Math.round(data.data.total * numberRan);
         document.getElementById("phivanchuyen-order").value = totalFee;
@@ -503,7 +548,37 @@
         document.getElementById("phivanchuyen-order").value = totalFee;
             totalThanhToan();
     });
-
+    // Phương thức thực hiện khi input payment thay đổi
+    function changePaymentMethod(){
+        var lstInputRadioPayment = document.getElementsByName('payment_method');
+        for (let item of lstInputRadioPayment) {
+            if (item.checked) {
+                document.getElementById('phuongthucthanhtoan-order').value = item.value;
+                console.log(document.getElementById('phuongthucthanhtoan-order').value)
+            }
+        }
+    }
     // Tải danh sách tỉnh khi trang được load
     loadProvinces();
+
+    // tạo thông báo
+    const toastContainer = document.getElementById('toast-container');
+    // Hiển thị thông báo
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-bg-${isError ? 'danger': 'success'} border - 0 show`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+                            <div class="d-flex">
+                                <div class="toast-body">${message}</div>
+                                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            `;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 </script>

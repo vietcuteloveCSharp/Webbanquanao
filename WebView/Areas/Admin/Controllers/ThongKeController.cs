@@ -23,8 +23,7 @@ namespace WebView.Areas.Admin.Controllers
                 {
                     Id = hd.Id,
                     TongTien = hd.TongTien,
-                    PhiVanChuyen = hd.PhiVanChuyen,
-                    Total = hd.TongTien - hd.PhiVanChuyen,
+                    Total = Math.Max(0, hd.TongTien - hd.PhiVanChuyen),
                     NgayTao = hd.NgayTao
                 })
                 .ToListAsync();
@@ -74,6 +73,47 @@ namespace WebView.Areas.Admin.Controllers
                 totalRevenue
             });
         }
+        [HttpGet]
+        public IActionResult ThongKeSanPhamBanChay(DateTime? startDate, DateTime? endDate)
+        {
+            var query = _context.ChiTietHoaDons
+                .Include(cthd => cthd.ChiTietSanPham)
+                .Include(cthd => cthd.HoaDon)
+                .Where(cthd => cthd.HoaDon.TrangThai == ETrangThaiHD.HoanThanhDon);
+
+            // Lọc theo ngày nếu có
+            if (startDate.HasValue)
+            {
+                query = query.Where(cthd => cthd.HoaDon.NgayTao >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(cthd => cthd.HoaDon.NgayTao <= endDate.Value);
+            }
+
+            // Lấy top 3 sản phẩm bán chạy
+            var sanPhamBanChay = query
+                .GroupBy(cthd => new
+                {
+                    cthd.ChiTietSanPham.SanPham.Id,  // Nhóm theo ID của sản phẩm
+                    cthd.ChiTietSanPham.SanPham.Ten // Nhóm theo tên sản phẩm
+                })
+                .Select(g => new
+                {
+                    SanPhamId = g.Key.Id,  // Dùng Id sản phẩm để tính
+                    TenSanPham = g.Key.Ten, // Tên sản phẩm
+                    TongSoLuong = g.Sum(cthd => cthd.SoLuong), // Tổng số lượng bán
+                })
+                .OrderByDescending(sp => sp.TongSoLuong) // Sắp xếp giảm dần
+                .Take(3) // Lấy top 3
+                .ToList();
+
+            return Json(new { sanPhamBanChay });
+        }
+
+
+
 
     }
 }

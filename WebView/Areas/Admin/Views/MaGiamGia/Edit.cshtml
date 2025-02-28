@@ -14,6 +14,12 @@
         <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
 
+    @* Nội dung *@
+    <div class="form-group">
+        <label asp-for="NoiDung"></label>
+        <textarea asp-for="NoiDung" class="form-control"></textarea>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+    </div>
     @* Loại giảm giá *@
     <div class="form-group">
         <label asp-for="LoaiGiamGia"></label>
@@ -24,14 +30,15 @@
         <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
     </div>
 
+    @* Điều kiện giảm giá *@
+    <div class="form-group">
+        <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
+        <input asp-for="DieuKienGiamGia" class="form-control typing-price" id="DieuKienGiamGia" />
+        <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
+    </div>
 
     @* Trường dành riêng cho Coupon *@
     <div id="coupon-fields" style="@(Model.LoaiGiamGia == 0 ? "display:block" : "display:none")">
-        <div class="form-group">
-            <label asp-for="DieuKienGiamGia">Điều kiện giảm giá (Số tiền tối thiểu)</label>
-            <input asp-for="DieuKienGiamGia" class="form-control typing-price" />
-            <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
-        </div>
         <div class="form-group">
             <label asp-for="GiaTriGiam">Giá trị giảm (%)</label>
             <input asp-for="GiaTriGiam" class="form-control typing-price" />
@@ -43,22 +50,16 @@
     <div id="voucher-fields" style="@(Model.LoaiGiamGia == 1 ? "display:block" : "display:none")">
         <div class="form-group">
             <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
-            <input asp-for="MenhGia" class="form-control typing-price" />
+            <input asp-for="MenhGia" class="form-control typing-price" value="@((Model.MenhGia == 0 ? "" : Model.MenhGia?.ToString("0.##")))" />
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
     </div>
 
-    @* Nội dung *@
-    <div class="form-group">
-        <label asp-for="NoiDung"></label>
-        <textarea asp-for="NoiDung" class="form-control"></textarea>
-        <span asp-validation-for="NoiDung" class="text-danger"></span>
-    </div>
 
-    @* Giá trị tối đa *@
-    <div class="form-group">
+    @* Giá trị tối đa (Chỉ hiển thị khi chọn Coupon) *@
+    <div class="form-group" id="giaTriToiDaField">
         <label asp-for="GiaTriToiDa">Giá trị tối đa (VNĐ)</label>
-        <input asp-for="GiaTriToiDa" class="form-control typing-price" />
+        <input asp-for="GiaTriToiDa" class="form-control typing-price" id="GiaTriToiDa" />
         <span asp-validation-for="GiaTriToiDa" class="text-danger"></span>
     </div>
 
@@ -104,14 +105,18 @@
             const loaiGiamGia = document.getElementById("LoaiGiamGia");
             const couponFields = document.getElementById("coupon-fields");
             const voucherFields = document.getElementById("voucher-fields");
+            const giaTriToiDaField = document.getElementById("giaTriToiDaField"); // Phần tử cha của trường Giá trị tối đa
 
+            // Hàm thay đổi hiển thị các trường tùy theo loại giảm giá
             function toggleFields() {
                 if (loaiGiamGia.value === "0") {
                     couponFields.style.display = "block";
                     voucherFields.style.display = "none";
+                    giaTriToiDaField.style.display = "block"; // Hiển thị trường Giá trị tối đa
                 } else if (loaiGiamGia.value === "1") {
                     couponFields.style.display = "none";
                     voucherFields.style.display = "block";
+                    giaTriToiDaField.style.display = "none"; // Ẩn trường Giá trị tối đa
                 }
             }
 
@@ -120,16 +125,49 @@
 
             // Sự kiện thay đổi
             loaiGiamGia.addEventListener("change", toggleFields);
-        });
-        document.addEventListener("DOMContentLoaded", function () {
-            const typingPriceFields = document.querySelectorAll(".typing-price, input[type='number']");
 
-            typingPriceFields.forEach(function (field) {
-                field.addEventListener("input", function () {
-                    this.value = this.value.replace(/[^0-9]/g, ''); // Chỉ chấp nhận số
+            // Lấy các input cần giới hạn
+            const inputs = [
+                document.getElementById("GiaTriGiam"),
+                document.getElementById("DieuKienGiamGia"),
+                document.getElementById("GiaTriToiDa"),
+                document.getElementById("MenhGia")
+            ];
+
+            // Hàm giới hạn giá trị nhập từ bàn phím
+            function enforceRange(inputElement, min, max) {
+                // Ngăn không cho nhập ký tự không phải số
+                inputElement.addEventListener("keypress", function (event) {
+                    const charCode = event.which || event.keyCode;
+                    // Chỉ cho phép nhập số (0-9)
+                    if (charCode < 48 || charCode > 57) {
+                        event.preventDefault();
+                    }
                 });
-            });
-        });
 
+                // Ngăn không cho nhập số âm hoặc vượt quá giới hạn
+                inputElement.addEventListener("input", function () {
+                    let value = parseFloat(this.value);
+                    if (value < min) {
+                        this.value = min;
+                    } else if (value > max) {
+                        this.value = max;
+                    }
+                });
+
+                // Đặt giá trị mặc định nếu để trống
+                inputElement.addEventListener("blur", function () {
+                    if (this.value === "" || parseFloat(this.value) < min) {
+                        this.value = min; // Giá trị mặc định
+                    }
+                });
+            }
+
+            // Áp dụng giới hạn cho các input
+            enforceRange(inputs[0], 1, 100);       // Giá trị giảm (%): 1-100
+            enforceRange(inputs[1], 1, 20000000); // Điều kiện giảm giá (VNĐ): 1-20 triệu
+            enforceRange(inputs[2], 1, 10000000); // Giá trị tối đa (VNĐ): 1-10 triệu
+            enforceRange(inputs[3], 1, 20000000); // Mệnh giá (VNĐ): 1-20 triệu
+        });
     </script>
 }

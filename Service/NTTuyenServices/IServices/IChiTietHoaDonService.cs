@@ -1,10 +1,4 @@
 ﻿using DTO.NTTuyen.ChiTietHoaDon;
-using DTO.NTTuyen.HoaDons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.NTTuyenServices.IServices
 {

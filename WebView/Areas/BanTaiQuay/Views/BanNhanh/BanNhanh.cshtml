@@ -30,28 +30,29 @@
                 <p id="time"></p>
             </div>
             <!-- tìm kiếm khách hàng -->
-            @* <div class="mb-2">
+            <div class="mb-2">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#timKiemKhachHangModal">
                     Tìm kiếm khách hàng
                 </button>
 
-            </div> *@
+            </div>
             <!-- form tính tiền -->
             <div class="mb-2 position-relative " style="min-height: 85%;">
-                <form action="#" id="form-thanh-toan">
                     <div class="d-flex mb-2 mt-3 justify-content-between">
-                        <span>Khách hàng</span>
-                        <span>Khách lạ</span>
+                        <input type='text' name="IdKhachHang" id="IdKhachHang" value="0" hidden>
+                        <span>Khách hàng:</span>
+                        <span id="ten-khach-hang-span">Khách lạ</span>
+                        <button type="button" class="btn btn-danger" id="btnKhachHang">Xóa</button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Tổng tiền hàng(vnd):</label>
+                        <input id="tong-tien-hang" class="form-control" name="TongTienHang" type="text" placeholder="0" disabled>
                     </div>
                     <div class="d-flex mb-2 justify-content-between">
-                        <span>Tổng tiền hàng</span>
-                        <input id="tong-tien-hang" type="text" placeholder="0" disabled>
-                    </div>
-                    <div class="d-flex mb-2 justify-content-between">
-                        <label>Loại thanh toán</label>
+                        <label>Loại thanh toán:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="loaiThanhToan" id="loaiTienMat"
+                            <input class="form-check-input" type="radio" id="loaiTienMat"
                                    checked>
                             <label class="form-check-label" for="loaiTienMat">
                                 Tiền mặt
@@ -59,62 +60,23 @@
                         </div>
                     </div>
                     <div class="d-flex mb-2 justify-content-between">
-                        <label>Dịch vụ khác</label>
+                        <label>Dịch vụ:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="dichvukhac" id="banTaiQuay"
+                            <input class="form-check-input" type="radio" id="banTaiQuay"
                                    checked>
                             <label class="form-check-label" for="banTaiQuay">
                                 Bán tại quầy
                             </label>
                         </div>
-                        @* <div class="form-check">
-                            <input class="form-check-input" type="radio" name="dichvukhac" id="giaoTanNoi">
-                            <label class="form-check-label " for="giaoTanNoi">
-                                Giao tận nơi
-                            </label>
-                        </div> *@
-                    </div>
-                    <div class="giao-tan-noi">
-                        <div class="mb-2">
-                            <label for="province" class="form-label">Tỉnh/Thành phố</label>
-                            <select id="province" class="form-select" required>
-                                <option value="">Chọn Tỉnh/Thành phố</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label for="district" class="form-label">Quận/Huyện</label>
-                            <select id="district" class="form-select" required>
-                                <option value="">Chọn Quận/Huyện</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label for="ward" class="form-label">Phường/Xã</label>
-                            <select id="ward" class="form-select" required>
-                                <option value="">Chọn Phường/Xã</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label for="address" class="form-label">Địa chỉ cụ thể</label>
-                            <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ cụ thể">
-                        </div>
-                        <div class="mb-2">
-                            <label for="shipping-fee" class="form-label">Phí vận chuyển</label>
-                            <input type="text" id="shipping-fee" class="form-control" placeholder="0" disabled>
-                        </div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label">Khách cần trả</label>
-                        <input id="khach-can-tra" class="form-control" type="text" placeholder="0" disabled>
-                    </div>
-                    <div class="mb-2">
-                        <label class ="form-label">Khách thanh toán</label>
-                        <input id="khach-thanh-toan" class="form-control" type="text" placeholder="0">
+                        <label class ="form-label">Khách thanh toán(vnd):</label>
+                        <input id="khach-thanh-toan" class="form-control" type="text" name="TongTienKhachThanhToan" placeholder="0" disabled>
                     </div>
                     <div class="d-flex mb-0 bottom-0 position-absolute w-100">
-                        <button class="btn btn-primary mx-auto h-auto w-100">Thanh Toán</button>
+                        <button class="btn btn-primary mx-auto h-auto w-100" onclick="thanhToanHoaDon()">Thanh Toán</button>
                     </div>
 
-                </form>
             </div>
         </div>
         <!-- Toast container -->
@@ -131,7 +93,8 @@
     <div class="offcanvas-body">
         <div class="d-flex flex-column gap-3">
             <button class="btn btn-light" type="button">Quản lý</button>
-            <button class="btn btn-light" type="button">Đăng xuất</button>
+            <a class="btn btn-light" href="/Admin">Đăng xuất</a>
+
 
         </div>
     </div>
@@ -163,7 +126,6 @@
                                 <th>Tên sản phẩm</th>
                                 <th>Giá</th>
                                 <th>Tồn kho</th>
-                                @* <th>Khách đặt</th> *@
                                 <th>Thêm</th>
                             </tr>
                         </thead>
@@ -194,11 +156,12 @@
 
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <label for="input-search">
+                   @*  <label for="input-search">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                    </label>
-                    <input type="text" id="input-search" class="form-control form-input"
+                    </label> *@
+                    <input type="text" id="input-search-kh" class="form-control form-input"
                            placeholder="Tìm khách hàng">
+                    <button id="timkiemkhachhang" class="btn btn-primary" style="height: 37px;">Tìm kiếm</button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
@@ -209,15 +172,12 @@
                             <tr>
                                 <th>Tên khách hàng</th>
                                 <th>Sdt</th>
+                                <th>Email</th>
                                 <th>Thêm</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Nguyễn Hoàng</td>
-                                <td>029392831</td>
-                                <td> <button class="btn btn-primary"><i class="fa-solid fa-plus"></i></button></td>
-                            </tr>
+                        <tbody id="khachHangList">
+                           
                         </tbody>
                     </table>
                 </div>
@@ -290,17 +250,20 @@
 
     let currentPage = 1;
     let searchQuery = "";
+    let searchQueyryKh = "";
     // Lưu trữ thông tin giỏ hàng
     let cart = [];
     // Fetch Products via API
+    let allProduct = [];
     function fetchProducts(query, page) {
-        fetch(`BanNhanh/GetProducts?searchQuery=${encodeURIComponent(query)}&page=${page}`)
+        fetch(`/BanTaiQuay/BanNhanh/GetProducts?searchQuery=${encodeURIComponent(query)}&page=${page}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Data từ API:", data); // Kiểm tra dữ liệu trả về
+                console.log("Data san pham:", data); // Kiểm tra dữ liệu trả về
                 if (data.products && Array.isArray(data.products)) {
                     renderProducts(data.products);
                     renderPagination(data.currentPage, data.totalPages);
+                    allProduct = data.products;
                 } else {
                     console.error("Dữ liệu sản phẩm không hợp lệ:", data);
                     productList.innerHTML = "<tr><td colspan='6'>Không có sản phẩm nào được tìm thấy!</td></tr>";
@@ -309,7 +272,21 @@
             })
             .catch(error => console.error("Lỗi khi fetch sản phẩm:", error));
     }
-    
+    // Fetch Khách hàng từ api
+    function fetchKhachHang(query) {
+        fetch(`/BanTaiQuay/BanNhanh/GetKhachHang?sdt=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data khach hang:", data); // Kiểm tra dữ liệu trả về
+                if (data.khachHangs && Array.isArray(data.khachHangs)) {
+                    renderKhachHangs(data.khachHangs);
+                } else {
+                    console.error("Dữ liệu khach hang không hợp lệ:", data);
+                    khachHangTable.innerHTML = "<tr><td colspan='6'>Không có sản phẩm nào được tìm thấy!</td></tr>";
+                }
+            })
+            .catch(error => console.error("Lỗi khi fetch sản phẩm:", error));
+    }
     // Render Product List
     function renderProducts(products) {
         if (!products || !Array.isArray(products)) {
@@ -317,19 +294,68 @@
             productList.innerHTML = "<tr><td colspan='6'>Không có sản phẩm nào được tìm thấy!</td></tr>";
             return;
         }
-
-        productList.innerHTML = products.map(p => `
-                <tr>
-                    <td><img src="${p.hinhAnh}" alt="${p.ten}" width="50"></td>
-                    <td>${p.ten}</td>
-                    <td>${p.gia.toLocaleString()} vnđ</td>
-                    <td>${p.soLuong}</td>
-                    <td><button class="btn btn-primary add-to-cart">+</button></td>
-                </tr>
-            `).join('');
+        if (products.length == 0) {
+            productList.innerHTML = "<tr><td colspan='6'>Không có sản phẩm nào được tìm thấy!</td></tr>";
+            return;
+        }
+        productList.innerHTML = products.map(p => {
+            str ="";
+            if (p.giaban != p.giabandau) {
+                str +=`
+                    <tr>
+                        <td style="display: none;"><input type="text" value="${p.id}" hidden></td>
+                        <td><img src="${p.listHinHAnh[0].url}" alt="${p.ten}" width="50"></td>
+                        <td>${p.ten} <span class="badge bg-primary">${p.mauSac.ten}</span> <span class="badge bg-info">${p.kichThuoc.ten}</span></td>
+                        <td>${p.giaBan.toLocaleString()} vnd <span class="ms-2">${p.giaBanDau.toLocaleString()} vnd</span></td>
+                        <td>${p.soLuong}</td>
+                        <td><button class="btn btn-primary add-to-cart">+</button></td>
+                    </tr>
+                `;
+            }else{
+                str+= `
+                    <tr>
+                        <td style="display: none;"><input type="text" value="${p.id}" hidden></td>
+                        <td><img src="${p.listHinHAnh[0].url}" alt="${p.ten}" width="50"></td>
+                        <td>${p.ten} <span class="badge bg-primary">${p.mauSac.ten} </span> <span class="badge bg-info">${p.kichThuoc.ten}</span></td>
+                        <td>${p.giaBan.toLocaleString()} vnd</td>
+                        <td>${p.soLuong}</td>
+                        <td><button class="btn btn-primary add-to-cart">+</button></td>
+                    </tr>
+                `;
+            }
+            return str;
+           }).join('');
     }
-
-    // Render Pagination
+    // Render Khách hàng
+    const khachHangTable = document.getElementById("khachHangList");
+    let khachhanght = [];
+    function renderKhachHangs(khachhangs) {
+        if (!khachhangs || !Array.isArray(khachhangs)) {
+            console.error("Dữ liệu đầu vào không hợp lệ:", khachhangs);
+            khachHangTable.innerHTML = "<tr><td colspan='6'>Không có khách hàng nào được tìm thấy!</td></tr>";
+            return;
+        }
+        if (khachhangs.length == 0) {
+            khachHangTable.innerHTML = "<tr><td colspan='6'>Không có khách hàng nào được tìm thấy!</td></tr>";
+            return;
+        }
+        khachHangTable.innerHTML = khachhangs.map(p => {
+            khachhanght.push(p);
+            str = "";
+                str += `
+                            <tr>
+                                    <td style="display: none;"><input type="text" value="${p.id}" hidden></td>
+                                    <td>${p.ten}</td>
+                                    <td>${p.sdt}</td>
+                                    <td>${p.email}</td>
+                                    <td> <button class="btn btn-primary add-kh-to-cart">+</button></td>
+                            </tr>
+                    `;
+           
+            return str;
+        }).join('');
+    }
+    // Render Pagination sản phẩm
     function renderPagination(current, total) {
         pagination.innerHTML = "";
         for (let i = 1; i <= total; i++) {
@@ -347,12 +373,19 @@
             pagination.appendChild(pageLink);
         }
     }
-
-    // Search Event
+    
+    // Search Event san pham
     searchButton.addEventListener("click", () => {
         searchQuery = searchInput.value;
         currentPage = 1; // Reset to first page
         fetchProducts(searchQuery, currentPage);
+    });
+    // Search event khach hang
+    const searchButtKhachHang = document.getElementById("timkiemkhachhang");
+    const inputSearchKhachHang = document.getElementById("input-search-kh");
+    searchButtKhachHang.addEventListener("click", () => {
+        searchQueyryKh = inputSearchKhachHang.value;
+        fetchKhachHang(searchQueyryKh);
     });
 
      // Xử lý sự kiện khi click vào nút "+"
@@ -360,31 +393,78 @@
             if (e.target.classList.contains('add-to-cart')) {
                 const row = e.target.closest('tr');
                 const productImage = row.querySelector('img').src;
-                const productName = row.cells[1].textContent.trim();
-                let productPrice = row.cells[2].textContent.trim().toString();
-                const productKey = productName;
-                productPrice = parseFloat(productPrice.replaceAll('.','').replaceAll(',','.'));
-                const existingProduct = cart.find(item => item.name === productKey);
-
+                // const productName = row.cells[1].innerText.trim();
+                const productName =  Array.from(row.cells[2].childNodes)
+                .filter(node => node.nodeType === Node.TEXT_NODE) // Lọc các node chỉ chứa text
+                .map(node => node.textContent.trim()) // Lấy nội dung text và loại bỏ khoảng trắng thừa
+                .join(' '); // Gộp các đoạn text lại
+                const childrenColor = row.cells[2].childNodes[1].outerHTML;
+                const childrenSize = row.cells[2].childNodes[3].outerHTML;
+                let productPrice = row.cells[3].textContent.trim().toString();
+                productPrice = parseFloat(productPrice.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd','').trim())
+                const productId = row.cells[0].children[0].value;
+                const existingProduct = cart.find(item => item.id == productId);
+                const totalQuantity = parseInt(row.cells[4].textContent.trim());
                 if (existingProduct) {
-                    existingProduct.quantity++;
-                    existingProduct.total = existingProduct.quantity * existingProduct.price;
-                    showToast(`Tăng số lượng sản phẩm: ${productName}`);
+                     var ishave = allProduct.find(x => x.id == existingProduct.id);
+                    if (ishave != null) {
+                        if (ishave.soLuong == existingProduct.quantity) {
+                            showToast(`Số lượng sản phẩm tối đa. Không thể thêm nữa`, true);
+                            return;
+                        }
+                        existingProduct.quantity++;
+                        existingProduct.total = existingProduct.quantity * existingProduct.price;
+                        showToast(`Tăng số lượng sản phẩm: ${productName}`);
+                        saveHoaDonToSession();
+                    } else {
+
+                        existingProduct.quantity++;
+                        existingProduct.total = existingProduct.quantity * existingProduct.price;
+                        showToast(`Tăng số lượng sản phẩm: ${productName}`);
+                        saveHoaDonToSession();
+                    }
                 } else {
                     cart.push({
+                        id: productId,
                         image: productImage,
-                        name: productKey,
+                        name: productName,
+                        size: childrenSize,
+                        color: childrenColor,
                         price: productPrice,
                         quantity: 1,
+                        totalquantity:totalQuantity,
                         total: productPrice,
                     });
                     showToast(`Thêm sản phẩm: ${productName} thành công!`);
+                    saveHoaDonToSession();
                 }
 
                 renderCart();
             }
         });
+    // Xử lý sự kiện khi click vào nút "+" trong bảng khách hàng
+    const tenKH = document.getElementById('ten-khach-hang-span');
+    const idKh = document.getElementById('IdKhachHang');
+    const btnKhachHang = document.getElementById('btnKhachHang');
+    btnKhachHang.style.display = "none";
 
+    khachHangTable.addEventListener('click', function (e) {
+        if (e.target.classList.contains('add-kh-to-cart')) {
+            const row = e.target.closest('tr');
+            tenKH.innerHTML = row.cells[1].outerHTML;
+            idKh.value = row.cells[0].children[0].value;
+            showToast("Thêm khách hàng thành công")
+            btnKhachHang.style.display = "block";
+            saveHoaDonToSession();
+        }
+    });
+    btnKhachHang.addEventListener('click', function () {
+        idKh.value = "0";
+        tenKH.innerHTML = "Khách lạ";
+        btnKhachHang.style.display = "none";
+        showToast("Xóa khách hàng thành công", true);
+        saveHoaDonToSession();
+    });
         // Render giỏ hàng ra bảng
         function renderCart() {
             let count = 1;
@@ -393,13 +473,14 @@
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                 <td>${count}</td>
-                <td><img src="${product.image}" alt="${product.name}" width="50"></td>
-                <td>${product.name}</td>
-                <td class="price">${product.price.toLocaleString()} vnđ</td>
-                <td><input type="number" class="form-control form-control-sm quantity" min="1" value="${product.quantity}" data-index="${index}"></td>
-                <td>${product.total.toLocaleString()} vnđ</td>
-                <td><button class="btn btn-danger btn-sm delete-product" data-index="${index}">Xóa</button></td>
+                    <td style="display: none;"><input type="text" name="SanPhamChiTiet-Id" value="${product.id}" hidden></td>
+                    <td>${count}</td>
+                    <td><img src="${product.image}" alt="${product.name}" width="50"></td>
+                    <td>${product.name} ${product.color} ${product.size}</td>
+                    <td class="price">${product.price.toLocaleString()} vnd</td>
+                    <td><input type="number" class="form-control form-control-sm quantity" min="1" value="${product.quantity}" data-index="${index}"></td>
+                    <td>${product.total.toLocaleString()} vnd</td>
+                    <td><button class="btn btn-danger btn-sm delete-product" data-index="${index}">Xóa</button></td>
                   `;
                 count++;
                 cartList.appendChild(row);
@@ -417,15 +498,28 @@
                 input.addEventListener('input', function () {
                     const index = parseInt(this.getAttribute('data-index'));
                     const newQuantity = parseInt(this.value);
-
+                    
                     if (newQuantity > 0) {
-                        cart[index].quantity = newQuantity;
-                        cart[index].total = newQuantity * cart[index].price;
-                        renderCart();
-                        showToast(`Cập nhật số lượng: ${cart[index].name}`);
+                        if (cart[index].totalquantity < newQuantity){
+                            this.value = cart[index].totalquantity;
+                            cart[index].quantity = cart[index].totalquantity;
+                            cart[index].total = cart[index].totalquantity * cart[index].price;
+                            showToast(`Hết hàng`,true);
+                        }else{
+                            cart[index].quantity = newQuantity;
+                            cart[index].total = newQuantity * cart[index].price;
+                            showToast(`Cập nhật số lượng: ${cart[index].name}`);
+                            
+
+                        }
                     } else {
-                        showToast('Số lượng không hợp lệ!', true);
+                        this.value = 1;
+                        cart[index].quantity = 1;
+                        cart[index].total = 1 * cart[index].price;
+                        
                     }
+                    renderCart();
+                    saveHoaDonToSession();
                 });
             });
         }
@@ -440,6 +534,8 @@
                     cart.splice(index, 1); // Xóa sản phẩm khỏi mảng cart
                     renderCart();
                     showToast(`Đã xóa sản phẩm: ${deletedProduct}`,true);
+                calculateTotal();
+                    saveHoaDonToSession();
                 });
             });
         }
@@ -472,6 +568,7 @@
 
                         // Ví dụ: Tự động tính lại tổng tiền khi thêm dòng
                         calculateTotal();
+                        saveHoaDonToSession();
                     }
                 });
             }
@@ -496,162 +593,130 @@
             const price = parseFloat(priceN || 0);
             total += quantity * price;
         });
-        document.getElementById('tong-tien-hang').value = parseInt(total);
-        document.getElementById('khach-can-tra').value = parseInt(total);
+        document.getElementById('tong-tien-hang').value = parseInt(total).toLocaleString();
+        document.getElementById('khach-thanh-toan').value = (Math.round(Math.round(total) / 1000) * 1000).toLocaleString();
     }
-    // document.getElementById('giaoTanNoi').check
 
 
-    const token = '3ca6ba1b-b145-11ef-8350-bab7316192b7';
-    const shopId = 5497668;
-    const giaoTanNoiRadio = document.getElementById('giaoTanNoi');
     const banTaiQuayRadio = document.getElementById('banTaiQuay');
-    const giaoTanNoiDiv = document.querySelector('.giao-tan-noi');
-    const provinceSelect = document.getElementById('province');
-    const districtSelect = document.getElementById('district');
-    const wardSelect = document.getElementById('ward');
-    const shippingFeeInput = document.getElementById('shipping-fee');
-    document.querySelector('.giao-tan-noi').style.display = 'none';
-    giaoTanNoiRadio.addEventListener('click', () => {
-        giaoTanNoiDiv.style.display = 'block';
-    });
+   
 
     banTaiQuayRadio.addEventListener('click', () => {
         calculateTotal();
-        provinceSelect.selectedIndex = 0;
-        districtSelect.selectedIndex = 0;
-        wardSelect.selectedIndex = 0;
-        shippingFeeInput.value = '0';
-        giaoTanNoiDiv.style.display = 'none';
     });
-    // Fetch provinces
-    function fetchProvinces() {
-        fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/province', {
-            headers: {
-                'Content-Type': 'application/json',
-                'Token': token
+    // thay đổi hóa đơn được chọn
+    let idHdHienTai = 1;
+    function changeHd(id) {
+        // thực hiện fill thông tin hóa đơn được click vào các trường dữ liệu
+      
+        idHdHienTai = id;
+        let data = sessionStorage.getItem(id);
+        data = JSON.parse(data);
+           // thực hiện fill thông tin
+        if (data != null) {
+             cart = data.lsthoadon;
+             idKh.value = data.idkhachang;
+             document.getElementById('ten-khach-hang-span').innerHTML = data.tenkhachang;
+            if (data.idkhachang != 0) {
+                   btnKhachHang.style.display = "block";
+             }else{
+                btnKhachHang.style.display = "none";
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    provinceSelect.innerHTML = `<option value="">Chọn Tỉnh/Thành phố</option>`;
-                    data.data.forEach(province => {
-                        provinceSelect.innerHTML += `<option value="${province.ProvinceID}">${province.ProvinceName}</option>`;
-                    });
-                }
-            })
-            .catch(error => console.error('Error fetching provinces:', error));
-    }
+           
+            let listCart = cart;
+            let idKhachHang = idKh.value;
 
-    // Fetch districts based on province
-    provinceSelect.addEventListener('change', function () {
-        const provinceId = this.value;
-
-        if (!provinceId) return;
-
-        fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/district', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Token': token
-            },
-            body: JSON.stringify({ province_id: parseInt(provinceId) })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    districtSelect.innerHTML = `<option value="">Chọn Quận/Huyện</option>`;
-                    data.data.forEach(district => {
-                        districtSelect.innerHTML += `<option value="${district.DistrictID}">${district.DistrictName}</option>`;
-                    });
-                }
-            })
-            .catch(error => console.error('Error fetching districts:', error));
-    });
-
-    // Fetch wards based on district
-    districtSelect.addEventListener('change', function () {
-        const districtId = this.value;
-
-        if (!districtId) return;
-
-        fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/ward', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Token': token
-            },
-            body: JSON.stringify({ district_id: parseInt(districtId) })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    wardSelect.innerHTML = `<option value="">Chọn Phường/Xã</option>`;
-                    data.data.forEach(ward => {
-                        wardSelect.innerHTML += `<option value="${ward.WardCode}">${ward.WardName}</option>`;
-                    });
-                }
-            })
-            .catch(error => console.error('Error fetching wards:', error));
-    });
-
-    // Calculate shipping fee
-    wardSelect.addEventListener('change', function (event) {
-        event.preventDefault();
-
-        const districtId = districtSelect.value;
-        const wardCode = wardSelect.value;
-        const address = document.getElementById('address').value;
-
-        if (!districtId || !wardCode) {
-            alert('Vui lòng nhập đầy đủ thông tin giao hàng!');
-            return;
         }
-
-        const requestData = {
-            "service_type_id": 5,
-            "from_district_id": 3440,
-            "from_ward_code": "13010",
-            "to_district_id": parseInt(districtId),
-            "to_ward_code": `${wardCode}`,
-            "weight": 100,
-            "insurance_value": 0,
-            "coupon": null,
-            "items": [
-                {
-                    "name": "TEST1",
-                    "quantity": 1,
-                    "height": 100,
-                    "weight": 100,
-                    "length": 100,
-                    "width": 100
-                }
-            ]
+        renderCart();
+        calculateTotal();
+    }
+    saveHoaDonToSession();
+    // Lưu đối tượng vào Session Storage
+    function saveHoaDonToSession() {
+        const hoadon = {
+            idhd: idHdHienTai,
+            lsthoadon: cart ?? [],
+            idkhachang: idKh.value,
+            tongtienhang: parseInt(document.getElementById('tong-tien-hang').value.replaceAll('.','')),
+            tongtienthanhtoan: parseInt(document.getElementById('khach-thanh-toan').value.replaceAll('.', '')),
+            tenkhachang: document.getElementById('ten-khach-hang-span').innerHTML
         };
+        sessionStorage.setItem(idHdHienTai, JSON.stringify(hoadon));
+    }
+    function thanhToanHoaDon(){
+        let data = sessionStorage.getItem(idHdHienTai);
+        data = JSON.parse(data);
+        // thực hiện fill thông tin
+        if (data != null) {
+            if (data.lsthoadon.length > 0) { 
+                let lstHoaDon = [];
+                Array.from(data.lsthoadon).forEach(item => {
+                    lstHoaDon.push({
+                        id: item.id,
+                        quantity: item.quantity,
+                        gia : item.price
+                    });
+                })
+                const dataToSend = {
+                    idkhachang: data.idkhachang, // Thay bằng ID khách hàng thực tế
+                    lsthoadon: lstHoaDon,
+                    tongtienhang: data.tongtienhang, // Tổng tiền hàng (tính toán từ danh sách hóa đơn)
+                    tongtienthanhtoan: data.tongtienthanhtoan // Tổng tiền thanh toán (sau khi làm tròn hoặc áp dụng khuyến mãi)
+                };
 
-        fetch('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Token': token,
-                'ShopId': shopId
-            },
-            body: JSON.stringify(requestData)
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.code === 200) {
-                    shippingFeeInput.value = parseInt(data.data.total * 0.03) || 0;
-                    document.getElementById('khach-can-tra').value = parseInt(document.getElementById('khach-can-tra')?.value || 0) + parseInt(data.data.total * 0.03);
-                } else {
-                    alert('Không thể tính phí vận chuyển!');
+                // gửi thanh toán đến api
+                fetch('/BanTaiQuay/BanNhanh/PostThanhToanTaiQuay', {
+                    method: 'POST', // Phương thức POST
+                    headers: {
+                        'Content-Type': 'application/json' // Định dạng dữ liệu gửi đi
+                    },
+                    body: JSON.stringify(dataToSend) // Chuyển object thành JSON
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json(); // Trích xuất dữ liệu JSON từ phản hồi
+                    })
+                    .then(data => {
+                        // Xử lý thành công
+                        console.log("Gửi thành công:", data);
+                        
+                        if(data.status == 200){
+                            showToast("Thanh toán thành công!");
+                        }else{
+                            showToast("Thanh toán thất bại!",false);
+                        }
+                        const activeHd = document.getElementById(`${idHdHienTai}`);
+                        // Kiểm tra xem có tồn tại thẻ <a> không
+                        if (activeHd) {
+                            // Lấy phần tử <li> chứa thẻ <a>
+                            const liElement = activeHd.closest('li');
+
+                            // Kiểm tra và xóa phần tử <li>
+                            if (liElement) {
+                                liElement.remove();
+                                console.log('Đã xóa hóa đơn:', activeHd.id);
+                            }
+                        }
+                        // xóa session của hóa đơn hiện tại
+                        sessionStorage.removeItem(idHdHienTai);
+                        idKh.value = "0";
+                        tenKH.innerHTML = "Khách lạ";
+                        btnKhachHang.style.display = "none";
+                        cart=[];
+                        renderCart();
+                        calculateTotal();
+                        saveHoaDonToSession();
+                    })
+                    .catch(error => {
+                        // Xử lý lỗi
+                        console.error("Gửi thất bại:", error);
+                        alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!");
+                    });
+                }else{
+                 showToast("Không có sản phẩm để thanh toán!",false);
                 }
-            })
-            .catch(error => console.error('Error calculating shipping fee:', error));
-    });
-
-    // Fetch provinces on load
-    fetchProvinces();
-
+        }
+    }
 </script>

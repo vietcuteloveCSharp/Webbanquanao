@@ -1,7 +1,7 @@
 ﻿@model WebView.NghiaDTO.KhuyenMaiDTO
 
 @{
-    ViewData["Title"] = "Thêm Khuyến Mại";
+    ViewData["Title"] = "Thêm Sale";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -12,22 +12,20 @@
         <input asp-for="Ten" class="form-control" />
         <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
-
-
     <div class="mb-3">
         <label for="MoTa" class="form-label">Mô Tả</label>
         <textarea asp-for="MoTa" class="form-control"></textarea>
         <span asp-validation-for="MoTa" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
-        <label for="GiaTriGiam" class="form-label">Giá Trị Giảm</label>
+        <label for="GiaTriGiam" class="form-label">Giá Trị Giảm (%)</label>
         <input asp-for="GiaTriGiam" class="form-control" />
         <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
     </div>
+  
 
     <div class="mb-3">
-        <label for="DieuKienGiamGia" class="form-label">Điều Kiện Giảm Giá</label>
+        <label for="DieuKienGiamGia" class="form-label">Điều Kiện Giảm Giá (VND)</label>
         <input asp-for="DieuKienGiamGia" class="form-control" />
         <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
     </div>
@@ -83,9 +81,66 @@
     <button type="submit" class="btn btn-primary">Tạo</button>
     <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 </form>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy các trường nhập liệu
+            var giaTriGiamInput = document.querySelector('input#GiaTriGiam');
+            var dieuKienGiamGiaInput = document.querySelector('input#DieuKienGiamGia');
+
+            // Đảm bảo rằng giá trị bắt đầu không phải là 0.00
+            if (giaTriGiamInput.value === '0.00') {
+                giaTriGiamInput.value = ''; // Hoặc giá trị mặc định mà bạn muốn
+            }
+            if (dieuKienGiamGiaInput.value === '0.00') {
+                dieuKienGiamGiaInput.value = ''; // Hoặc giá trị mặc định mà bạn muốn
+            }
+
+            // Sự kiện khi người dùng nhập vào trường GiaTriGiam
+            giaTriGiamInput.addEventListener('input', function (event) {
+                var value = event.target.value;
+                // Loại bỏ bất kỳ ký tự không phải là số và dấu chấm
+                event.target.value = value.replace(/[^0-9.]/g, '');
+
+                // Kiểm tra và sửa giá trị nếu vượt quá 101
+                if (parseFloat(event.target.value) > 101) {
+                    event.target.value = '100';
+                }
+
+                // Kiểm tra và sửa giá trị nếu nhỏ hơn hoặc bằng 1
+                if (parseFloat(event.target.value) <= 1) {
+                    event.target.value = '2';  // Hoặc bạn có thể để lại là '2' hoặc một giá trị hợp lý
+                }
+
+                // Giới hạn chỉ cho phép tối đa 3 chữ số trước dấu chấm và 2 chữ số sau dấu chấm
+                if (event.target.value.split('.')[0].length > 3) {
+                    event.target.value = event.target.value.substring(0, event.target.value.indexOf('.') + 3);
+                }
+                if (event.target.value.split('.')[1] && event.target.value.split('.')[1].length > 2) {
+                    event.target.value = event.target.value.substring(0, event.target.value.indexOf('.') + 3);
+                }
+            });
+
+            // Sự kiện khi người dùng nhập vào trường DieuKienGiamGia
+            dieuKienGiamGiaInput.addEventListener('input', function (event) {
+                var value = event.target.value;
+                // Loại bỏ bất kỳ ký tự không phải là số và dấu chấm
+                event.target.value = value.replace(/[^0-9.]/g, '');
+
+                // Kiểm tra và sửa giá trị nếu nhỏ hơn 1, đặt lại thành 1
+                if (parseFloat(event.target.value) < 1) {
+                    event.target.value = '1'; // Hoặc bạn có thể chọn giá trị khác thay cho 1
+                }
+
+                // Kiểm tra và sửa giá trị nếu vượt quá 20 triệu (20,000,000)
+                if (parseFloat(event.target.value) > 20000000) {
+                    event.target.value = '20000000'; // Đặt lại giá trị tối đa là 20 triệu
+                }
+            });
+        });
+    </script>
 }
