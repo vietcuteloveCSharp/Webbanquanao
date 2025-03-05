@@ -1,5 +1,6 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -198,15 +199,113 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var resp = lstHoaDon.Select(x => new HoaDonKhachHangResp
             {
                 Id = x.Id,
-                TongTien = x.TongTien + x.PhiVanChuyen,
+                TongTien = Math.Round(x.TongTien),
                 NgayMua = x.NgayTao,
                 SoLuongSp = x.ChiTietHoaDons.Count,
-                TrangThai = (int)x.TrangThai,
-            }).ToList();
+                TrangThai = (int)x.TrangThai
+
+            }).OrderByDescending(x => x.NgayMua).ToList();
             ViewData["lstHoaDon"] = resp;
             return View("TaiKhoan", tk);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DonHangChiTiet(int id)
+        {
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            // dựa vào id hóa đơn -> lấy được hóa đơn -> lấy được ds chi tiết sản phẩm + phương thức thanh toán hóa đơn
+            var hoadon = await _context.HoaDons.Include(x => x.ChiTietHoaDons).ThenInclude(x => x.ChiTietSanPham.SanPham)
+                                               .Include(x => x.ThanhToanHoaDons).ThenInclude(x => x.PhuongThucThanhToan)
+                                               .FirstOrDefaultAsync(x => x.Id == id);
+            if (hoadon == null)
+            {
+                return View();
+            }
+            string trangthai = "";
+            switch (hoadon.TrangThai)
+            {
+                case ETrangThaiHD.None:
+                    trangthai = "";
+                    break;
+                case ETrangThaiHD.HoanThanhDon:
+                    trangthai = "Hoàn thành đơn";
+                    break;
+                case ETrangThaiHD.ChoXacNhan:
+                    trangthai = "Chờ xác nhận";
+                    break;
+                case ETrangThaiHD.ChoThanhToan:
+                    trangthai = "Chờ thanh toán";
+                    break;
+                case ETrangThaiHD.DaXacNhan:
+                    trangthai = "Đã xác nhận";
+                    break;
+                case ETrangThaiHD.DangVanChuyen:
+                    trangthai = "Đang vận chuyển";
+                    break;
+                case ETrangThaiHD.HuyDon:
+                    trangthai = "Hủy đơn";
+                    break;
+            }
+            var banHangTaiQuay = _context.PhuongThucThanhToans.FirstOrDefault(x => x.Ten.ToLower().Equals("bantaiquay"))?.Id ?? 0;
+
+            string phuongThucTT = "Thanh toán tại quầy";
+            string hinhThucGiaoHang = "Giao hàng tận nơi";
+            switch (hoadon.ThanhToanHoaDons.First().PhuongThucThanhToan.Ten.ToLower())
+            {
+                case "vnpay":
+                    phuongThucTT = "Thanh toán qua Vnpay";
+                    break;
+                case "cod":
+                    phuongThucTT = "Thanh toán khi nhận hàng";
+                    break;
+                case "bantaiquay":
+                    phuongThucTT = "Thanh toán tại quầy";
+                    hinhThucGiaoHang = "Tại quầy";
+                    break;
+                default:
+                    phuongThucTT = "Phương thức thanh toán khác";
+                    break;
+            }
+            var resp = new HoaDonChiTietResp()
+            {
+                DiaChiGiaoHang = hoadon.DiaChiGiaoHang,
+                NgayMua = hoadon.NgayTao,
+                PhiVanChuyen = Math.Round(hoadon.PhiVanChuyen),
+                TongTien = Math.Round(hoadon.TongTien),
+                TrangThai = trangthai,
+                SanPhamResp = hoadon.ChiTietHoaDons.Select(x => new HoaDonSanPhamChiTietResp
+                {
+                    Gia = x.Gia,
+                    SoLuong = x.SoLuong,
+                    MoTa = x.ChiTietSanPham.SanPham.MoTa,
+                    Ten = x.ChiTietSanPham.SanPham.Ten,
+                    KichThuoc = _context.KichThuocs.Where(a => a.Id == x.ChiTietSanPham.Id_KichThuoc).Select(a => new KichThuocResp()
+                    {
+                        Id = a.Id,
+                        Ten = a.Ten
+                    }).FirstOrDefault(),
+                    MauSac = _context.MauSacs.Where(a => a.Id == x.ChiTietSanPham.Id_MauSac).Select(a => new MauSacResp()
+                    {
+                        Id = a.Id,
+                        Ten = a.Ten,
+                        MaHex = a.MaHex
+                    }).FirstOrDefault(),
+                    HinhAnh = _context.HinhAnhs.FirstOrDefault(a => a.Id_SanPham == x.ChiTietSanPham.Id_SanPham).Url
+                }).ToList(),
+                HinhThucMuaHang = hoadon.ThanhToanHoaDons.First().Id_PhuongThucThanhToan == banHangTaiQuay ? "Offline" : "Online",
+                PhuongThucThanhToan = phuongThucTT,
+                HinhThucGiaoHang = hinhThucGiaoHang,
+                SDT = tk.Sdt,
+                TenKhachHang = tk.Ten
+            };
+
+            ViewData["HoaDonChiTiet"] = resp;
+            return View("HoaDonChiTiet");
+        }
 
         public IActionResult DoiMatKhau()
         {

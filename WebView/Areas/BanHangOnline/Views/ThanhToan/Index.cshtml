@@ -3,8 +3,13 @@
     ViewData["Title"] = "Thanh toán";
     var resp = ViewData["SpThanhToan"] as ThanhToanResp;
 }
+<style>
+    #toast-container {
+        right: 0;
+    }
+</style>
+<div class="toast-container" id="toast-container"></div>
 <div class="container mt-5">
-    
     <div class="row">
 
         <!-- Địa chỉ giao hàng -->
@@ -223,7 +228,7 @@
     const provinceSelect = document.getElementById('province');
     const districtSelect = document.getElementById('district');
     const wardSelect = document.getElementById('ward');
-    const form = document.getElementById('shipping-form');
+    const formshipping = document.getElementById('shipping-form');
 
     const subtotal = document.getElementById('subtotal');
     const feeResult = document.getElementById('shipping-fee');
@@ -231,12 +236,23 @@
     const totalAmount = document.getElementById('total-amount');
 
     const diachigiaohangOrder = document.getElementById('diachigiaohang-order');
+    diachigiaohangOrder.value = "";
 
+    //Event bắt sự kiện submit
+    document.getElementById("shipping-form").addEventListener("submit", function (event) {
+        let addressInput = document.getElementById("diachigiaohang-order");
+
+        // Kiểm tra nếu giá trị rỗng hoặc null
+        if (!addressInput.value.trim()) {
+            showToast("Vui lòng chọn địa chỉ giao hàng",true);
+            event.preventDefault(); // Ngăn submit form
+        } 
+    });
     function changeVndToNumber(params) {
         let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
     }
-
+    
     const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
     function totalThanhToan() {
@@ -271,7 +287,6 @@
     sessionStorage.removeItem("ListGiamGia");
     function GetMaGiamGia() {
         let keyword = document.getElementById('search-voucher').value;
-        keyword = keyword == null ? null : keyword;
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         // Tìm đối tượng giảm giá có `ten` chứa ký tự biến keyword
 
@@ -376,12 +391,15 @@
     GetMaGiamGia();
 
     function ThemPhieuGiamGia(idPhieuGiamGia) {
-        alert("Thêm thành công phiếu giảm giá: " + idPhieuGiamGia);
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         const result = getSessionGiamGia.filter(item => item.id == idPhieuGiamGia);
         console.log(result);
         var total = changeVndToNumber(subtotal.innerText.trim());
         var maGiamGia = result[0];
+        if(total < result[0].dieuKienGiamGia){
+            showToast("Thêm mã giảm giá không thành công",true);
+            return;
+        }
         //  0 - coupon || 1 - voucher
         let discountAmountNumber = 0;
         if (maGiamGia.loaiGiamGia == 0){
@@ -404,6 +422,7 @@
         document.getElementById('delete-discount').style = "display: block !important;";
         document.getElementById("discount-code").value = maGiamGia.ten;
         totalThanhToan();
+        showToast("Thêm mã giảm giá thành công");
     }
 
     // Hàm lấy danh sách tỉnh
@@ -468,8 +487,6 @@
         districtSelect.innerHTML = '<option value="">Chọn quận / huyện</option>';
         feeResult.textContent = '0 vnđ';
         const provinceId = provinceSelect.value;
-        // lấy giá trị text trong thẻ option được chọn
-        diachigiaohangOrder.value ="Thành phố: " + provinceSelect.options[provinceSelect.selectedIndex].innerHTML+ ", ";
         if (provinceSelect.value) {
             loadDistricts(provinceId)
         }
@@ -480,7 +497,6 @@
         wardSelect.disabled = true;
         wardSelect.innerHTML = '<option value="">Chọn phường / xã</option>';
         const districtId = districtSelect.value;
-        diachigiaohangOrder.value += `Huyện: ${districtSelect.options[districtSelect.selectedIndex].innerHTML}, `;
         if (districtId) loadWards(districtId);
         totalThanhToan();
     });
@@ -491,7 +507,7 @@
         const provinceId = provinceSelect.value;
         const districtId = districtSelect.value;
         const wardCode = wardSelect.value;
-        diachigiaohangOrder.value += `Xã: ${wardSelect.options[wardSelect.selectedIndex].innerHTML}.`;
+        diachigiaohangOrder.value += `${wardSelect.options[wardSelect.selectedIndex].innerHTML}, ` + `${districtSelect.options[districtSelect.selectedIndex].innerHTML}, ` + provinceSelect.options[provinceSelect.selectedIndex].innerHTML + ".";
         const requestData = {
             "service_type_id": 5,
             "from_district_id": 3440,
@@ -523,6 +539,7 @@
             body: JSON.stringify(requestData)
         });
         const data = await response.json();
+        
         let numberRan = Math.random() * 0.09;
         let totalFee = Math.round(data.data.total * numberRan);
         document.getElementById("phivanchuyen-order").value = totalFee;
@@ -543,4 +560,25 @@
     }
     // Tải danh sách tỉnh khi trang được load
     loadProvinces();
+
+    // tạo thông báo
+    const toastContainer = document.getElementById('toast-container');
+    // Hiển thị thông báo
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-bg-${isError ? 'danger': 'success'} border - 0 show`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+                            <div class="d-flex">
+                                <div class="toast-body">${message}</div>
+                                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            `;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 </script>

@@ -23,8 +23,7 @@ namespace WebView.Areas.Admin.Controllers
                 {
                     Id = hd.Id,
                     TongTien = hd.TongTien,
-                    //PhiVanChuyen = hd.PhiVanChuyen,
-                    Total = hd.TongTien,
+                    Total = Math.Max(0, hd.TongTien - hd.PhiVanChuyen),
                     NgayTao = hd.NgayTao
                 })
                 .ToListAsync();

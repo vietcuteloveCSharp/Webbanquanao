@@ -247,16 +247,7 @@ namespace WebView.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SanPhamDTO model, List<string> ImageUrls, List<int> DeletedImageIds)
         {
-            var chiTietSanPhams = await _context.ChiTietSanPhams
-    .Where(ct => ct.Id_SanPham == model.Id)
-    .Select(ct => new ChiTietSanPhamDTO
-    {
-        Id_MauSac = ct.Id_MauSac,
-        Id_KichThuoc = ct.Id_KichThuoc,
-        SoLuong = ct.SoLuong,
-    }).ToListAsync();
-
-            model.ChiTietSanPhams = chiTietSanPhams;
+         
 
             // Kiểm tra tên sản phẩm có bị trùng hay không
             var existingProduct = await _context.SanPhams
@@ -326,6 +317,15 @@ namespace WebView.Areas.Admin.Controllers
                 sanPham.NgayTao = model.NgayTao;
                 sanPham.Id_ThuongHieu = model.Id_ThuongHieu;
                 sanPham.Id_DanhMuc = model.Id_DanhMuc;
+                // Cập nhật chi tiết sản phẩm
+                _context.ChiTietSanPhams.RemoveRange(sanPham.ChiTietSanPhams);
+                sanPham.ChiTietSanPhams = model.ChiTietSanPhams.Select(ct => new ChiTietSanPham
+                {
+                    Id_SanPham = sanPham.Id,
+                    Id_MauSac = ct.Id_MauSac,
+                    Id_KichThuoc = ct.Id_KichThuoc,
+                    SoLuong = ct.SoLuong
+                }).ToList();
 
                 // Xóa hình ảnh được chọn
                 if (DeletedImageIds != null && DeletedImageIds.Any())
