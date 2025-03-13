@@ -24,5 +24,6 @@ namespace Responses.Resquests
         [DefaultValue("Vuvietanh1!")]
 
         public string MatKhau { get; set; } = null!;
+
     }
 }

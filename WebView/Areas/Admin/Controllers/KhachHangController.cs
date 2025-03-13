@@ -47,6 +47,7 @@ namespace WebView.Areas.Admin.Controllers
                     Avatar = kh.Avatar,
                     TrangThai = kh.TrangThai,
                     NgaySinh = kh.NgaySinh
+
                 })
                 .FirstOrDefaultAsync(kh => kh.Id == id);
 

@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Azure;
+using DAL.Context;
 using DTO.VuvietanhDTO.NhanViens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Responses.Resquests;
 using Service.VuVietAnhService.IRepository.IAccount;
+using Service.VuVietAnhService.Repository.Account;
 
 namespace WebAPI.Controllers
 {
@@ -16,10 +20,12 @@ namespace WebAPI.Controllers
     {
         private readonly IAccountService _accountSerivce;
         private readonly IConfiguration _configuration;
-        public AccountController(IAccountService accountSerivce, IConfiguration configuration)
+        private readonly WebBanQuanAoDbContext _context;
+        public AccountController(WebBanQuanAoDbContext dbContext , IAccountService accountSerivce, IConfiguration configuration)
         {
             _accountSerivce = accountSerivce;
             _configuration = configuration;
+            _context = dbContext;
 
         }
         
@@ -57,25 +63,44 @@ namespace WebAPI.Controllers
             }   
 
         }
-       
+
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginResquest loginResquest)
+        public async Task<IActionResult> Login(LoginResquest loginRequest)
         {
+            var user = await _context.NhanViens
+       .Include(nv => nv.ChucVu) // Đảm bảo lấy thông tin chức vụ
+       .FirstOrDefaultAsync(u => u.TaiKhoan == loginRequest.TaiKhoan && u.MatKhau == loginRequest.MatKhau);
+
             if (!ModelState.IsValid)
             {
-                // Dữ liệu không hợp lệ, trả về lỗi cùng với các thông báo lỗi cụ thể
                 return BadRequest(ModelState);
             }
+
             try
             {
-                var result = await _accountSerivce.LoginAccount(loginResquest);
-               if (result.Success) return Ok(result);
-               return Unauthorized();
+                var result = await _accountSerivce.LoginAccount(loginRequest);
+                Console.WriteLine($"API Login Response: {JsonConvert.SerializeObject(result)}");
+
+
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+
+                // Trả về Unauthorized nếu đăng nhập thất bại
+                return Unauthorized(new
+                {
+                    Message = "Tài khoản hoặc mật khẩu không chính xác",
+                    ErrorDetails = result.Message
+                });
             }
             catch (Exception ex)
             {
-
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new
+                {
+                    Message = "Đã xảy ra lỗi khi xử lý đăng nhập.",
+                    Error = ex.Message
+                });
             }
         }
     }

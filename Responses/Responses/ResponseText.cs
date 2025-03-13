@@ -11,6 +11,7 @@ namespace Responses.Responses
         public bool Success { get; set; } // kiểm tra xem nó thành công không
         public string Message { get; set; } = string.Empty;   // Thông báo cho người dùng
         public string Token { get; set; }
+        public int Id_ChucVu { get; set; } // Thêm thuộc tính này để chứa ID chức vụ
         public ResponseText()
         {
 
@@ -24,15 +25,16 @@ namespace Responses.Responses
         {
             Message = message;
         }
-        public ResponseText(bool success, string message, string token)
+        public ResponseText(bool success, string message, string token, int id_ChucVu)
         {
             Success = success;
             Message = message;
             Token = token;
+            Id_ChucVu = id_ChucVu;
         }
-        public static ResponseText ResponseSuccess(bool succes, string message, string token)
+        public static ResponseText ResponseSuccess(bool succes, string message, string token, int idChucVu)
         {
-            return new ResponseText(succes, message, token);
+            return new ResponseText(succes, message, token, idChucVu);
         }
     }
 }

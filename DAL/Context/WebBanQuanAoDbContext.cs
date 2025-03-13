@@ -73,7 +73,7 @@ namespace DAL.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=LAPTOP-IRUEAU\\SQL2022;Initial Catalog=WEBBANQUANAO;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=NGHIAFIN\\MSSQLSERVER1;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
         }
     }
