@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
             this._calamviecService = calamviecService;
            this._configuration = configuration;
         }
-        //lấy list chức vụ
+        //lấy list  ca lam viec
         [HttpGet("Get-All-CaLamViec")]
         public async Task<ActionResult<IEnumerable<FullCaLamViecDTO>>> GetAllCaLamViec()
         {
@@ -126,11 +126,11 @@ namespace WebAPI.Controllers
             }
         }
         [HttpPut("doi-ca/{idNv1}/{idNv2}")]
-        public async Task<IActionResult> DoiCaLamViec(int idNv1, int idNv2)
+        public async Task<IActionResult> DoiCaLamViec(int idNv1, int idNv2,int idngayLamviec)
         {
             try
             {
-                var result = await _calamviecService.DoiCaLamViec(idNv1, idNv2);
+                var result = await _calamviecService.DoiCaLamViec(idNv1, idNv2,idngayLamviec);
 
                 if (!result)
                 {

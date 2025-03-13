@@ -16,7 +16,7 @@ using static DAL.DataSeed.EnumableClass;
 
 namespace Service.VuVietAnhService.Repository.Calamviec
 {
-    public class CalamviecService :ICalamviecService
+    public class CalamviecService : ICalamviecService
     {
         private WebBanQuanAoDbContext _context;
         private IMapper _mapper;
@@ -28,35 +28,35 @@ namespace Service.VuVietAnhService.Repository.Calamviec
             this._logger = logger;
         }
         //mặc định gán giờ ở dưới vào tên ca
-        public static CaLamViec TaocalamviecInstance(EnumTenCa tenCa)
-        {
-            var (gioBatDau, gioKetThuc) = GetGioLamViec(tenCa);
-            return new CaLamViec
-            {
-                TenCa = tenCa,
-                GioBatDau = gioBatDau,
-                GioKetThuc = gioKetThuc,
-              
-                
-            };
-        }
-        // set giờ cho enum ca
-        public static (TimeSpan, TimeSpan) GetGioLamViec(EnumTenCa tenCa)
-        {
-            return tenCa switch
-            {
-                EnumTenCa.CaSang => (new TimeSpan(07, 0, 0), new TimeSpan(12, 0, 0)),
-                EnumTenCa.CaChieu => (new TimeSpan(12, 0, 1), new TimeSpan(17, 0, 0)),
-                EnumTenCa.CaToi => (new TimeSpan(17, 0, 1), new TimeSpan(22, 0, 0)),
-                _ => throw new ArgumentException("loại ca không hợp lệ")
-            };
-         }
+        //public static CaLamViec TaocalamviecInstance(EnumTenCa tenCa)
+        //{
+        //    var (gioBatDau, gioKetThuc) = GetGioLamViec(tenCa);
+        //    return new CaLamViec
+        //    {
+        //        TenCa = tenCa,
+        //        GioBatDau = gioBatDau,
+        //        GioKetThuc = gioKetThuc,
+
+
+        //    };
+        //}
+        //// set giờ cho enum ca
+        //public static (TimeSpan, TimeSpan) GetGioLamViec(EnumTenCa tenCa)
+        //{
+        //    return tenCa switch
+        //    {
+        //        EnumTenCa.CaSang => (new TimeSpan(07, 0, 0), new TimeSpan(12, 0, 0)),
+        //        EnumTenCa.CaChieu => (new TimeSpan(12, 0, 1), new TimeSpan(17, 0, 0)),
+        //        EnumTenCa.CaToi => (new TimeSpan(17, 0, 1), new TimeSpan(22, 0, 0)),
+        //        _ => throw new ArgumentException("loại ca không hợp lệ")
+        //    };
+        // }
 
         public async Task<IEnumerable<FullCaLamViecDTO>> GetAllCaLamViec()
         {
             var ALLCaLamViec = await _context.CaLamViecs.ToListAsync();
             if (!ALLCaLamViec.Any()) return new List<FullCaLamViecDTO>(); //trả về list rỗng nếu không có
-             var ALLCaLamViecDTO = _mapper.Map<List<FullCaLamViecDTO>>(ALLCaLamViec);
+            var ALLCaLamViecDTO = _mapper.Map<List<FullCaLamViecDTO>>(ALLCaLamViec);
             return ALLCaLamViecDTO;
         }
 
@@ -74,17 +74,18 @@ namespace Service.VuVietAnhService.Repository.Calamviec
         public async Task<bool> CreateCaLamViec(CreateCaLamViecDTO createCaLamViecDTO)
         {
             ArgumentNullException.ThrowIfNull(createCaLamViecDTO);
+            if (createCaLamViecDTO.GioKetThuc < createCaLamViecDTO.GioBatDau)
+            { throw new InvalidOperationException("Giờ kết thúc phải sau giờ bắt đầu!"); }
             try
             {
-                var caLamViec = TaocalamviecInstance(createCaLamViecDTO.TenCa);
-                caLamViec.Id_NhanVien = createCaLamViecDTO.Id_NhanVien;
-                await _context.CaLamViecs.AddAsync(caLamViec);
+                var newCaLamViec = _mapper.Map<CaLamViec>(createCaLamViecDTO);
+                await _context.CaLamViecs.AddAsync(newCaLamViec);
                 await _context.SaveChangesAsync();
                 return true;  // Thành công
             }
             catch (DbUpdateException dbEx)
             {
-                Console.WriteLine($"Lỗi database: {dbEx.InnerException?.Message}");
+                _logger.LogError($"Lỗi database: {dbEx.InnerException?.Message}");
                 return false;
             }
             catch (Exception ex)
@@ -103,16 +104,12 @@ namespace Service.VuVietAnhService.Repository.Calamviec
                 // Nếu không tìm thấy, báo lỗi
                 if (existingCalamviec == null)
                 {
-                    throw new KeyNotFoundException($"Không tìm thấy chức vụ với ID {id}.");
+                    throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
                 }
-                var caLamViec = TaocalamviecInstance(existingCalamviec.TenCa);
-
+                if (updateCaLamViecDTO.GioBatDau < updateCaLamViecDTO.GioKetThuc)
+                { throw new InvalidOperationException("Giờ kết thúc phải sau giờ bắt đầu!"); }
                 // Sử dụng AutoMapper để cập nhật các thuộc tính
                 _mapper.Map(updateCaLamViecDTO, existingCalamviec);
-
-                var (gioBatDau, gioKetThuc) = GetGioLamViec(existingCalamviec.TenCa);
-                existingCalamviec.GioBatDau = gioBatDau;
-                existingCalamviec.GioKetThuc = gioKetThuc;
 
                 // Lưu thay đổi vào database
                 await _context.SaveChangesAsync();
@@ -123,14 +120,15 @@ namespace Service.VuVietAnhService.Repository.Calamviec
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}", updateCaLamViecDTO);
-                
+
                 throw;
             }
-            
-            
+
+
         }
 
-        public async Task<bool> DoiCaLamViec(int Idnv1, int Idnv2)
+
+        public async Task<bool> DoiCaLamViec(int Idnv1, int Idnv2, int Idngaylamviec)
         {
             // tìm nv xem có cùng role không
             try
@@ -147,10 +145,17 @@ namespace Service.VuVietAnhService.Repository.Calamviec
                 {
                     throw new InvalidOperationException("Hai nhân viên phải có cùng chức vụ mới được đổi ca.");
                 }
+                var caNv1 = await _context.CaLamViecs
+                    .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv1 && c.Id_NgayLamViec == Idngaylamviec);
+
+                var caNv2 = await _context.CaLamViecs
+                    .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv2 && c.Id_NgayLamViec == Idngaylamviec);
+                if(caNv1 != caNv2)
+                {
+                    throw new InvalidOperationException("Hai nhân viên phải có cùng ngày làm việc mới được đổi ca.");
+                }
                 // Đổi ca làm việc
-                var tempCa = nv1.CaLamViecs;
-                nv1.CaLamViecs = nv2.CaLamViecs;
-                nv2.CaLamViecs = tempCa;
+                (caNv1.Id_NhanVien, caNv2.Id_NhanVien) = (caNv2.Id_NhanVien, caNv1.Id_NhanVien);
 
                 // Lưu thay đổi vào database
                 await _context.SaveChangesAsync();
@@ -162,6 +167,34 @@ namespace Service.VuVietAnhService.Repository.Calamviec
                 _logger.LogError(ex, "Lỗi khi đổi ca làm việc");
                 return false;
             }
+        }
+
+        public async Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO)
+        {
+            try
+            {
+                var existingCalamviec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == id);
+                // Nếu không tìm thấy, báo lỗi
+                if (existingCalamviec == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
+                }
+
+                // Sử dụng AutoMapper để cập nhật các thuộc tính
+                _mapper.Map(deteleCaLamViecDTO, existingCalamviec);
+
+                // Lưu thay đổi vào database
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}" , deteleCaLamViecDTO);
+
+                throw;
+            }
+
         }
     }
 }

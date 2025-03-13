@@ -21,6 +21,7 @@ namespace DAL.Context
         public virtual DbSet<MaGiamGia> MaGiamGias { get; set; }
         public virtual DbSet<MauSac> MauSacs { get; set; }
         public virtual DbSet<NhanVien> NhanViens { get; set; }
+        public virtual DbSet<NgayLamviec> NgayLamviecs { get; set; }
         public virtual DbSet<PhuongThucThanhToan> PhuongThucThanhToans { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }

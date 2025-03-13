@@ -11,7 +11,9 @@ namespace DTO.VuvietanhDTO.Calamviecs
     public class UpdateCaLamViecDTO
     {
         [Required(ErrorMessage = "TenCa is required.")]
-        public EnumTenCa TenCa { get; set; }        
+        public EnumTenCa TenCa { get; set; }
+        public TimeSpan GioBatDau { get; set; }
+        public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; } = true;
     }
 }
