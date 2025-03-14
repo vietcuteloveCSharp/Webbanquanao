@@ -23,11 +23,6 @@ namespace DAL.Entities
         [DataType(DataType.Time)]
         public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; } = true;
-        [ForeignKey("NhanVien")]
-        public int Id_NhanVien { get; set; }
-        [ForeignKey("NgayLamViecId")]
-        public int Id_NgayLamViec { get; set; }
-        public virtual NhanVien NhanVien { get; set; } 
-        public virtual NgayLamviec NgayLamviec { get;set; }
+        public virtual ICollection<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_Nhanviens { get; set; }
     }
 }

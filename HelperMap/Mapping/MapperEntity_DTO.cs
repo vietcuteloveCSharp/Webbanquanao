@@ -214,7 +214,7 @@ namespace HelperMap.Mapping
                 
             #endregion
             #region MapCalamviec
-            CreateMap<NgayLamviec, NgayLamViecDTO>()
+            CreateMap<NgayLamViec, NgayLamViecDTO>()
                 .ForMember(dest => dest.Ngay, opt => opt.MapFrom(src => src.Ngay.Date));
                 
             #endregion

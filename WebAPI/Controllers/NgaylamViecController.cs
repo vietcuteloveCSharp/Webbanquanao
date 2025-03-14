@@ -84,29 +84,29 @@ namespace WebAPI.Controllers
             }
 
         }
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteNgayLamViec(int id)
-        {
-            try
-            {
-                bool result = await _ngaylamviecService.DeleteNgayLamViec(id);
-                if (result)
-                    return Ok("Xóa ngày làm việc thành công!");
-                return BadRequest("Xóa ngày làm việc thất bại!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Lỗi hệ thống: " + ex.Message);
-            }
-        }
+        //[HttpDelete("delete/{id}")]
+        //public async Task<IActionResult> DeleteNgayLamViec(int id)
+        //{
+        //    try
+        //    {
+        //        bool result = await _ngaylamviecService.DeleteNgayLamViec(id);
+        //        if (result)
+        //            return Ok("Xóa ngày làm việc thành công!");
+        //        return BadRequest("Xóa ngày làm việc thất bại!");
+        //    }
+        //    catch (KeyNotFoundException ex)
+        //    {
+        //        return NotFound(ex.Message);
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "Lỗi hệ thống: " + ex.Message);
+        //    }
+        //}
     }
 
 }

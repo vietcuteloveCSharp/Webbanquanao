@@ -128,73 +128,73 @@ namespace Service.VuVietAnhService.Repository.Calamviec
         }
 
 
-        public async Task<bool> DoiCaLamViec(int Idnv1, int Idnv2, int Idngaylamviec)
-        {
-            // tìm nv xem có cùng role không
-            try
-            {
-                var nv1 = await _context.NhanViens.Include(nv => nv.CaLamViecs).FirstOrDefaultAsync(nv => nv.Id == Idnv1);
-                var nv2 = await _context.NhanViens.Include(nv => nv.CaLamViecs).FirstOrDefaultAsync(nv => nv.Id == Idnv2);
-                // Kiểm tra nếu không tìm thấy nhân viên nào
-                if (nv1 == null || nv2 == null)
-                {
-                    throw new KeyNotFoundException("Không tìm thấy nhân viên.");
-                }
-                // Kiểm tra nếu 2 nhân viên có cùng chức vụ
-                if (nv1.Id_ChucVu != nv2.Id_ChucVu)
-                {
-                    throw new InvalidOperationException("Hai nhân viên phải có cùng chức vụ mới được đổi ca.");
-                }
-                var caNv1 = await _context.CaLamViecs
-                    .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv1 && c.Id_NgayLamViec == Idngaylamviec);
+        //public async Task<bool> DoiCaLamViec(int Idnv1, int Idnv2, int Idngaylamviec)
+        //{
+        //    // tìm nv xem có cùng role không
+        //    try
+        //    {
+        //        var nv1 = await _context.NhanViens.Include(nv => nv.CaLamViecs).FirstOrDefaultAsync(nv => nv.Id == Idnv1);
+        //        var nv2 = await _context.NhanViens.Include(nv => nv.CaLamViecs).FirstOrDefaultAsync(nv => nv.Id == Idnv2);
+        //        // Kiểm tra nếu không tìm thấy nhân viên nào
+        //        if (nv1 == null || nv2 == null)
+        //        {
+        //            throw new KeyNotFoundException("Không tìm thấy nhân viên.");
+        //        }
+        //        // Kiểm tra nếu 2 nhân viên có cùng chức vụ
+        //        if (nv1.Id_ChucVu != nv2.Id_ChucVu)
+        //        {
+        //            throw new InvalidOperationException("Hai nhân viên phải có cùng chức vụ mới được đổi ca.");
+        //        }
+        //        var caNv1 = await _context.CaLamViecs
+        //            .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv1 && c.Id_NgayLamViec == Idngaylamviec);
 
-                var caNv2 = await _context.CaLamViecs
-                    .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv2 && c.Id_NgayLamViec == Idngaylamviec);
-                if(caNv1 != caNv2)
-                {
-                    throw new InvalidOperationException("Hai nhân viên phải có cùng ngày làm việc mới được đổi ca.");
-                }
-                // Đổi ca làm việc
-                (caNv1.Id_NhanVien, caNv2.Id_NhanVien) = (caNv2.Id_NhanVien, caNv1.Id_NhanVien);
+        //        var caNv2 = await _context.CaLamViecs
+        //            .FirstOrDefaultAsync(c => c.Id_NhanVien == Idnv2 && c.Id_NgayLamViec == Idngaylamviec);
+        //        if(caNv1 != caNv2)
+        //        {
+        //            throw new InvalidOperationException("Hai nhân viên phải có cùng ngày làm việc mới được đổi ca.");
+        //        }
+        //        // Đổi ca làm việc
+        //        (caNv1.Id_NhanVien, caNv2.Id_NhanVien) = (caNv2.Id_NhanVien, caNv1.Id_NhanVien);
 
-                // Lưu thay đổi vào database
-                await _context.SaveChangesAsync();
+        //        // Lưu thay đổi vào database
+        //        await _context.SaveChangesAsync();
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Lỗi khi đổi ca làm việc");
-                return false;
-            }
-        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Lỗi khi đổi ca làm việc");
+        //        return false;
+        //    }
+        //}
 
-        public async Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO)
-        {
-            try
-            {
-                var existingCalamviec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == id);
-                // Nếu không tìm thấy, báo lỗi
-                if (existingCalamviec == null)
-                {
-                    throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
-                }
+        //public async Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO)
+        //{
+        //    try
+        //    {
+        //        var existingCalamviec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == id);
+        //        // Nếu không tìm thấy, báo lỗi
+        //        if (existingCalamviec == null)
+        //        {
+        //            throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
+        //        }
 
-                // Sử dụng AutoMapper để cập nhật các thuộc tính
-                _mapper.Map(deteleCaLamViecDTO, existingCalamviec);
+        //        // Sử dụng AutoMapper để cập nhật các thuộc tính
+        //        _mapper.Map(deteleCaLamViecDTO, existingCalamviec);
 
-                // Lưu thay đổi vào database
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
+        //        // Lưu thay đổi vào database
+        //        await _context.SaveChangesAsync();
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}" , deteleCaLamViecDTO);
+        //        _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}" , deteleCaLamViecDTO);
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
     }
 }
