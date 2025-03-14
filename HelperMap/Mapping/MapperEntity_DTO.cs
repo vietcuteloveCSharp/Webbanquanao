@@ -10,6 +10,7 @@ using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Kichthuocs;
 using DTO.VuvietanhDTO.Mausacs;
+using DTO.VuvietanhDTO.Ngaylamviecs;
 using DTO.VuvietanhDTO.NhanViens;
 using DTO.VuvietanhDTO.Sanphams;
 using DTO.VuvietanhDTO.Thuonghieus;
@@ -210,6 +211,11 @@ namespace HelperMap.Mapping
             #region MapCalamviec
             CreateMap<CaLamViec, FullCaLamViecDTO>();
             CreateMap<CaLamViec, CaLamViecDTO>();
+                
+            #endregion
+            #region MapCalamviec
+            CreateMap<NgayLamviec, NgayLamViecDTO>()
+                .ForMember(dest => dest.Ngay, opt => opt.MapFrom(src => src.Ngay.Date));
                 
             #endregion
 

@@ -14,7 +14,8 @@ namespace Service.VuVietAnhService.IRepository.ICalamviec
         Task<CaLamViecDTO> GetCaLamViecById(int id);
         Task<bool> CreateCaLamViec(CreateCaLamViecDTO createCaLamViecDTO);
         Task<bool> UpdateCaLamViec(int id,UpdateCaLamViecDTO updateCaLamViec);
-        Task<bool> DoiCaLamViec(int nv1, int nv2);
+        Task<bool> DoiCaLamViec(int nv1, int nv2, int Idngaylamviec);
+        Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO);
         
     }
 }

@@ -14,7 +14,7 @@ namespace DAL.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required(ErrorMessage ="TenCa is required.")]
+        [Required(ErrorMessage = "TenCa is required.")]
         public EnumTenCa TenCa { get; set; }
         [DataType(DataType.Time)]
         [Required(ErrorMessage = "Giobatdau is required.")]
@@ -25,6 +25,9 @@ namespace DAL.Entities
         public bool TrangThai { get; set; } = true;
         [ForeignKey("NhanVien")]
         public int Id_NhanVien { get; set; }
-        public virtual NhanVien NhanVien { get; set; } = null!;
+        [ForeignKey("NgayLamViecId")]
+        public int Id_NgayLamViec { get; set; }
+        public virtual NhanVien NhanVien { get; set; } 
+        public virtual NgayLamviec NgayLamviec { get;set; }
     }
 }
