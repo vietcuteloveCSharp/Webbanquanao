@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bảng Ca Làm Việc & Lịch</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .calendar-container {
+      max-width: 400px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      
+      <!-- Bảng ca làm việc theo tuần -->
+      <div class="col-md-8 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <button id="prevWeek" class="btn btn-primary">Previous</button>
+            <div id="weekLabel" class="fw-bold"></div>
+            <button id="nextWeek" class="btn btn-primary">Next</button>
+          </div>
+          <div class="card-body" id="weekSchedule">
+            <!-- Bảng ca theo tuần sẽ được render tại đây bởi JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Lịch tháng -->
+      <div class="col-md-4">
+        <div class="calendar-container">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <button id="prevMonth" class="btn btn-primary">Previous</button>
+              <div id="currentMonth" class="fw-bold"></div>
+              <button id="nextMonth" class="btn btn-primary">Next</button>
+            </div>
+            <div class="card-body" id="calendarBody">
+              <!-- Lịch tháng sẽ được render bởi JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- JavaScript cho cả bảng ca theo tuần và lịch tháng -->
+  <script>
+    /* ---------------------------
+         Phần bảng ca làm việc theo tuần
+       --------------------------- */
+
+    // weekOffset = 0 hiển thị tuần hiện tại, chỉ cho phép chuyển trước/sau tối đa 4 tuần.
+    let weekOffset = 0;
+    const MAX_WEEK_OFFSET = 4;
+    const weekScheduleDiv = document.getElementById('weekSchedule');
+    const weekLabelDiv = document.getElementById('weekLabel');
+
+    // Hàm lấy ngày thứ Hai của tuần của một ngày nào đó (nếu là Chủ Nhật, mặc định trả về thứ Hai của tuần trước)
+    function getMonday(d) {
+      const date = new Date(d);
+      const day = date.getDay(); // 0 (CN) đến 6 (T7)
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(date.setDate(diff));
+    }
+
+    // Hàm định dạng ngày theo định dạng dd/mm/yyyy
+    function formatDate(date) {
+      const day = ('0' + date.getDate()).slice(-2);
+      const month = ('0' + (date.getMonth() + 1)).slice(-2);
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    // Hàm render bảng ca làm việc theo tuần (hiển thị từ Thứ Hai đến Chủ Nhật)
+    function updateWeekSchedule() {
+      const today = new Date();
+      const currentMonday = getMonday(today);
+
+      // Tính ngày thứ Hai của tuần cần hiển thị dựa trên weekOffset (0: tuần hiện tại)
+      const displayMonday = new Date(currentMonday);
+      displayMonday.setDate(currentMonday.getDate() + weekOffset * 7);
+      
+      // Tính ngày Chủ Nhật của tuần hiện hành
+      const displaySunday = new Date(displayMonday);
+      displaySunday.setDate(displayMonday.getDate() + 6);
+
+      // Cập nhật label header cho bảng ca (ví dụ: "Từ 14/08/2023 đến 20/08/2023")
+      weekLabelDiv.textContent = `Từ ${formatDate(displayMonday)} đến ${formatDate(displaySunday)}`;
+
+      // Mảng tên các ngày trong tuần, bắt đầu từ Thứ Hai
+      const dayNames = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+
+      // Xây dựng bảng ca làm việc
+      let html = '<table class="table table-bordered text-center">';
+      html += '<thead><tr>';
+      html += '<th>Thời gian</th>';
+      for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(displayMonday);
+        currentDate.setDate(displayMonday.getDate() + i);
+        html += `<th>${dayNames[i]}<br>${formatDate(currentDate)}</th>`;
+      }
+      html += '</tr></thead>';
+
+      // Thêm 3 ca làm việc: Sáng, Trưa, Chiều/Tối
+      html += '<tbody>';
+      const shifts = ['Sáng', 'Trưa', 'Chiều/Tối'];
+      shifts.forEach(shift => {
+        html += '<tr>';
+        html += `<th>${shift}</th>`;
+        for (let j = 0; j < 7; j++) {
+          html += '<td></td>';
+        }
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+
+      weekScheduleDiv.innerHTML = html;
+
+      // Cập nhật trạng thái disable cho nút Previous/Next dựa theo giới hạn tối đa 4 tuần.
+      document.getElementById('prevWeek').disabled = (weekOffset <= -MAX_WEEK_OFFSET);
+      document.getElementById('nextWeek').disabled = (weekOffset >= MAX_WEEK_OFFSET);
+    }
+
+    // Sự kiện chuyển tuần qua lại cho bảng ca.
+    document.getElementById('prevWeek').addEventListener('click', function() {
+      if (weekOffset > -MAX_WEEK_OFFSET) {
+        weekOffset--;
+        updateWeekSchedule();
+      }
+    });
+
+    document.getElementById('nextWeek').addEventListener('click', function() {
+      if (weekOffset < MAX_WEEK_OFFSET) {
+        weekOffset++;
+        updateWeekSchedule();
+      }
+    });
+
+    // Khởi tạo bảng ca theo tuần (mặc định hiển thị tuần hiện tại)
+    updateWeekSchedule();
+
+    /* ---------------------------
+         Phần lịch tháng (với đánh dấu ngày hiện tại và mặc định hiển thị tháng này)
+       --------------------------- */
+    let currentYear, currentMonth;
+    const currentMonthDiv = document.getElementById('currentMonth');
+    const calendarBodyDiv = document.getElementById('calendarBody');
+
+    // Hàm tạo lịch tháng, đánh dấu ngày hiện tại nếu lịch đang hiển thị tháng của ngày hiện tại
+    function generateCalendar(year, month) {
+      // Lấy ngày hiện tại để so sánh.
+      const today = new Date();
+      const currentDay = today.getDate();
+      const currMonth = today.getMonth();
+      const currYear = today.getFullYear();
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const totalDays = lastDay.getDate();
+      let startDay = firstDay.getDay();
+
+      let html = '<table class="table table-bordered text-center">';
+      html += '<thead><tr>';
+      const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+      daysOfWeek.forEach(day => {
+        html += `<th>${day}</th>`;
+      });
+      html += '</tr></thead>';
+      html += '<tbody>';
+      let dayCounter = 1;
+      for (let i = 0; i < 6; i++) {
+        html += '<tr>';
+        for (let j = 0; j < 7; j++) {
+          if (i === 0 && j < startDay) {
+            html += '<td></td>';
+          } else if (dayCounter > totalDays) {
+            html += '<td></td>';
+          } else {
+            // Nếu đang hiển thị tháng/năm hiện tại và dayCounter là ngày hiện tại, đánh dấu nó.
+            if (year === currYear && month === currMonth && dayCounter === currentDay) {
+              html += `<td class="table-primary fw-bold">${dayCounter}</td>`;
+            } else {
+              html += `<td>${dayCounter}</td>`;
+            }
+            dayCounter++;
+          }
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+
+    // Hàm cập nhật lịch tháng và hiển thị header (ví dụ: "Tháng 5 2023")
+    function updateCalendar() {
+      calendarBodyDiv.innerHTML = generateCalendar(currentYear, currentMonth);
+      const monthNames = [
+        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+      ];
+      currentMonthDiv.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    }
+
+    // Sự kiện chuyển tháng cho lịch.
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      updateCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      updateCalendar();
+    });
+
+    // Khởi tạo lịch tháng mặc định hiển thị tháng của ngày hiện tại.
+    function initCalendar() {
+      const today = new Date();
+      currentYear = today.getFullYear();
+      currentMonth = today.getMonth();
+      updateCalendar();
+    }
+
+    initCalendar();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
