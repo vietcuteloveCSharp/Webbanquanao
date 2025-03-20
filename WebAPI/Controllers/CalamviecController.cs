@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
             this._calamviecService = calamviecService;
            this._configuration = configuration;
         }
-        //lấy list chức vụ
+        //lấy list  ca lam viec
         [HttpGet("Get-All-CaLamViec")]
         public async Task<ActionResult<IEnumerable<FullCaLamViecDTO>>> GetAllCaLamViec()
         {
@@ -125,34 +125,34 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
             }
         }
-        [HttpPut("doi-ca/{idNv1}/{idNv2}")]
-        public async Task<IActionResult> DoiCaLamViec(int idNv1, int idNv2)
-        {
-            try
-            {
-                var result = await _calamviecService.DoiCaLamViec(idNv1, idNv2);
+        //[HttpPut("doi-ca/{idNv1}/{idNv2}")]
+        //public async Task<IActionResult> DoiCaLamViec(int idNv1, int idNv2,int idngayLamviec)
+        //{
+        //    try
+        //    {
+        //        var result = await _calamviecService.DoiCaLamViec(idNv1, idNv2,idngayLamviec);
 
-                if (!result)
-                {
-                    return BadRequest("Đổi ca thất bại, vui lòng kiểm tra lại.");
-                }
+        //        if (!result)
+        //        {
+        //            return BadRequest("Đổi ca thất bại, vui lòng kiểm tra lại.");
+        //        }
 
-                return Ok("Đổi ca thành công.");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
+        //        return Ok("Đổi ca thành công.");
+        //    }
+        //    catch (KeyNotFoundException ex)
+        //    {
+        //        return NotFound(new { Message = ex.Message });
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return BadRequest(new { Message = ex.Message });
+        //    }
+        //    catch (Exception ex)
+        //    {
                 
-                return StatusCode(500, new { Message = "Có lỗi xảy ra, vui lòng thử lại sau!" });
-            }
+        //        return StatusCode(500, new { Message = "Có lỗi xảy ra, vui lòng thử lại sau!" });
+        //    }
 
-        }
+        //}
     }
 }

@@ -46,11 +46,9 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             IsValidTrangThaiTransition(hoaDon.TrangThai, nextTrangThaiHD);
             // Cập nhật trạng thái mới
             hoaDon.TrangThai = nextTrangThaiHD;
-
             // Lưu thay đổi vào cơ sở dữ liệu
             _context.HoaDons.Update(hoaDon);
             await _context.SaveChangesAsync();
-
             // Trả về DTO cập nhật
             // Sử dụng AutoMapper để ánh xạ từ HoaDon sang UpdateTrangThaiDTO
             var updateResult = _mapper.Map<UpdateTrangThaiDTO>(hoaDon);
@@ -97,6 +95,7 @@ namespace Service.VuVietAnhService.Repository.Hoadon
                 );
             }
         }
+
 
         public async Task<IEnumerable<FullHoaDonDTO>> GetAllHoaDon()
         {

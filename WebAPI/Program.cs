@@ -32,6 +32,8 @@ using System.Text;
 using WebAPI.CheckEnpoint;
 using Service.VuVietAnhService.IRepository.ICalamviec;
 using Service.VuVietAnhService.Repository.Calamviec;
+using Service.VuVietAnhService.IRepository.INgaylamviec;
+using Service.VuVietAnhService.Repository.Ngaylamviec;
 
 namespace WebAPI
 {
@@ -73,6 +75,7 @@ namespace WebAPI
             builder.Services.AddScoped<ISanphamSerivce, SanphamService>();
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
             builder.Services.AddScoped<ICalamviecService,CalamviecService>();
+            builder.Services.AddScoped<INgaylamviecService,NgaylamviecService>();
 
          
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();

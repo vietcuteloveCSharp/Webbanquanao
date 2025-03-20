@@ -11,9 +11,13 @@ namespace DTO.VuvietanhDTO.Calamviecs
     public class CreateCaLamViecDTO
     {
         [Required(ErrorMessage = "TenCa is required.")]
-        public EnumTenCa TenCa { get; set; }        
+        public EnumTenCa TenCa { get; set; }
+        public TimeSpan GioBatDau { get; set; }
+        public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; } =true;
         [Required(ErrorMessage = "Id NhanVien is required.")]
         public int Id_NhanVien { get; set; }
+        [Required(ErrorMessage = "Id NgayLamViec is required.")]
+        public int Id_NgayLamViec { get; set; }
     }
 }

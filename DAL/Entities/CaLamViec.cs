@@ -14,7 +14,7 @@ namespace DAL.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required(ErrorMessage ="TenCa is required.")]
+        [Required(ErrorMessage = "TenCa is required.")]
         public EnumTenCa TenCa { get; set; }
         [DataType(DataType.Time)]
         [Required(ErrorMessage = "Giobatdau is required.")]
@@ -23,8 +23,6 @@ namespace DAL.Entities
         [DataType(DataType.Time)]
         public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; } = true;
-        [ForeignKey("NhanVien")]
-        public int Id_NhanVien { get; set; }
-        public virtual NhanVien NhanVien { get; set; } = null!;
+        public virtual ICollection<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_Nhanviens { get; set; }
     }
 }
