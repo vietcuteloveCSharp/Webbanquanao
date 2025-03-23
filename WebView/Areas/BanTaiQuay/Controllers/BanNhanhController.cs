@@ -52,7 +52,7 @@ namespace WebView.Areas.BanTaiQuay.Controllers
                         // lấy màu sắc + kích thước + số lượng trong Sản phẩm chi tiết
                         var lstSpCt = _dbContext.ChiTietSanPhams.Where(x => x.Id_SanPham == item.Id)
                             .Include(x => x.MauSac).Include(x => x.KichThuoc)
-                            .Where(x=> x.SoLuong > 0)
+                            .Where(x => x.SoLuong > 0)
                             .ToList();
                         if (lstSpCt != null && lstSpCt.Count > 0)
                         {
@@ -83,7 +83,7 @@ namespace WebView.Areas.BanTaiQuay.Controllers
                                     {
                                         Id = x.Id,
                                         Id_SanPham = x.Id_SanPham,
-                                        ImageData = x.ImageData,
+                                        //ImageData = x.ImageData,
                                         ImageSourceType = x.ImageSourceType,
                                         Url = x.Url
                                     })?.ToList() ?? null,

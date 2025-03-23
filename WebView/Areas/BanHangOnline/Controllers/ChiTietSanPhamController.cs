@@ -58,7 +58,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 {
                     Id = x?.Id,
                     Id_SanPham = x?.Id_SanPham,
-                    ImageData = x?.ImageData,
+                    //ImageData = x?.ImageData,
                     Url = x?.Url,
                 }).ToList(),
             };
