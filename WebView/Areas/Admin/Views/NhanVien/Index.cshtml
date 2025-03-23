@@ -1,5 +1,18 @@
-﻿@model IEnumerable<WebView.NghiaDTO.KhachHangDTO>
-<h1>Danh sách người dùng</h1>
+﻿@model List<WebView.NghiaDTO.NhanVienDTO>
+
+@{
+    ViewData["Title"] = "Danh sách nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <style>
     .badge-success {
         background-color: #28a745;
@@ -74,45 +87,45 @@
 
     }
 </style>
-<div class="table-responsive">
-    <table class="table table-bordered table-hover" id="myTable">
+<a asp-action="Create" class="btn btn-primary">Thêm nhân viên</a>
+<table class="table table-bordered mt-3" id="myTable">
     <thead>
         <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Tài khoản</th>
-                <th scope="col">Tên</th>
-                <th scope="col">Email</th>
-                <th scope="col">Số điện thoại</th>
-                <th scope="col">Trạng thái</th>
-                <th scope="col">Hành động</th>
+            <th>ID</th>
+            <th>Tên nhân viên</th>
+            <th>Số điện thoại</th>
+            <th>Email</th>
+            <th>Chức vụ</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var kh in Model)
+        @foreach (var nv in Model)
         {
             <tr>
-                <td >@kh.Id</td>
-                <td>@kh.TaiKhoan</td>
-                <td>@kh.Ten</td>
-                <td>@kh.Email</td>
-                <td>@kh.Sdt</td>
+                <td>@nv.Id</td>
+                <td>@nv.TenNhanVien</td>
+                <td>@nv.Sdt</td>
+                <td>@nv.Email</td>
+                <td>@nv.ChucVuDTO.Ten</td>
                 <td>
-                    @if (kh.TrangThai)
+                    @if (nv.TrangThai)
                     {
-                            <span class="badge bg-success">Mở khóa</span>
+                        <span class="badge bg-success">Mở khóa</span>
                     }
                     else
                     {
-                            <span class="badge bg-danger">Khóa</span>
+                        <span class="badge bg-danger">Khóa</span>
                     }
                 </td>
                 <td>
-                        <a asp-action="Details" asp-controller="KhachHang" asp-route-Id="@kh.Id" class="btn btn-sm btn-success">
-                            <i class="fa fa-edit"></i> Chi tiết
-                        </a>
-                    <form asp-action="ToggleStatus" asp-route-id="@kh.Id" method="post" style="display:inline;">
+                    <a asp-action="Edit" asp-controller="NhanVien" asp-route-Id="@nv.Id" class="btn btn-sm btn-success">
+                        <i class="fa fa-edit"></i> Sửa
+                    </a>
+                    <form asp-action="ToggleStatus" asp-route-id="@nv.Id" method="post" style="display:inline;">
                         <button type="submit" class="btn btn-warning btn-sm">
-                            @if (kh.TrangThai)
+                            @if (nv.TrangThai)
                             {
                                 <span>Khóa</span>
                             }
@@ -122,9 +135,12 @@
                             }
                         </button>
                     </form>
+                    <a asp-action="Delete" asp-controller="NhanVien" asp-route-Id="@nv.Id" class="btn btn-sm btn-danger confirmDeletion">
+                        <i class="fa fa-trash"></i> Xóa
+                    </a>
+                  
                 </td>
             </tr>
         }
     </tbody>
 </table>
-</div>

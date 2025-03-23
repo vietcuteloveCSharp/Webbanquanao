@@ -2,6 +2,7 @@
 using DAL.Entities;
 using DTO.NTTuyen.ChiTietHoaDon;
 using DTO.NTTuyenDTO.ChiTietSanPhams;
+using DTO.VuvietanhDTO.Calamviecs;
 using DTO.VuvietanhDTO.Chucvus;
 using DTO.VuvietanhDTO.Cuahangs;
 using DTO.VuvietanhDTO.Danhmucs;
@@ -9,6 +10,7 @@ using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Kichthuocs;
 using DTO.VuvietanhDTO.Mausacs;
+using DTO.VuvietanhDTO.Ngaylamviecs;
 using DTO.VuvietanhDTO.NhanViens;
 using DTO.VuvietanhDTO.Sanphams;
 using DTO.VuvietanhDTO.Thuonghieus;
@@ -205,6 +207,16 @@ namespace HelperMap.Mapping
                 .ForMember(dto => dto.Id_SanPham, opt => opt.MapFrom(src => src.Id_SanPham))
                 .ForMember(dto => dto.Id_MauSac, opt => opt.MapFrom(src => src.Id_MauSac))
                 .ForMember(dto => dto.Id_KichThuoc, opt => opt.MapFrom(src => src.Id_KichThuoc));
+            #endregion
+            #region MapCalamviec
+            CreateMap<CaLamViec, FullCaLamViecDTO>();
+            CreateMap<CaLamViec, CaLamViecDTO>();
+                
+            #endregion
+            #region MapCalamviec
+            CreateMap<NgayLamViec, NgayLamViecDTO>()
+                .ForMember(dest => dest.Ngay, opt => opt.MapFrom(src => src.Ngay.Date));
+                
             #endregion
 
         }

@@ -24,14 +24,13 @@ namespace WebView.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginResquest data)
         {
-            string apiUrl = "https://localhost:7169/api/Account/Login"; 
+            string apiUrl = "https://localhost:7169/api/Account/Login";
 
             var loginRequest = new LoginResquest
             {
                 TaiKhoan = data.TaiKhoan,
                 MatKhau = data.MatKhau,
             };
-
             // Gọi API đăng nhập để lấy JWT
             var response = await _apiService.PostAsync(apiUrl, loginRequest, string.Empty);
             if (response.IsSuccessStatusCode)
@@ -47,7 +46,7 @@ namespace WebView.Areas.Admin.Controllers
                     // Chuyển hướng tới trang sản phẩm admin
                 }
                 // Xử lý khi đăng nhập thất bại
-                ModelState.AddModelError(string.Empty,loginResponse.Message);
+                ModelState.AddModelError(string.Empty, loginResponse.Message);
                 return View();
 
             }

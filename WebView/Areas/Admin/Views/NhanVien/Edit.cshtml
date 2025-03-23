@@ -1,0 +1,83 @@
+﻿@model WebView.NghiaDTO.NhanVienDTO
+
+@{
+    ViewData["Title"] = "Chỉnh sửa nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="form-group">
+        <label for="TaiKhoan">Tài khoản</label>
+        <input type="text" name="TaiKhoan" class="form-control" id="TaiKhoan" value="@Model.TaiKhoan" />
+    </div>
+
+    <div class="form-group">
+        <label for="MatKhau">Mật khẩu (để trống nếu không đổi)</label>
+        <input type="password" name="MatKhau" class="form-control" id="MatKhau" />
+    </div>
+
+    <div class="form-group">
+        <label for="TenNhanVien">Tên nhân viên</label>
+        <input type="text" name="TenNhanVien" class="form-control" value="@Model.TenNhanVien" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Sdt">Số điện thoại</label>
+        <input type="text" name="Sdt" class="form-control" value="@Model.Sdt" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" name="Email" class="form-control" value="@Model.Email" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Id_ChucVu">Chức vụ</label>
+        <select name="Id_ChucVu" class="form-control" id="Id_ChucVu">
+            @foreach (var cv in ViewBag.ChucVus)
+            {
+                <option value="@cv.Id" selected="@(cv.Id == Model.Id_ChucVu ? "selected" : null)">@cv.Ten</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var chucVuDropdown = document.getElementById("Id_ChucVu");
+        var taiKhoanInput = document.getElementById("TaiKhoan");
+        var matKhauInput = document.getElementById("MatKhau");
+        var taiKhoanField = taiKhoanInput.parentElement;
+        var matKhauField = matKhauInput.parentElement;
+
+        var nhanVienId = @ViewBag.NhanVienId; // ID của chức vụ Nhân viên
+
+        function toggleTaiKhoanMatKhau() {
+            var selectedValue = parseInt(chucVuDropdown.value);
+
+            if (selectedValue === nhanVienId) {
+                taiKhoanField.style.display = "none";
+                matKhauField.style.display = "none";
+
+                taiKhoanInput.value = "";
+                matKhauInput.value = "";
+                taiKhoanInput.removeAttribute("required");
+                matKhauInput.removeAttribute("required");
+            } else {
+                taiKhoanField.style.display = "block";
+                matKhauField.style.display = "block";
+
+                taiKhoanInput.setAttribute("required", "required");
+            }
+        }
+
+        chucVuDropdown.addEventListener("change", toggleTaiKhoanMatKhau);
+        toggleTaiKhoanMatKhau();
+    });
+</script>

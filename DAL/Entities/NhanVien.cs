@@ -8,8 +8,8 @@ namespace DAL.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string TaiKhoan { get; set; } = null!;
-        public string MatKhau { get; set; } = null!;
+        public string? TaiKhoan { get; set; } // Cho phép null
+        public string? MatKhau { get; set; } // Cho phép null
         public string TenNhanVien { get; set; } = string.Empty;
         public string Sdt { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
@@ -27,6 +27,7 @@ namespace DAL.Entities
         public virtual ChucVu ChucVu { get; set; }
 
         public virtual ICollection<HoaDon> HoaDons { get; set; }
+        public virtual ICollection<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_NhanViens { get; set; } 
 
     }
 }
