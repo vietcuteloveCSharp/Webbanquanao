@@ -151,6 +151,24 @@
         text-align: center;
     }
 
+    .box-item {
+        height: 527px;
+        padding: 10px 10px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px -5px 10px rgba(204, 204, 204, 0.5), 0px 5px 10px rgba(204, 204, 204, 0.5);
+        transition: box-shadow 0.3s ease-in-out;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 10px 0px;
+        text-align: center;
+        max-width: 350px;
+        margin-left: 26px;
+    }
+
         /* Khi di chuột vào, shadow sẽ đậm hơn */
         .box:hover {
             box-shadow: 0px -8px 15px rgba(204, 204, 204, 0.8), 0px 8px 15px rgba(204, 204, 204, 0.8);
@@ -205,24 +223,24 @@
                     <div class="product-slider col-8">
                         @foreach (var sp in item.Value)
                         {
-                        
-                        <div class="product-card">
-                                <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id">
-                                <img class="imgsub" src="@sp.ListHinHAnh?.FirstOrDefault()?.Url" alt="@sp.Ten">
-                            </a>
-                            <div class="d-flex flex-column justify-content-start">
-                                    <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
-                                <p class="price">@sp.GiaBan vnd</p>
-                                @if (sp.GiaBanDau != sp.GiaBan)
-                                    {
-                                        <div class="d-flex justify-content-start">
-                                            <p class="old-price">@sp.GiaBanDau vnd</p>
-                                            <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
-                                        </div>
-                                    }
+                            <div class="box-item">
+                                <div class="product-card border-1">
+                                    <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id">
+                                    <img class="imgsub" src="@sp.ListHinHAnh?.FirstOrDefault()?.Url" alt="@sp.Ten">
+                                </a>
+                                <div class="d-flex flex-column justify-content-start">
+                                        <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
+                                    <p class="price">@sp.GiaBan vnd</p>
+                                    @if (sp.GiaBanDau != sp.GiaBan)
+                                        {
+                                            <div class="d-flex justify-content-start">
+                                                <p class="old-price">@sp.GiaBanDau vnd</p>
+                                                <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
+                                            </div>
+                                        }
+                                </div>
                             </div>
                         </div>
-
                         }
                     </div>
                 </div>

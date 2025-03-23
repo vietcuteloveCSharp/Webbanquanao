@@ -34,7 +34,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // tìm toàn bộ sản phâm có tên chứa ký tự str, trạng thái hoạt động, số lượng >=1
             // ưu tiên: sản phẩm mới, đang trong đợt khuyến mại
             var lstSp = await _context.SanPhams.AsNoTracking().Where(x => x.TrangThai == true)
-                                                                .Where(x =>x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
+                                                                .Where(x => x.Ten.ToLower().Trim().Contains(str.ToLower().Trim()))
                                                                 .Include(x => x.DanhMuc).Include(x => x.ChiTietSanPhams).ThenInclude(a => a.KichThuoc)
                                                                 .Include(x => x.ChiTietSanPhams).ThenInclude(a => a.MauSac)
                                                                 .Where(x => x.TrangThai == true && x.ChiTietSanPhams.Any(a => a.SoLuong >= 1)).ToListAsync();
@@ -86,7 +86,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                             {
                                 Id = a.Id,
                                 Id_SanPham = a.Id_SanPham,
-                                ImageData = a.ImageData,
+                                //ImageData = a.ImageData,
                                 ImageSourceType = a.ImageSourceType,
                                 Url = a.Url
                             }).Take(1).ToList()
