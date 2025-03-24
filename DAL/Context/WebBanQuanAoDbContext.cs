@@ -1,5 +1,4 @@
-﻿using DAL.DataSeed;
-using DAL.Entities;
+﻿using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Context
@@ -43,31 +42,31 @@ namespace DAL.Context
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            ////// Generate seed data with Bogus
-            var databaseSeeder = new DatabaseSeeder();
+            //// Generate seed data with Bogus
+            //var databaseSeeder = new DatabaseSeeder();
 
 
             //// Apply the seed data on the tables
-            modelBuilder.Entity<CuaHang>().HasData(databaseSeeder.CuaHangs);
-            modelBuilder.Entity<KhuyenMai>().HasData(databaseSeeder.KhuyenMais);
-            modelBuilder.Entity<DanhMuc>().HasData(databaseSeeder.DanhMucs);
-            modelBuilder.Entity<ChiTietKhuyenMai>().HasData(databaseSeeder.ChiTietKhuyenMais);
-            modelBuilder.Entity<MauSac>().HasData(databaseSeeder.MauSacs);
-            modelBuilder.Entity<KichThuoc>().HasData(databaseSeeder.KichThuocs);
-            modelBuilder.Entity<ThuongHieu>().HasData(databaseSeeder.ThuongHieus);
-            modelBuilder.Entity<SanPham>().HasData(databaseSeeder.SanPhams);
-            modelBuilder.Entity<ChiTietSanPham>().HasData(databaseSeeder.ChiTietSanPhams);
-            modelBuilder.Entity<KhachHang>().HasData(databaseSeeder.KhachHangs);
-            modelBuilder.Entity<GioHang>().HasData(databaseSeeder.GioHangs);
-            modelBuilder.Entity<PhuongThucThanhToan>().HasData(databaseSeeder.PhuongThucThanhToans);
-            modelBuilder.Entity<ChucVu>().HasData(databaseSeeder.ChucVus);
-            modelBuilder.Entity<NhanVien>().HasData(databaseSeeder.NhanViens);
-            modelBuilder.Entity<HoaDon>().HasData(databaseSeeder.HoaDons);
-            modelBuilder.Entity<ThanhToanHoaDon>().HasData(databaseSeeder.ThanhToanHoaDons);
-            modelBuilder.Entity<ChiTietHoaDon>().HasData(databaseSeeder.ChiTietHoaDons);
-            modelBuilder.Entity<MaGiamGia>().HasData(databaseSeeder.MaGiamGias);
-            modelBuilder.Entity<ChiTietMaGiamGia>().HasData(databaseSeeder.ChiTietMaGiamGias);
-            modelBuilder.Entity<HinhAnh>().HasData(databaseSeeder.HinhAnhs);
+            //modelBuilder.Entity<CuaHang>().HasData(databaseSeeder.CuaHangs);
+            //modelBuilder.Entity<KhuyenMai>().HasData(databaseSeeder.KhuyenMais);
+            //modelBuilder.Entity<DanhMuc>().HasData(databaseSeeder.DanhMucs);
+            //modelBuilder.Entity<ChiTietKhuyenMai>().HasData(databaseSeeder.ChiTietKhuyenMais);
+            //modelBuilder.Entity<MauSac>().HasData(databaseSeeder.MauSacs);
+            //modelBuilder.Entity<KichThuoc>().HasData(databaseSeeder.KichThuocs);
+            //modelBuilder.Entity<ThuongHieu>().HasData(databaseSeeder.ThuongHieus);
+            //modelBuilder.Entity<SanPham>().HasData(databaseSeeder.SanPhams);
+            //modelBuilder.Entity<ChiTietSanPham>().HasData(databaseSeeder.ChiTietSanPhams);
+            //modelBuilder.Entity<KhachHang>().HasData(databaseSeeder.KhachHangs);
+            //modelBuilder.Entity<GioHang>().HasData(databaseSeeder.GioHangs);
+            //modelBuilder.Entity<PhuongThucThanhToan>().HasData(databaseSeeder.PhuongThucThanhToans);
+            //modelBuilder.Entity<ChucVu>().HasData(databaseSeeder.ChucVus);
+            //modelBuilder.Entity<NhanVien>().HasData(databaseSeeder.NhanViens);
+            //modelBuilder.Entity<HoaDon>().HasData(databaseSeeder.HoaDons);
+            //modelBuilder.Entity<ThanhToanHoaDon>().HasData(databaseSeeder.ThanhToanHoaDons);
+            //modelBuilder.Entity<ChiTietHoaDon>().HasData(databaseSeeder.ChiTietHoaDons);
+            //modelBuilder.Entity<MaGiamGia>().HasData(databaseSeeder.MaGiamGias);
+            //modelBuilder.Entity<ChiTietMaGiamGia>().HasData(databaseSeeder.ChiTietMaGiamGias);
+            //modelBuilder.Entity<HinhAnh>().HasData(databaseSeeder.HinhAnhs);
 
 
 
