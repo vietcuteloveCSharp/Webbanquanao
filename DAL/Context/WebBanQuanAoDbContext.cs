@@ -29,6 +29,8 @@ namespace DAL.Context
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
+        public virtual DbSet<DanhGia> DanhGias { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
 
         public WebBanQuanAoDbContext()
         {
@@ -41,31 +43,31 @@ namespace DAL.Context
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //// Generate seed data with Bogus
-            //var databaseSeeder = new DatabaseSeeder();
+            ////// Generate seed data with Bogus
+            var databaseSeeder = new DatabaseSeeder();
 
 
             //// Apply the seed data on the tables
-            //modelBuilder.Entity<CuaHang>().HasData(databaseSeeder.CuaHangs);
-            //modelBuilder.Entity<KhuyenMai>().HasData(databaseSeeder.KhuyenMais);
-            //modelBuilder.Entity<DanhMuc>().HasData(databaseSeeder.DanhMucs);
-            //modelBuilder.Entity<ChiTietKhuyenMai>().HasData(databaseSeeder.ChiTietKhuyenMais);
-            //modelBuilder.Entity<MauSac>().HasData(databaseSeeder.MauSacs);
-            //modelBuilder.Entity<KichThuoc>().HasData(databaseSeeder.KichThuocs);
-            //modelBuilder.Entity<ThuongHieu>().HasData(databaseSeeder.ThuongHieus);
-            //modelBuilder.Entity<SanPham>().HasData(databaseSeeder.SanPhams);
-            //modelBuilder.Entity<ChiTietSanPham>().HasData(databaseSeeder.ChiTietSanPhams);
-            //modelBuilder.Entity<KhachHang>().HasData(databaseSeeder.KhachHangs);
-            //modelBuilder.Entity<GioHang>().HasData(databaseSeeder.GioHangs);
-            //modelBuilder.Entity<PhuongThucThanhToan>().HasData(databaseSeeder.PhuongThucThanhToans);
-            //modelBuilder.Entity<ChucVu>().HasData(databaseSeeder.ChucVus);
-            //modelBuilder.Entity<NhanVien>().HasData(databaseSeeder.NhanViens);
-            //modelBuilder.Entity<HoaDon>().HasData(databaseSeeder.HoaDons);
-            //modelBuilder.Entity<ThanhToanHoaDon>().HasData(databaseSeeder.ThanhToanHoaDons);
-            //modelBuilder.Entity<ChiTietHoaDon>().HasData(databaseSeeder.ChiTietHoaDons);
-            //modelBuilder.Entity<MaGiamGia>().HasData(databaseSeeder.MaGiamGias);
-            //modelBuilder.Entity<ChiTietMaGiamGia>().HasData(databaseSeeder.ChiTietMaGiamGias);
-            //modelBuilder.Entity<HinhAnh>().HasData(databaseSeeder.HinhAnhs);
+            modelBuilder.Entity<CuaHang>().HasData(databaseSeeder.CuaHangs);
+            modelBuilder.Entity<KhuyenMai>().HasData(databaseSeeder.KhuyenMais);
+            modelBuilder.Entity<DanhMuc>().HasData(databaseSeeder.DanhMucs);
+            modelBuilder.Entity<ChiTietKhuyenMai>().HasData(databaseSeeder.ChiTietKhuyenMais);
+            modelBuilder.Entity<MauSac>().HasData(databaseSeeder.MauSacs);
+            modelBuilder.Entity<KichThuoc>().HasData(databaseSeeder.KichThuocs);
+            modelBuilder.Entity<ThuongHieu>().HasData(databaseSeeder.ThuongHieus);
+            modelBuilder.Entity<SanPham>().HasData(databaseSeeder.SanPhams);
+            modelBuilder.Entity<ChiTietSanPham>().HasData(databaseSeeder.ChiTietSanPhams);
+            modelBuilder.Entity<KhachHang>().HasData(databaseSeeder.KhachHangs);
+            modelBuilder.Entity<GioHang>().HasData(databaseSeeder.GioHangs);
+            modelBuilder.Entity<PhuongThucThanhToan>().HasData(databaseSeeder.PhuongThucThanhToans);
+            modelBuilder.Entity<ChucVu>().HasData(databaseSeeder.ChucVus);
+            modelBuilder.Entity<NhanVien>().HasData(databaseSeeder.NhanViens);
+            modelBuilder.Entity<HoaDon>().HasData(databaseSeeder.HoaDons);
+            modelBuilder.Entity<ThanhToanHoaDon>().HasData(databaseSeeder.ThanhToanHoaDons);
+            modelBuilder.Entity<ChiTietHoaDon>().HasData(databaseSeeder.ChiTietHoaDons);
+            modelBuilder.Entity<MaGiamGia>().HasData(databaseSeeder.MaGiamGias);
+            modelBuilder.Entity<ChiTietMaGiamGia>().HasData(databaseSeeder.ChiTietMaGiamGias);
+            modelBuilder.Entity<HinhAnh>().HasData(databaseSeeder.HinhAnhs);
 
 
 
@@ -73,7 +75,7 @@ namespace DAL.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=QuanAoCanMan;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=HOANGNN\\SQLEXPRESS;Initial Catalog=WebBanQuanAoDbContext;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
         }
     }
