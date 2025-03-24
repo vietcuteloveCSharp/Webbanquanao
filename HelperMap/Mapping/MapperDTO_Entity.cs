@@ -234,6 +234,11 @@ namespace HelperMap.Mapping
             #region MapCalamviec
             CreateMap<CreateCaLamViecDTO, CaLamViec>();
             CreateMap<UpdateCaLamViecDTO, CaLamViec>();
+            CreateMap<DeteleCaLamViecDTO, CaLamViec>();
+
+            #endregion
+            #region MapNgayLamViec
+            
             #endregion
         }
     }

@@ -54,7 +54,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 {
                     Id = a.Id,
                     Id_SanPham = x.Id,
-                    ImageData = a.ImageData,
+                    //ImageData = a.ImageData,
                     Url = a.Url
                 }).ToList()
             }).ToList();
@@ -446,7 +446,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             if (response.VnPayResponseCode == "00")
             {
                 // thay đổi trạng thái của hóa đơn
-                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.HoanThanhDon;
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.ChoXacNhan;
                 _context.SaveChanges();
                 // thêm ThanhToanHoaDons
                 var ptThanhToan = new PhuongThucThanhToan();

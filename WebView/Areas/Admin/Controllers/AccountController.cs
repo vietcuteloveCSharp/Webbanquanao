@@ -31,7 +31,6 @@ namespace WebView.Areas.Admin.Controllers
                 TaiKhoan = data.TaiKhoan,
                 MatKhau = data.MatKhau,
             };
-
             // Gọi API đăng nhập để lấy JWT
             var response = await _apiService.PostAsync(apiUrl, loginRequest, string.Empty);
             if (response.IsSuccessStatusCode)
