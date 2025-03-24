@@ -5,7 +5,93 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<style>
+    .chi-tiet-table {
+        display: table;
+        width: 100%;
+        max-width: 600px; /* Giới hạn chiều rộng để các cột không quá xa nhau */
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
 
+    .chi-tiet-header {
+        display: table-row;
+        background-color: #f1f5f9;
+        color: #333;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+    }
+
+        .chi-tiet-header .header-cell {
+            display: table-cell;
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+    .chiTietSanPham-item {
+        display: table-row;
+        transition: background-color 0.2s ease;
+    }
+
+        .chiTietSanPham-item .form-group {
+            display: table-cell;
+            padding: 8px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        /* Xen kẽ màu nền cho các hàng */
+        .chiTietSanPham-item:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Hiệu ứng hover */
+        .chiTietSanPham-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Điều chỉnh kích thước input/select/button */
+        .chiTietSanPham-item .form-group select,
+        .chiTietSanPham-item .form-group input {
+            width: 100px;
+            height: 36px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+            .chiTietSanPham-item .form-group select:focus,
+            .chiTietSanPham-item .form-group input:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            }
+
+        .chiTietSanPham-item .form-group button {
+            width: 60px;
+            height: 36px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+            .chiTietSanPham-item .form-group button:hover {
+                background-color: #dc3545;
+                filter: brightness(90%);
+            }
+
+    #addChiTietContainer {
+        margin-top: 10px;
+    }
+</style>
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
@@ -38,27 +124,35 @@
 
     <button type="button" class="btn btn-secondary" id="toggleChiTiet">Hiển Thị Màu & Kích Thước</button>
     <div id="chiTietSanPhamContainer" style="display: none;">
-        @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
-        {
-            <div class="chiTietSanPham-item">
-                <div class="form-group">
-                    <label>Màu Sắc</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
-                </div>
-                <div class="form-group">
-                    <label>Kích Thước</label>
-                    <select class="form-control" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
-                </div>
-                <div class="form-group">
-                    <label>Số Lượng</label>
-                    <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
-                </div>
-                <button type="button" class="btn btn-danger remove-item">Xóa</button>
+        <div class="chi-tiet-table">
+            <div class="chi-tiet-header">
+                <div class="header-cell">Màu Sắc</div>
+                <div class="header-cell">Kích Thước</div>
+                <div class="header-cell">Số Lượng</div>
+                <div class="header-cell">Xóa</div>
             </div>
-        }
+            @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
+            {
+                <div class="chiTietSanPham-item">
+                    <div class="form-group">
+                        <select class="form-control chiTiet-mauSac" asp-for="ChiTietSanPhams[@i].Id_MauSac" asp-items="ViewBag.MauSacs"></select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control chiTiet-kichThuoc" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
-
+    <div id="addChiTietContainer" style="display: none;">
+        <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
+    </div>
     <!-- Hình ảnh hiện tại -->
     <div>
         <h4>Hình ảnh hiện tại</h4>
@@ -92,13 +186,31 @@
         <ul id="newImageLinksList"></ul>
     </div>
 
-
-    <button type="submit" class="btn btn-primary">Lưu</button>
-
+    <!-- Nút Confirm và Lưu -->
+    <button type="button" class="btn btn-primary" id="confirmButton">Xác Nhận</button>
+    <button type="submit" class="btn btn-primary" id="submitButton" style="display: none;">Lưu</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 </form>
-
-<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
-
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác Nhận Thay Đổi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn lưu các thay đổi này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Đồng Ý</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
    @*  @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -183,82 +295,93 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Hiển thị/ẩn chi tiết sản phẩm
-            document.getElementById('toggleChiTiet').addEventListener('click', function () {
-                const container = document.getElementById('chiTietSanPhamContainer');
-                container.style.display = container.style.display === 'none' ? 'block' : 'none';
-                this.textContent = container.style.display === 'none' ? 'Hiển Thị Màu & Kích Thước' : 'Ẩn Màu & Kích Thước';
+            const toggleButton = document.getElementById('toggleChiTiet');
+            const addButtonContainer = document.getElementById('addChiTietContainer');
+            const addButton = document.getElementById('addChiTiet');
+            const container = document.getElementById('chiTietSanPhamContainer');
+            const confirmButton = document.getElementById('confirmButton');
+            const submitButton = document.getElementById('submitButton');
+            const editForm = document.getElementById('editForm');
+
+            // Hiển thị/ẩn danh sách chi tiết sản phẩm và nút "Thêm Màu & Kích Thước"
+            toggleButton.addEventListener('click', function () {
+                const isHidden = container.style.display === 'none';
+                container.style.display = isHidden ? 'block' : 'none';
+                addButtonContainer.style.display = isHidden ? 'block' : 'none';
+                this.textContent = isHidden ? 'Ẩn Màu & Kích Thước' : 'Hiển Thị Màu & Kích Thước';
             });
-            document.getElementById('addChiTiet').addEventListener('click', function () {
-                const container = document.getElementById('chiTietSanPhamContainer');
-                const index = container.querySelectorAll('.chiTietSanPham-item').length;
-                const mauSac = document.querySelector(`select[name="ChiTietSanPhams[${index - 1}].Id_MauSac"]`).value;
-                const kichThuoc = document.querySelector(`select[name="ChiTietSanPhams[${index - 1}].Id_KichThuoc"]`).value;
 
-                const isDuplicate = Array.from(container.querySelectorAll('.chiTietSanPham-item')).some(item => {
-                    return (
-                        item.querySelector('select[name$=".Id_MauSac"]').value === mauSac &&
-                        item.querySelector('select[name$=".Id_KichThuoc"]').value === kichThuoc
-                    );
+            // Lấy danh sách màu sắc và kích thước từ ViewBag (dạng JSON)
+            const mauSacOptions = `@Html.Raw(Json.Serialize(ViewBag.MauSacs))`;
+            const kichThuocOptions = `@Html.Raw(Json.Serialize(ViewBag.KichThuocs))`;
+            const mauSacList = JSON.parse(mauSacOptions);
+            const kichThuocList = JSON.parse(kichThuocOptions);
+
+            // Hàm cập nhật lại chỉ số index của các mục
+            function updateIndexes() {
+                const items = container.querySelectorAll('.chiTietSanPham-item');
+                items.forEach((item, index) => {
+                    const mauSacSelect = item.querySelector('.chiTiet-mauSac');
+                    const kichThuocSelect = item.querySelector('.chiTiet-kichThuoc');
+                    const soLuongInput = item.querySelector('input[type="number"]');
+
+                    mauSacSelect.name = `ChiTietSanPhams[${index}].Id_MauSac`;
+                    kichThuocSelect.name = `ChiTietSanPhams[${index}].Id_KichThuoc`;
+                    soLuongInput.name = `ChiTietSanPhams[${index}].SoLuong`;
                 });
+            }
 
-                if (isDuplicate) {
-                    alert('Chi tiết sản phẩm với màu sắc và kích thước này đã tồn tại!');
-                    return;
-                }
+            addButton.addEventListener('click', function () {
+                const index = container.querySelectorAll('.chiTietSanPham-item').length;
 
-                // Thêm chi tiết nếu không trùng lặp
+                // Tạo phần tử mới
                 const newItem = document.createElement('div');
                 newItem.className = 'chiTietSanPham-item';
                 newItem.innerHTML = `
-                <div class="form-group">
-                    <label>Màu Sắc</label>
-                    <select class="form-control" name="ChiTietSanPhams[${index}].Id_MauSac">
-        @foreach (var item in ViewBag.MauSacs as SelectList)
-        {
-                                <option value="@item.Value">@item.Text</option>
-        }
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Kích Thước</label>
-                    <select class="form-control" name="ChiTietSanPhams[${index}].Id_KichThuoc">
-        @foreach (var item in ViewBag.KichThuocs as SelectList)
-        {
-                                <option value="@item.Value">@item.Text</option>
-        }
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Số Lượng</label>
-                    <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="0" />
-                </div>
-                <button type="button" class="btn btn-danger remove-item">Xóa</button>
-            `;
-                container.appendChild(newItem);
+                            <div class="form-group">
+                                <select class="form-control chiTiet-mauSac" name="ChiTietSanPhams[${index}].Id_MauSac">
+                                    ${mauSacList.map(item => `<option value="${item.value}">${item.text}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control chiTiet-kichThuoc" name="ChiTietSanPhams[${index}].Id_KichThuoc">
+                                    ${kichThuocList.map(item => `<option value="${item.value}">${item.text}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="ChiTietSanPhams[${index}].SoLuong" value="1" />
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                            </div>
+                        `;
+
+                // Thêm vào bảng
+                container.querySelector('.chi-tiet-table').appendChild(newItem);
+                updateIndexes();
             });
 
-            // Xóa chi tiết sản phẩm
+            // Xóa chi tiết sản phẩm và cập nhật lại chỉ số
             document.addEventListener('click', function (e) {
                 if (e.target && e.target.classList.contains('remove-item')) {
                     e.target.closest('.chiTietSanPham-item').remove();
+                    updateIndexes();
                 }
             });
-         
-            // Hiển thị giá dạng tiền tệ
-            $(".typing-price").on("input", function () {
-                const value = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
-                const numberValue = parseFloat(value);
-                if (!isNaN(numberValue)) {
-                    $("#price-convert").html(
-                        new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
-                    );
-                } else {
-                    $("#price-convert").html('');
-                }
+
+            // Xử lý nút Confirm
+            confirmButton.addEventListener('click', function () {
+                $('#confirmModal').modal('show'); // Hiển thị modal xác nhận
+            });
+
+            // Xử lý nút Đồng Ý trong modal
+            document.getElementById('confirmSubmit').addEventListener('click', function () {
+                $('#confirmModal').modal('hide'); // Ẩn modal
+                submitButton.click(); // Gửi form
             });
         });
     </script>
+
 
     <script>
         $(document).ready(function () {
@@ -267,6 +390,19 @@
                 $(this).val(input);
             });
         });
-
+        // Hiển thị giá dạng tiền tệ
+        $(".typing-price").on("input", function () {
+            const value = $(this).val().replace(/[^0-9,]/g, '').replace(',', '.');
+            const numberValue = parseFloat(value);
+            if (!isNaN(numberValue)) {
+                $("#price-convert").html(
+                    new Intl.NumberFormat('vn-VN', { style: 'currency', currency: 'VND' }).format(numberValue)
+                );
+            } else {
+                $("#price-convert").html('');
+            }
+        });
     </script>
+ 
+
 }
