@@ -241,7 +241,7 @@
     // Hiển thị thông báo
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-bg-${isError ? 'danger' : 'success'} border-0 show`;
+        toast.className = `toast align-items-center text-bg-${isError == false ? 'danger' : 'success'} border-0 show`;
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
                         <div class="d-flex">
