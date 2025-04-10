@@ -11,12 +11,15 @@ namespace WebView.NghiaDTO
         [StringLength(50, ErrorMessage = "Tài khoản không được vượt quá 50 ký tự")]
         public string? TaiKhoan { get; set; }
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
+        [StringLength(100, MinimumLength = 7, ErrorMessage = "Mật khẩu phải dài hơn 6 ký tự")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{7,}$",
+        ErrorMessage = "Mật khẩu phải chứa ít nhất một chữ cái thường, một chữ cái hoa, một số và một ký tự đặc biệt (!@#$%^&*)")]
         public string? MatKhau { get; set; }
         [Required(ErrorMessage = "Tên nhân viên không được để trống")]
         [StringLength(100, ErrorMessage = "Tên nhân viên không được vượt quá 100 ký tự")]
         public string TenNhanVien { get; set; } = string.Empty;
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Số điện thoại phải đúng 10 chữ số")]
         [RegularExpression(@"^(0[0-9]{9,10})$", ErrorMessage = "Số điện thoại không hợp lệ")]
         public string Sdt { get; set; } = string.Empty;
 
