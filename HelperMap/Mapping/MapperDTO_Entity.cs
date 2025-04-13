@@ -45,6 +45,19 @@ namespace HelperMap.Mapping
                 .ForMember(dest => dest.TenNhanVien, opt => opt.MapFrom(src => src.TenNhanVien))
                 .ForMember(dest => dest.Id_ChucVu, opt => opt.MapFrom(src => src.Id_ChucVu));
             #endregion
+            #region Mapping nhanvien profile
+            CreateMap<NhanVienProfileDTO, NhanVien >()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TaiKhoan, opt => opt.MapFrom(src => src.TaiKhoan))
+                .ForMember(dest => dest.TenNhanVien, opt => opt.MapFrom(src => src.Ten))
+                .ForMember(dest => dest.Sdt, opt => opt.MapFrom(src => src.Sdt))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.NgaySinh, opt => opt.MapFrom(src => src.NgaySinh))
+                .ForMember(dest => dest.DiaChi, opt => opt.MapFrom(src => src.DiaChi))
+                .ForMember(dest => dest.GhiChu, opt => opt.MapFrom(src => src.GhiChu))
+                .ForMember(dest => dest.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dest => dest.Id_ChucVu, opt => opt.MapFrom(src => src.Id_ChucVu));
+            #endregion
             #region Mapping Đăng kí--nhân viên DTO->Entity nhân Viên
             CreateMap<NhanvienRegisterDTO, NhanVien>()
                 .ForMember(dest => dest.TaiKhoan, opt => opt.MapFrom(src => src.TaiKhoan))

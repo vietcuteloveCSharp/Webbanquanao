@@ -76,8 +76,9 @@ namespace WebAPI
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
             builder.Services.AddScoped<ICalamviecService,CalamviecService>();
             builder.Services.AddScoped<INgaylamviecService,NgaylamviecService>();
+            builder.Services.AddScoped<INhanVienServices, NhanVienServices>();
 
-         
+
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
             builder.Services.AddScoped<IChiTietSanPhamServices,     ChiTietSanPhamServices>();
             

@@ -46,13 +46,37 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             IsValidTrangThaiTransition(hoaDon.TrangThai, nextTrangThaiHD);
             // Cập nhật trạng thái mới
             hoaDon.TrangThai = nextTrangThaiHD;
+            if (nextTrangThaiHD == ETrangThaiHD.DaXacNhan)
+            {
+                var listCthd = _context.ChiTietHoaDons.Where(ct => ct.Id_HoaDon == id).ToList();
+                foreach (var item in listCthd)
+                {
+                    var ctsp = await _context.ChiTietSanPhams
+                    .FirstOrDefaultAsync(x => x.Id == item.Id_ChiTietSanPham);
+                    if (ctsp != null)
+                    {
+                        if (ctsp.SoLuong < item.SoLuong)
+                        {
+                            throw new InvalidOperationException($"Sản phẩm {_context.SanPhams.Find(ctsp.Id_SanPham).Ten} không còn đủ số lượng");
+                        }
+                        else
+                        {
+                            // Cập nhật số lượng sản phẩm trong bảng ChiTietSanPham
+                            ctsp.SoLuong -= item.SoLuong;
+                            _context.ChiTietSanPhams.Update(ctsp);
+                            //Cập nhật số lượng sản phẩm trong bảng SanPham
+                            _context.SanPhams.Find(ctsp.Id_SanPham).SoLuong -= item.SoLuong;
+                            _context.SanPhams.Update(_context.SanPhams.Find(ctsp.Id_SanPham));
+                        }
+                    }
+                }   
+            }
             // Lưu thay đổi vào cơ sở dữ liệu
             _context.HoaDons.Update(hoaDon);
             await _context.SaveChangesAsync();
             // Trả về DTO cập nhật
             // Sử dụng AutoMapper để ánh xạ từ HoaDon sang UpdateTrangThaiDTO
             var updateResult = _mapper.Map<UpdateTrangThaiDTO>(hoaDon);
-
             return updateResult;
         }
         public void IsValidTrangThaiTransition(ETrangThaiHD current, ETrangThaiHD next)
