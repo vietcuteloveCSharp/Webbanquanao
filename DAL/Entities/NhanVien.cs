@@ -27,7 +27,7 @@ namespace DAL.Entities
         public virtual ChucVu ChucVu { get; set; }
 
         public virtual ICollection<HoaDon> HoaDons { get; set; }
-        public virtual ICollection<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_NhanViens { get; set; } 
+        public virtual ICollection<CaNhanVien> Canhanviens { get; set; } 
 
     }
 }

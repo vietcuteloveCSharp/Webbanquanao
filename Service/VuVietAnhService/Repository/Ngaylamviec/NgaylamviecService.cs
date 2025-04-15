@@ -47,39 +47,39 @@ namespace Service.VuVietAnhService.Repository.Ngaylamviec
         }
 
 
-        //public async Task<bool> DeleteNgayLamViec(int id)
-        //{
-        //    try
-        //    {
-        //        // Tìm ngày làm việc cần xóa
-        //        var ngayLamViec = await _context.NgayLamviecs
-        //            .Include(n => n.CaLamViecs) // Load tất cả ca làm việc liên quan
-        //            .FirstOrDefaultAsync(n => n.Id == id);
+        public async Task<bool> DeleteNgayLamViec(int id)
+        {
+            try
+            {
+                // Tìm ngày làm việc cần xóa
+                var ngayLamViec = await _context.NgayLamviecs
+                    .Include(n => n.CaLamViecs) // Load tất cả ca làm việc liên quan
+                    .FirstOrDefaultAsync(n => n.Id == id);
 
-        //        // Nếu không tìm thấy, báo lỗi
-        //        if (ngayLamViec == null)
-        //            throw new KeyNotFoundException($"Không tìm thấy ngày làm việc với ID {id}");
+                // Nếu không tìm thấy, báo lỗi
+                if (ngayLamViec == null)
+                    throw new KeyNotFoundException($"Không tìm thấy ngày làm việc với ID {id}");
 
-        //        // **Không cho xóa nếu ngày làm việc là ngày trong quá khứ**
-        //        if (ngayLamViec.Ngay < DateTime.Today)
-        //            throw new InvalidOperationException("Không thể xóa ngày làm việc đã qua.");
+                // **Không cho xóa nếu ngày làm việc là ngày trong quá khứ**
+                if (ngayLamViec.Ngay < DateTime.Today)
+                    throw new InvalidOperationException("Không thể xóa ngày làm việc đã qua.");
 
-        //        // Xóa tất cả ca làm việc của ngày này
-        //        _context.CaLamViecs.RemoveRange(ngayLamViec.CaLamViecs);
+                // Xóa tất cả ca làm việc của ngày này
+                _context.CaLamViecs.RemoveRange(ngayLamViec.CaLamViecs);
 
-        //        // Xóa ngày làm việc
-        //        _context.NgayLamviecs.Remove(ngayLamViec);
+                // Xóa ngày làm việc
+                _context.NgayLamviecs.Remove(ngayLamViec);
 
-        //        await _context.SaveChangesAsync();
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log lỗi nếu cần
-        //        Console.WriteLine($"Lỗi khi xóa ngày làm việc: {ex.Message}");
-        //        return false;
-        //    }
-        //}
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu cần
+                Console.WriteLine($"Lỗi khi xóa ngày làm việc: {ex.Message}");
+                return false;
+            }
+        }
 
         public async Task<IEnumerable<NgayLamViecDTO>> GetAllNgayLamViec()
         {
