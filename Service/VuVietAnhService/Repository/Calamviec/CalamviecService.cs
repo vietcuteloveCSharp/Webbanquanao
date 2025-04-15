@@ -106,7 +106,7 @@ namespace Service.VuVietAnhService.Repository.Calamviec
                 {
                     throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
                 }
-                if (updateCaLamViecDTO.GioBatDau < updateCaLamViecDTO.GioKetThuc)
+                if (updateCaLamViecDTO.GioBatDau > updateCaLamViecDTO.GioKetThuc)
                 { throw new InvalidOperationException("Giờ kết thúc phải sau giờ bắt đầu!"); }
                 // Sử dụng AutoMapper để cập nhật các thuộc tính
                 _mapper.Map(updateCaLamViecDTO, existingCalamviec);
@@ -169,32 +169,32 @@ namespace Service.VuVietAnhService.Repository.Calamviec
         //    }
         //}
 
-        //public async Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO)
-        //{
-        //    try
-        //    {
-        //        var existingCalamviec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == id);
-        //        // Nếu không tìm thấy, báo lỗi
-        //        if (existingCalamviec == null)
-        //        {
-        //            throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
-        //        }
+        public async Task<bool> DeleteCaLamViec(int id, DeteleCaLamViecDTO deteleCaLamViecDTO)
+        {
+            try
+            {
+                var existingCalamviec = await _context.CaLamViecs.FirstOrDefaultAsync(c => c.Id == id);
+                // Nếu không tìm thấy, báo lỗi
+                if (existingCalamviec == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {id}.");
+                }
 
-        //        // Sử dụng AutoMapper để cập nhật các thuộc tính
-        //        _mapper.Map(deteleCaLamViecDTO, existingCalamviec);
+                // Sử dụng AutoMapper để cập nhật các thuộc tính
+                _mapper.Map(deteleCaLamViecDTO, existingCalamviec);
 
-        //        // Lưu thay đổi vào database
-        //        await _context.SaveChangesAsync();
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
+                // Lưu thay đổi vào database
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
 
-        //        _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}" , deteleCaLamViecDTO);
+                _logger.LogError(ex, "Lỗi không xác định khi update ca làm việc. DTO: {@DTO}", deteleCaLamViecDTO);
 
-        //        throw;
-        //    }
+                throw;
+            }
 
-        //}
+        }
     }
 }
