@@ -2,19 +2,47 @@
 
 <h2>Chỉnh sửa Kích Thước</h2>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="editForm">
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label for="TenKichThuoc">Tên Kích Thước</label>
-        <input type="text" class="form-control"asp-for="Ten" />
+        <input type="text" class="form-control" asp-for="Ten" />
         <span asp-validation-for="Ten" class="text-danger"></span>
-        
     </div>
-    <button type="submit" class="btn btn-primary">Thêm Kích thước</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">Lưu Thay Đổi</button>
 </form>
+
 <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn lưu thay đổi cho kích thước này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Xử lý khi nhấn "Xác nhận" trong modal
+        document.getElementById("confirmSubmit").addEventListener("click", function () {
+            document.getElementById("editForm").submit(); // Gửi form
+        });
+    </script>
 }

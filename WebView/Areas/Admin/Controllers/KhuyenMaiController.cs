@@ -1,4 +1,4 @@
-﻿using DAL.Context;
+﻿    using DAL.Context;
 using DAL.Entities;
 using DTO.VuvietanhDTO.Sanphams;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +63,16 @@ namespace WebView.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            // Kiểm tra và cập nhật trạng thái khuyến mãi đã hết hạn
+            var khuyenMais = _context.KhuyenMais
+                .Where(km => km.TrangThai == 1 && km.NgayKetThuc <= DateTime.Now) // Lọc khuyến mãi đang hoạt động và đã hết hạn
+                .ToList();
+
+            foreach (var km in khuyenMais)
+            {
+                km.TrangThai = 2; // Chuyển sang trạng thái "Kết thúc"
+            }
+            _context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
             // Lấy danh mục đã được chọn trong các khuyến mãi có trạng thái "Đang khuyến mãi" hoặc "Kết thúc"
             var danhMucIdsDaChon = _context.KhuyenMais
                 .Where(km => km.TrangThai == 1 || km.TrangThai == 2)  // Lọc các khuyến mãi có trạng thái 'Đang khuyến mãi' (1) hoặc 'Kết thúc' (2)
@@ -140,7 +150,7 @@ namespace WebView.Areas.Admin.Controllers
                     NgayTao = DateTime.Now,  // Sử dụng thời gian hiện tại cho ngày tạo
                     NgayBatDau = khuyenMaiDTO.NgayBatDau,
                     NgayKetThuc = khuyenMaiDTO.NgayKetThuc,
-                    TrangThai = khuyenMaiDTO.TrangThai
+                    TrangThai = khuyenMaiDTO.NgayKetThuc <= DateTime.Now ? 2 : khuyenMaiDTO.TrangThai // Tự động đặt trạng thái "Kết thúc" nếu ngày kết thúc đã qua
                 };
 
                 // Thêm khuyến mãi vào cơ sở dữ liệu
@@ -214,8 +224,8 @@ namespace WebView.Areas.Admin.Controllers
                 GiaTriGiam = khuyenMai.GiaTriGiam,
                 DieuKienGiamGia = khuyenMai.DieuKienGiamGia,
                 NgayTao = khuyenMai.NgayTao,
-                NgayBatDau = DateTime.Now, // Thời gian hiện tại cho ngày bắt đầu
-                NgayKetThuc = DateTime.Now.AddHours(1),
+                NgayBatDau = khuyenMai.NgayBatDau, // Lấy thời gian thực tế từ dữ liệu
+                NgayKetThuc = khuyenMai.NgayKetThuc, // Lấy thời gian thực tế từ dữ liệu
                 TrangThai = khuyenMai.TrangThai,
                 // Chuyển danh sách ChiTietKhuyenMaiDTO thành một danh sách các Id danh mục đã chọn
                 chiTietKhuyenMaiDTOs = khuyenMai.chiTietKhuyenMais.Select(ct => new ChiTietKhuyenMaiDTO
@@ -260,7 +270,17 @@ namespace WebView.Areas.Admin.Controllers
                 if (existingKhuyenMai != null)
                 {
                     ModelState.AddModelError("Ten", "Tên khuyến mãi đã tồn tại. Vui lòng chọn tên khác.");
-                    // Đảm bảo truyền lại danh mục khi có lỗi
+                }
+
+                // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
+                if (khuyenMaiDTO.NgayKetThuc <= khuyenMaiDTO.NgayBatDau)
+                {
+                    ModelState.AddModelError("NgayKetThuc", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                }
+
+                // Nếu có lỗi validation, trả lại view với dữ liệu
+                if (!ModelState.IsValid)
+                {
                     ViewBag.DanhMucs = await _context.DanhMucs
                         .Select(dm => new SelectListItem
                         {

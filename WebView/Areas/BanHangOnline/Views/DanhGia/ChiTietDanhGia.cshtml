@@ -1,0 +1,130 @@
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+@{
+    ViewData["Title"] = "Đánh giá sản phẩm";
+    var resp = ViewData["spdanhgia"] as DanhGiaSanPhamResp;
+}
+
+<div class="container mt-5">
+    <div><a href="/BanHangOnline/DanhGia/DanhSachDanhGia">Quay trở về</a></div>
+    <h3 class="text-center">Đánh Giá Sản Phẩm</h3>
+
+    <div class="card">
+        <div class="card-body">
+            <!-- Thông tin sản phẩm -->
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <img src="@resp.ChiTietSanPham.SanPham.ListHinHAnh.First().Url" alt="@resp.ChiTietSanPham.SanPham.Ten" class="img-thumbnail"
+                         id="product-image" style="width: 100px; height: 100px; object-fit: cover;">
+                </div>
+                <div class="col-md-8">
+                    <p><strong>Tên sản phẩm:</strong> <span id="product-color">@resp.ChiTietSanPham.SanPham.Ten</span></p>
+                    <p><strong>Màu sắc:</strong> <span id="product-color">@resp.ChiTietSanPham.MauSacResps.First().Ten</span></p>
+                    <p><strong>Kích thước:</strong> <span id="product-size">@resp.ChiTietSanPham.KichThuocResps.First().Ten</span></p>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Chọn số sao -->
+            <div class="mb-3">
+                <label class="form-label"><strong>Đánh giá:</strong></label>
+                <div class="star-rating">
+                    <i class="fa fa-star" data-value=1></i>
+                    <i class="fa fa-star" data-value=2></i>
+                    <i class="fa fa-star" data-value=3></i>
+                    <i class="fa fa-star" data-value=4></i>
+                    <i class="fa fa-star" data-value=5></i>
+                </div>
+            </div>
+
+            <!-- Nội dung đánh giá -->
+            <div class="mb-3">
+                <label for="review-content" class="form-label"><strong>Nội dung đánh giá:</strong></label>
+                <textarea class="form-control" id="review-content" rows="4"
+                          placeholder="Nhập đánh giá của bạn"></textarea>
+            </div>
+
+            <!-- Upload ảnh -->
+            <div class="mb-3">
+                <label class="form-label"><strong>Hình ảnh đánh giá:</strong></label>
+                <input type="file" class="form-control" id="review-images" multiple accept="image/*">
+                <div id="image-preview" class="mt-2"></div>
+            </div>
+
+            <input id="idhdct" value=@resp.IdChiTietHoaDon hidden />
+            <!-- Nút gửi đánh giá -->
+            <button class="btn btn-primary w-100" id="submit-review">Gửi Đánh Giá</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let selectedStars = 0;
+
+        // Xử lý chọn số sao
+        $(".star-rating i").on("click", function () {
+            selectedStars = $(this).data("value");
+            $(".star-rating i").removeClass("text-warning").addClass("text-secondary");
+            $(this).prevAll().addBack().removeClass("text-secondary").addClass("text-warning");
+        });
+
+        // Hiển thị ảnh được chọn
+        $("#review-images").on("change", function (event) {
+            let files = event.target.files;
+            $("#image-preview").html("");
+
+            $.each(files, function (i, file) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#image-preview").append(`<img src="${e.target.result}" class="img-thumbnail m-1" width="80">`);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Xử lý gửi đánh giá
+        $("#submit-review").on("click", function () {
+            let reviewContent = $("#review-content").val().trim();
+            let images = $("#review-images")[0].files;
+            let formData = new FormData();
+
+            if (selectedStars === 0) {
+                alert("Vui lòng chọn số sao!");
+                return;
+            }
+            if (reviewContent === "") {
+                alert("Vui lòng nhập nội dung đánh giá!");
+                return;
+            }
+            let inputId = document.getElementById("idhdct").value;
+            formData.append("idhdct", inputId);
+
+            formData.append("sao", selectedStars);
+            formData.append("noidung", reviewContent);
+            // Đúng cách để thêm nhiều file vào FormData
+            $.each(images, function (i, file) {
+                formData.append("images", file); // Không push vào mảng, mà append từng file
+            });
+            console.log("Dữ liệu gửi đi:", {
+                stars: selectedStars,
+                content: reviewContent,
+                images: images.length
+            });
+            // Gửi dữ liệu đến API (Thay URL thật của bạn)
+            $.ajax({
+                url: "https://localhost:7043/BanHangOnline/DanhGia/ChiTietDanhGia",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert("Đánh giá đã được gửi!");
+                },
+                error: function () {
+                    alert("Lỗi khi gửi đánh giá!");
+                }
+            });
+        });
+    });
+</script>
