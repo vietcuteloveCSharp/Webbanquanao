@@ -40,6 +40,25 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
             }
         }
+        [HttpGet("Get-CaLamViecByNgayLamViecId/{ngayLamViecId:int}")]
+        public async Task<IActionResult> GetCaLamViecByNgayLamViecId(int ngayLamViecId)
+        {
+            try
+            {
+                var caLamViec = await _ngaylamviecService.GetCaLamViecByNgayLamViecIdAsync(ngayLamViecId);
+                return Ok(caLamViec);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Bắt exception khi không tìm thấy ngày làm việc và trả về NotFound
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Bắt tất cả các exception khác và trả về InternalServerError
+                return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
+            }
+        }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetNgayLamViecId(int id)
         {

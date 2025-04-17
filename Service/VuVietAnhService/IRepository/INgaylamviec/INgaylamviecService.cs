@@ -14,5 +14,6 @@ namespace Service.VuVietAnhService.IRepository.INgaylamviec
         Task<NgayLamViecDTO> GetNgayLamViecById(int id);
         Task<bool> CreateNgayLamviec(CreateNgayLamViecDTO createNgayLamViecDTO);
         Task<bool> DeleteNgayLamViec(int id);
+        Task<IEnumerable<CaLamViecByNgayLamViecDTO>> GetCaLamViecByNgayLamViecIdAsync(int ngayLamViecId);
     }
 }

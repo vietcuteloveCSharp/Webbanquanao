@@ -5,11 +5,6 @@ using DTO.VuvietanhDTO.Calamviecs;
 using DTO.VuvietanhDTO.Ngaylamviecs;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.INgaylamviec;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.VuVietAnhService.Repository.Ngaylamviec
 {
@@ -87,6 +82,16 @@ namespace Service.VuVietAnhService.Repository.Ngaylamviec
             if (!ALLNgayLamViec.Any()) return new List<NgayLamViecDTO>(); //trả về list rỗng nếu không có
             var ALLNgayLamViecDTO = _mapper.Map<List<NgayLamViecDTO>>(ALLNgayLamViec);
             return ALLNgayLamViecDTO;
+        }
+
+        public async Task<IEnumerable<CaLamViecByNgayLamViecDTO>> GetCaLamViecByNgayLamViecIdAsync(int ngayLamViecId)
+        {
+            var caLamViecList = await _context.CaLamViecs
+                .Where(c => c.IdNgaylamviec == ngayLamViecId)
+                .ToListAsync();
+            if (caLamViecList == null) throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID {ngayLamViecId}.");
+            var caLamViecListDTO = _mapper.Map<List<CaLamViecByNgayLamViecDTO>>(caLamViecList);
+            return caLamViecListDTO;
         }
 
         public async Task<NgayLamViecDTO> GetNgayLamViecById(int id)

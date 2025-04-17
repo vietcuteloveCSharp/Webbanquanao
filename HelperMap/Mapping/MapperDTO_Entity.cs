@@ -236,7 +236,7 @@ namespace HelperMap.Mapping
             CreateMap<CreateCaLamViecDTO, CaLamViec>();
             CreateMap<UpdateCaLamViecDTO, CaLamViec>();
             CreateMap<DeteleCaLamViecDTO, CaLamViec>();
-
+            CreateMap<CaLamViecByNgayLamViecDTO, CaLamViec>();
             #endregion
             #region MapNgayLamViec
             CreateMap<CreateNgayLamViecDTO, NgayLamViec>();
