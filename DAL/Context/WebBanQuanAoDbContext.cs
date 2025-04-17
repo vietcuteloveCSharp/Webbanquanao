@@ -1,5 +1,4 @@
-﻿using DAL.DataSeed;
-using DAL.Entities;
+﻿using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Context
@@ -32,6 +31,8 @@ namespace DAL.Context
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
+        public virtual DbSet<DanhGia> DanhGias { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
 
         public WebBanQuanAoDbContext()
         {
@@ -76,7 +77,9 @@ namespace DAL.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
             optionsBuilder.UseSqlServer("Data Source=LAPTOP-IRUEAU\\SQL2022;Initial Catalog=WEBBANQUANAO;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
 
         }
     }
