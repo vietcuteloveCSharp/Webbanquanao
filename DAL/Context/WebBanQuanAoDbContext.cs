@@ -29,6 +29,7 @@ namespace DAL.Context
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
+       
 
         public WebBanQuanAoDbContext()
         {
@@ -73,7 +74,9 @@ namespace DAL.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=QuanAoCanMan;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
+            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=QuanAoCanMan1;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
 
         }
     }
