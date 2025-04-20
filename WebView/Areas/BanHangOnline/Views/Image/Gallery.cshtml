@@ -1,0 +1,28 @@
+﻿@using DAL.Entities
+@model List<Image>
+@{
+    ViewData["Title"] = "Image Gallery";
+}
+
+<h2>Image Gallery</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No images uploaded yet.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var image in Model)
+        {
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="@Url.Action("GetImage", "Image", new { id = image.Id })" class="card-img-top" alt="@image.FileName">
+                    <div class="card-body">
+                        <p class="card-text">@image.FileName</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

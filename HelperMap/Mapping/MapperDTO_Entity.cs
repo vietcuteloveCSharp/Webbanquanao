@@ -11,6 +11,7 @@ using DTO.VuvietanhDTO.HoadonsDTO;
 using DTO.VuvietanhDTO.KhachHangs;
 using DTO.VuvietanhDTO.Kichthuocs;
 using DTO.VuvietanhDTO.Mausacs;
+using DTO.VuvietanhDTO.Ngaylamviecs;
 using DTO.VuvietanhDTO.NhanViens;
 using DTO.VuvietanhDTO.Sanphams;
 using DTO.VuvietanhDTO.Thuonghieus;
@@ -251,7 +252,8 @@ namespace HelperMap.Mapping
 
             #endregion
             #region MapNgayLamViec
-            
+            CreateMap<CreateNgayLamViecDTO, NgayLamViec>();
+            CreateMap<NgayLamViecDTO, NgayLamViec>();
             #endregion
         }
     }

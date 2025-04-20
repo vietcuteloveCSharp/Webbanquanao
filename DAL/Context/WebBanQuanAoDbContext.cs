@@ -1,5 +1,4 @@
-﻿using DAL.DataSeed;
-using DAL.Entities;
+﻿using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Context
@@ -10,6 +9,9 @@ namespace DAL.Context
         public virtual DbSet<ChiTietKhuyenMai> ChiTietKhuyenMais { get; set; }
         public virtual DbSet<ChiTietMaGiamGia> ChiTietMaGiamGias { get; set; }
         public virtual DbSet<ChiTietSanPham> ChiTietSanPhams { get; set; }
+        public virtual DbSet<CaNhanVien> CaNhanViens { get; set; }
+        public virtual DbSet<DanhGia> DanhGias { get; set; }
+        public virtual DbSet <Image> Images { get; set; }
         public virtual DbSet<ChucVu> ChucVus { get; set; }
         public virtual DbSet<CuaHang> CuaHangs { get; set; }
         public virtual DbSet<DanhMuc> DanhMucs { get; set; }
@@ -22,14 +24,15 @@ namespace DAL.Context
         public virtual DbSet<MauSac> MauSacs { get; set; }
         public virtual DbSet<NhanVien> NhanViens { get; set; }
         public virtual DbSet<NgayLamViec> NgayLamviecs { get; set; }
-        public virtual DbSet<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_NhanViens { get; set; }
+        public virtual DbSet<CaNhanVien> Canhanviens { get; set; }
         public virtual DbSet<PhuongThucThanhToan> PhuongThucThanhToans { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<ThanhToanHoaDon> ThanhToanHoaDons { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
-       
+        public virtual DbSet<DanhGia> DanhGias { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
 
         public WebBanQuanAoDbContext()
         {
@@ -75,7 +78,7 @@ namespace DAL.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=QuanAoCanMan1;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=LAPTOP-IRUEAU\\SQL2022;Initial Catalog=WEBBANQUANAO;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
         }

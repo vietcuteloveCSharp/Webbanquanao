@@ -8,107 +8,138 @@
 <head>
     <title>Admin Login</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Thêm Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: #f5f7fa; /* Nền xám nhạt để đồng bộ với quản trị */
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', Arial, sans-serif; /* Font Poppins */
             margin: 0;
-            color: #fff;
+            color: #333333;
         }
 
         .login-container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background: #ffffff; /* Nền trắng */
+            padding: 40px; /* Tăng padding cho thoáng */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow mềm hơn */
             width: 400px;
+            max-width: 90%; /* Responsive */
             text-align: center;
         }
 
         .login-container h2 {
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
+            font-weight: 600; /* Đậm vừa phải */
+            font-size: 28px; /* Tăng kích thước */
+            margin-bottom: 10px;
+            color: #333333;
+            letter-spacing: 0.5px;
         }
 
         .login-container p {
-            margin-bottom: 20px;
-            color: #666;
+            margin-bottom: 25px;
+            color: #666666; /* Xám nhẹ */
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Khoảng cách giữa các field */
+            text-align: left; /* Căn trái label */
+        }
+
+        .form-group label {
+            font-weight: 500; /* Đậm nhẹ */
+            font-size: 14px;
+            color: #444444;
+            margin-bottom: 5px;
+            display: block;
         }
 
         .form-control {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border: 1px solid #e0e0e0; /* Border nhẹ hơn */
+            border-radius: 6px;
+            padding: 12px 15px; /* Tăng padding cho input */
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .form-control:focus {
-            border-color: #2575fc;
-            box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+            border-color: #007bff; /* Xanh khi focus */
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+            outline: none;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: #007bff; /* Màu xanh đồng bộ */
             border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            transition: background 0.3s ease;
+            border-radius: 6px;
+            padding: 12px 20px; /* Tăng kích thước button */
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase; /* Chữ in hoa nhẹ */
+            letter-spacing: 0.5px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%; /* Full width */
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #2575fc, #6a11cb);
-        }
-
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
+            background: #0056b3; /* Xanh đậm hơn khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nâng nhẹ */
         }
 
         .text-danger {
-            font-size: 0.9rem;
+            font-size: 13px;
             margin-top: 5px;
+            font-weight: 400;
+            color: #dc3545; /* Màu đỏ cho lỗi */
         }
 
+        /* Responsive */
          (max-width: 500px) {
             .login-container {
+                padding: 25px;
                 width: 90%;
-                padding: 20px;
+            }
+
+            .login-container h2 {
+                font-size: 24px;
+            }
+
+            .btn-primary {
+                padding: 10px 15px;
             }
         }
     </style>
 </head>
 <body>
-
-<div class="login-container">
-    <h2>Welcome Back</h2>
-    <p>Login to your account</p>
-    <form asp-action="Login" method="post">
-        <div class="form-group">
-            <label asp-for="TaiKhoan">Username</label>
-            <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="Enter your username">
-            <span asp-validation-for="TaiKhoan" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="MatKhau">Password</label>
-            <input type="password" asp-for="MatKhau" class="form-control" placeholder="Enter your password">
-            <span asp-validation-for="MatKhau" class="text-danger"></span>
-        </div>
-        <div>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <div class="text-danger">@error.ErrorMessage</div>
-            }
-        </div>
-        <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
-    </form>
-</div>
-
+    <div class="login-container">
+        <h2>Chào mừng trở lại</h2>
+        <p>Đăng nhập vào tài khoản quản trị của bạn</p>
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label asp-for="TaiKhoan">Tài Khoản</label>
+                <input type="text" class="form-control" asp-for="TaiKhoan" placeholder="Enter your username">
+                <span asp-validation-for="TaiKhoan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MatKhau">Mật Khẩu</label>
+                <input type="password" asp-for="MatKhau" class="form-control" placeholder="Enter your password">
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+            <div>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div class="text-danger">@error.ErrorMessage</div>
+                }
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Đăng nhập</button>
+        </form>
+    </div>
 </body>
 </html>

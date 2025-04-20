@@ -2,20 +2,20 @@
 
 @{
     ViewData["Title"] = "Tạo mã giảm giá mới";
-   
 }
 
 <h2>@ViewData["Title"]</h2>
-<form asp-action="Create" method="post">
+
+<form asp-action="Create" method="post" id="createForm">
     @* Tên mã *@
     <div class="form-group">
         <label asp-for="Ten"></label>
         <input asp-for="Ten" class="form-control" placeholder="@Model?.Ten" value="@Model?.Ten" />
         <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
-       <div class="form-group">
+    <div class="form-group">
         <label asp-for="NoiDung"></label>
-        <input asp-for="NoiDung" class="form-control" placeholder="@Model.NoiDung" value="@Model.NoiDung" />
+        <input asp-for="NoiDung" class="form-control" placeholder="@Model?.NoiDung" value="@Model?.NoiDung" />
         <span asp-validation-for="NoiDung" class="text-danger"></span>
     </div>
 
@@ -54,7 +54,7 @@
     <div id="voucher-fields" style="display: none;">
         <div class="form-group">
             <label asp-for="MenhGia">Mệnh giá (VNĐ)</label>
-            <input asp-for="MenhGia" class="form-control typing-price" id="MenhGia"/>
+            <input asp-for="MenhGia" class="form-control typing-price" id="MenhGia" />
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
     </div>
@@ -81,10 +81,31 @@
         <input asp-for="SoLuong" class="form-control" type="number" min="1" />
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
-   
-    <button type="submit" class="btn btn-primary">Tạo</button>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">Tạo</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn tạo mã giảm giá này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @if (TempData["error"] != null)
 {
@@ -167,7 +188,10 @@
             enforceRange(inputs[2], 1, 10000000); // Giá trị tối đa (VNĐ): 1-10 triệu
             enforceRange(inputs[3], 1, 20000000); // Mệnh giá (VNĐ): 1-20 triệu
         });
+
+        // Xử lý khi nhấn "Xác nhận" trong modal
+        document.getElementById("confirmSubmit").addEventListener("click", function () {
+            document.getElementById("createForm").submit(); // Gửi form
+        });
     </script>
 }
-
-

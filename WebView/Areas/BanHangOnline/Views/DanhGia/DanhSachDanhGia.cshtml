@@ -1,0 +1,72 @@
+﻿@using WebView.Areas.BanHangOnline.HoangDTO.Resp
+
+@{
+    var resp = ViewData["lstDanhSachDanhGia"] as List<DanhGiaSanPhamResp>;
+}
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Hình ảnh</th>
+            <th>Tên</th>
+            <th>Màu sắc và Kích thước</th>
+            <th>Số sao đánh giá</th>
+            <th>Nội dung</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (resp != null && resp.Any())
+        {
+            var stt = 1;
+            @foreach (var item in resp)
+            {
+                <tr>
+                    <td>@stt</td>
+                    <td>
+                        <img src="@item.ChiTietSanPham.SanPham.ListHinHAnh.First().Url" alt="@item.ChiTietSanPham.SanPham.Ten" style="width: 100px; height: 100px; object-fit: cover;">
+                    </td>
+                    <td>@item.ChiTietSanPham.SanPham.Ten</td>
+                    <td>
+                        <p><strong>Màu sắc:</strong> <span id="product-color">@item.ChiTietSanPham.MauSacResps.First().Ten</span></p>
+                        <p><strong>Kích thước:</strong> <span id="product-size">@item.ChiTietSanPham.KichThuocResps.First().Ten</span></p>
+                    </td>
+                   <td>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i > item.Sao)
+                                {
+                                    <i class="fa fa-star" style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;"></i>
+                                }else{
+
+                                    <i class="fa fa-star text-warning"> </i>
+                                }
+                            }
+                            
+                   </td>
+                   <td>
+                       @item.NoiDung
+                   </td>
+                    <td>@(item.TrangThai ?"Đã đánh giá sản phẩm" : "Chưa đánh giá sản phẩm")</td>
+                    <td>
+                        @if (item.TrangThai == false)
+                        {
+                            <a href="/BanHangOnline/DanhGia/ChiTietDanhGia/@item.IdChiTietHoaDon" class="btn btn-primary btn-sm">Đánh giá sản phẩm</a>
+                        }else{
+
+                        <a href="/BanHangOnline/DanhGia/XemChiTiet/@item.IdChiTietHoaDon" class="btn btn-success btn-sm">Xem chi tiết</a>
+                        }
+                    </td>
+                </tr>
+                stt++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">Không có sản phẩm nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>

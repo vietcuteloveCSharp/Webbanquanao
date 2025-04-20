@@ -63,29 +63,76 @@ public class NhanVienController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NhanVienDTO nhanVienDTO)
     {
+        var nhanVienId = _context.ChucVus
+            .Where(cv => cv.Ten == "Nhân Viên")
+            .Select(cv => cv.Id)
+            .FirstOrDefault();
+
+        // Nếu là Nhân viên, bỏ qua validation TaiKhoan và MatKhau
+        if (nhanVienDTO.Id_ChucVu == nhanVienId)
+        {
+            ModelState.Remove("TaiKhoan"); // Loại bỏ lỗi validation cho TaiKhoan
+            ModelState.Remove("MatKhau");  // Loại bỏ lỗi validation cho MatKhau
+            nhanVienDTO.TaiKhoan = null;   // Đặt null để không lưu
+            nhanVienDTO.MatKhau = null;    // Đặt null để không lưu
+        }
+
         if (ModelState.IsValid)
         {
-            var nhanVien = new NhanVien
+            // Kiểm tra trùng lặp (chỉ khi không phải Nhân viên)
+            if (nhanVienDTO.Id_ChucVu != nhanVienId)
             {
-                TaiKhoan = nhanVienDTO.TaiKhoan,
-                MatKhau = nhanVienDTO.MatKhau,
-                TenNhanVien = nhanVienDTO.TenNhanVien,
-                Sdt = nhanVienDTO.Sdt,
-                Email = nhanVienDTO.Email,
-                NgaySinh = nhanVienDTO.NgaySinh,
-                DiaChi = nhanVienDTO.DiaChi,
-                GhiChu = nhanVienDTO.GhiChu,
-                NgayTao = DateTime.Now,
-                NgayCapNhat = DateTime.Now,
-                TrangThai = nhanVienDTO.TrangThai,
-                Id_ChucVu = nhanVienDTO.Id_ChucVu
-            };
+                if (_context.NhanViens.Any(nv => nv.TaiKhoan == nhanVienDTO.TaiKhoan))
+                {
+                    ModelState.AddModelError("TaiKhoan", "Tài khoản đã tồn tại.");
+                }
+            }
 
-            _context.NhanViens.Add(nhanVien);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Thêm nhân viên thành công.";
-            return RedirectToAction(nameof(Index));
+            if (_context.NhanViens.Any(nv => nv.Email == nhanVienDTO.Email))
+            {
+                ModelState.AddModelError("Email", "Email đã tồn tại.");
+            }
+            if (_context.NhanViens.Any(nv => nv.Sdt == nhanVienDTO.Sdt))
+            {
+                ModelState.AddModelError("Sdt", "Số điện thoại đã tồn tại.");
+            }
+            if (_context.NhanViens.Any(nv => nv.TenNhanVien == nhanVienDTO.TenNhanVien))
+            {
+                ModelState.AddModelError("TenNhanVien", "Tên nhân viên đã tồn tại.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var nhanVien = new NhanVien
+                {
+                    TaiKhoan = nhanVienDTO.TaiKhoan,
+                    MatKhau = nhanVienDTO.MatKhau,
+                    TenNhanVien = nhanVienDTO.TenNhanVien,
+                    Sdt = nhanVienDTO.Sdt,
+                    Email = nhanVienDTO.Email,
+                    NgaySinh = nhanVienDTO.NgaySinh,
+                    DiaChi = nhanVienDTO.DiaChi,
+                    GhiChu = nhanVienDTO.GhiChu,
+                    NgayTao = DateTime.Now,
+                    NgayCapNhat = DateTime.Now,
+                    TrangThai = nhanVienDTO.TrangThai,
+                    Id_ChucVu = nhanVienDTO.Id_ChucVu
+                };
+
+                _context.NhanViens.Add(nhanVien);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Thêm nhân viên thành công.";
+                return RedirectToAction(nameof(Index));
+            }
         }
+
+        // Load lại ViewBag khi có lỗi
+        ViewBag.ChucVus = _context.ChucVus
+            .Where(cv => cv.Id != 11)
+            .Select(cv => new { cv.Id, cv.Ten })
+            .ToList();
+        ViewBag.NhanVienId = nhanVienId;
+
         TempData["ErrorMessage"] = "Thêm nhân viên thất bại. Vui lòng kiểm tra lại thông tin.";
         return View(nhanVienDTO);
     }
@@ -102,7 +149,7 @@ public class NhanVienController : Controller
         {
             Id = nhanVien.Id,
             TaiKhoan = nhanVien.TaiKhoan,
-            MatKhau = "", // Không hiển thị mật khẩu cũ
+            MatKhau = nhanVien.MatKhau,
             TenNhanVien = nhanVien.TenNhanVien,
             Sdt = nhanVien.Sdt,
             Email = nhanVien.Email,
@@ -111,20 +158,22 @@ public class NhanVienController : Controller
             GhiChu = nhanVien.GhiChu,
             NgayTao = nhanVien.NgayTao,
             NgayCapNhat = nhanVien.NgayCapNhat,
-            Id_ChucVu = nhanVien.Id_ChucVu
+            Id_ChucVu = nhanVien.Id_ChucVu,
+            TrangThai = nhanVien.TrangThai
         };
 
-        // Chỉ lấy chức vụ Nhân viên và Thu ngân (loại bỏ Admin)
         ViewBag.ChucVus = _context.ChucVus
-            .Where(cv => cv.Id != 11) // Giả sử Admin có ID = 11
+            .Where(cv => cv.Id != 11) // Loại bỏ Admin
             .Select(cv => new { cv.Id, cv.Ten })
             .ToList();
 
-        ViewBag.NhanVienId = 14; // Giả sử ID của Nhân viên là 1
+        ViewBag.NhanVienId = _context.ChucVus
+            .Where(cv => cv.Ten == "Nhân Viên")
+            .Select(cv => cv.Id)
+            .FirstOrDefault();
 
         return View(nhanVienDTO);
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, NhanVienDTO nhanVienDTO)
@@ -133,6 +182,20 @@ public class NhanVienController : Controller
         {
             TempData["ErrorMessage"] = "ID nhân viên không hợp lệ.";
             return BadRequest();
+        }
+
+        var nhanVienId = _context.ChucVus
+            .Where(cv => cv.Ten == "Nhân Viên")
+            .Select(cv => cv.Id)
+            .FirstOrDefault();
+
+        // Nếu là Nhân viên, bỏ qua validation TaiKhoan và MatKhau
+        if (nhanVienDTO.Id_ChucVu == nhanVienId)
+        {
+            ModelState.Remove("TaiKhoan");
+            ModelState.Remove("MatKhau");
+            nhanVienDTO.TaiKhoan = null;
+            nhanVienDTO.MatKhau = null;
         }
 
         if (ModelState.IsValid)
@@ -144,34 +207,62 @@ public class NhanVienController : Controller
                 return NotFound();
             }
 
-            nhanVien.TenNhanVien = nhanVienDTO.TenNhanVien;
-            nhanVien.Sdt = nhanVienDTO.Sdt;
-            nhanVien.Email = nhanVienDTO.Email;
-            nhanVien.NgaySinh = nhanVienDTO.NgaySinh;
-            nhanVien.DiaChi = nhanVienDTO.DiaChi;
-            nhanVien.GhiChu = nhanVienDTO.GhiChu;
-            nhanVien.NgayCapNhat = DateTime.Now;
-            nhanVien.Id_ChucVu = nhanVienDTO.Id_ChucVu;
-
-            // Nếu là Nhân viên -> Không lưu tài khoản, mật khẩu
-            if (nhanVienDTO.Id_ChucVu == 14) // Giả sử ID của Nhân viên là 1
+            // Kiểm tra trùng lặp (bỏ qua bản ghi hiện tại)
+            if (nhanVienDTO.Id_ChucVu != nhanVienId && _context.NhanViens.Any(nv => nv.TaiKhoan == nhanVienDTO.TaiKhoan && nv.Id != id))
             {
-                nhanVien.TaiKhoan = null;
-                nhanVien.MatKhau = null;
+                ModelState.AddModelError("TaiKhoan", "Tài khoản đã tồn tại.");
             }
-            else
+            if (_context.NhanViens.Any(nv => nv.Email == nhanVienDTO.Email && nv.Id != id))
             {
-                nhanVien.TaiKhoan = nhanVienDTO.TaiKhoan;
-                if (!string.IsNullOrEmpty(nhanVienDTO.MatKhau))
+                ModelState.AddModelError("Email", "Email đã tồn tại.");
+            }
+            if (_context.NhanViens.Any(nv => nv.Sdt == nhanVienDTO.Sdt && nv.Id != id))
+            {
+                ModelState.AddModelError("Sdt", "Số điện thoại đã tồn tại.");
+            }
+            if (_context.NhanViens.Any(nv => nv.TenNhanVien == nhanVienDTO.TenNhanVien && nv.Id != id))
+            {
+                ModelState.AddModelError("TenNhanVien", "Tên nhân viên đã tồn tại.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                nhanVien.TenNhanVien = nhanVienDTO.TenNhanVien;
+                nhanVien.Sdt = nhanVienDTO.Sdt;
+                nhanVien.Email = nhanVienDTO.Email;
+                nhanVien.NgaySinh = nhanVienDTO.NgaySinh;
+                nhanVien.DiaChi = nhanVienDTO.DiaChi;
+                nhanVien.GhiChu = nhanVienDTO.GhiChu;
+                nhanVien.NgayCapNhat = DateTime.Now;
+                nhanVien.Id_ChucVu = nhanVienDTO.Id_ChucVu;
+                nhanVien.TrangThai = nhanVienDTO.TrangThai;
+
+                if (nhanVienDTO.Id_ChucVu == nhanVienId)
                 {
-                    nhanVien.MatKhau = nhanVienDTO.MatKhau;
+                    nhanVien.TaiKhoan = null;
+                    nhanVien.MatKhau = null;
                 }
-            }
+                else
+                {
+                    nhanVien.TaiKhoan = nhanVienDTO.TaiKhoan;
+                    if (!string.IsNullOrEmpty(nhanVienDTO.MatKhau))
+                    {
+                        nhanVien.MatKhau = nhanVienDTO.MatKhau; // Chỉ cập nhật mật khẩu nếu có nhập
+                    }
+                }
 
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Cập nhật nhân viên thành công.";
-            return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Cập nhật nhân viên thành công.";
+                return RedirectToAction(nameof(Index));
+            }
         }
+
+        // Load lại ViewBag khi có lỗi
+        ViewBag.ChucVus = _context.ChucVus
+            .Where(cv => cv.Id != 11)
+            .Select(cv => new { cv.Id, cv.Ten })
+            .ToList();
+        ViewBag.NhanVienId = nhanVienId;
 
         TempData["ErrorMessage"] = "Cập nhật nhân viên thất bại. Vui lòng kiểm tra lại thông tin.";
         return View(nhanVienDTO);

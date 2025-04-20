@@ -6,13 +6,12 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" id="editForm">
     <div class="mb-3">
         <label for="Ten" class="form-label">Tên Khuyến Mại</label>
         <input asp-for="Ten" class="form-control" />
         <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
-
 
     <div class="mb-3">
         <label for="MoTa" class="form-label">Mô Tả</label>
@@ -44,12 +43,11 @@
         <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
     </div>
 
-
     <div class="form-group">
         <label asp-for="TrangThai"></label>
         <select asp-for="TrangThai" class="form-control">
-            <option value="0">Ngưng khuyễn mai</option>
-            <option value="1">Đang khuyến mại</option>
+            <option value="0">Ngưng khuyến mãi</option>
+            <option value="1">Đang khuyến mãi</option>
             <option value="2">Kết thúc</option>
         </select>
         <span asp-validation-for="TrangThai" class="text-danger"></span>
@@ -86,10 +84,31 @@
         <p>Không có danh mục nào để áp dụng cho khuyến mãi này.</p>
     }
 
-
-    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">Lưu thay đổi</button>
     <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn lưu thay đổi cho khuyến mãi này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -150,6 +169,11 @@
                     event.target.value = '20000000'; // Đặt lại giá trị tối đa là 20 triệu
                 }
             });
+        });
+
+        // Xử lý khi nhấn "Xác nhận" trong modal
+        document.getElementById("confirmSubmit").addEventListener("click", function () {
+            document.getElementById("editForm").submit(); // Gửi form
         });
     </script>
 }

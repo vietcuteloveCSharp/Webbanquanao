@@ -140,9 +140,31 @@ namespace WebView.Areas.Admin.Controllers
             }
             return list;
         }
-        public IActionResult ShiftView()
+         
+        public async Task<IActionResult> ShiftView()
         {
-            return View();
+            var weekData = new List<DayShifts>();
+            int weekOffSet = 0; // Tuần hiện tại
+
+            // Tính ngày Thứ Hai và Chủ Nhật của tuần hiện tại
+                var monday= GetMonday(DateTime.Now).AddDays(7*weekOffSet);
+                var sunday = monday.AddDays(6); // Ngày Chủ Nhật
+
+            // Lặp qua từng ngày trong tuần để gọi API
+            for (var date = monday; date <= sunday; date = date.AddDays(1))
+            {
+                var formattedDate = date.ToString("yyyy-MM-dd");
+                var shifts = await GetShiftsForDate(formattedDate);
+
+                weekData.Add(new DayShifts
+                {
+                    Date = date,
+                    Shifts = shifts
+                });
+            }
+
+            return View(weekData);
+
         }
     }
 }
