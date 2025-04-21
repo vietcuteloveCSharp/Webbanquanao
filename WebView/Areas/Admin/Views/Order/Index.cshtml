@@ -174,8 +174,8 @@
     <table id="hoaDonTable">
         <thead>
             <tr>
-                <th>Thông tin khách hàng</th>
                 <th>Mã đơn hàng</th>
+                <th>Thông tin khách hàng</th>
                 <th>Sản phẩm</th>
                 <th>Thời gian</th>
                 <th>Địa chỉ giao hàng</th>
@@ -190,11 +190,11 @@
                 @foreach (var hoaDon in Model)
                 {
                     <tr>
+                        <td>@hoaDon.Id</td>
                         <td>
                             <p>SĐT: @hoaDon.KhachHangs.Sdt</p>
                             <p>Tên: @hoaDon.KhachHangs.Ten</p>
                         </td>
-                        <td>@hoaDon.Id</td>
                         <td>
                             @if (hoaDon.SanPhams != null && hoaDon.SanPhams.Any())
                             {

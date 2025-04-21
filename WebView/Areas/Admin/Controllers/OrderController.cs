@@ -151,7 +151,7 @@ namespace WebView.Areas.Admin.Controllers
                         else
                         {
                             string errorMessage = await response.Content.ReadAsStringAsync();
-                            TempData["ErrorMessage"] = $"Lỗi cập nhật trạng thái";
+                            TempData["ErrorMessage"] = $"{errorMessage}";
                         }
                     }
                 }

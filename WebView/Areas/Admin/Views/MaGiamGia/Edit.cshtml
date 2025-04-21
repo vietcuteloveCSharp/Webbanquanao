@@ -6,7 +6,7 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" id="editForm">
     @* Tên mã *@
     <div class="form-group">
         <label asp-for="Ten"></label>
@@ -20,6 +20,7 @@
         <textarea asp-for="NoiDung" class="form-control"></textarea>
         <span asp-validation-for="NoiDung" class="text-danger"></span>
     </div>
+
     @* Loại giảm giá *@
     <div class="form-group">
         <label asp-for="LoaiGiamGia"></label>
@@ -54,7 +55,6 @@
             <span asp-validation-for="MenhGia" class="text-danger"></span>
         </div>
     </div>
-
 
     @* Giá trị tối đa (Chỉ hiển thị khi chọn Coupon) *@
     <div class="form-group" id="giaTriToiDaField">
@@ -94,9 +94,30 @@
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">Cập nhật</button>
     <a asp-action="Index" class="btn btn-secondary">Hủy</a>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn cập nhật mã giảm giá này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
@@ -105,7 +126,7 @@
             const loaiGiamGia = document.getElementById("LoaiGiamGia");
             const couponFields = document.getElementById("coupon-fields");
             const voucherFields = document.getElementById("voucher-fields");
-            const giaTriToiDaField = document.getElementById("giaTriToiDaField"); // Phần tử cha của trường Giá trị tối đa
+            const giaTriToiDaField = document.getElementById("giaTriToiDaField");
 
             // Hàm thay đổi hiển thị các trường tùy theo loại giảm giá
             function toggleFields() {
@@ -168,6 +189,11 @@
             enforceRange(inputs[1], 1, 20000000); // Điều kiện giảm giá (VNĐ): 1-20 triệu
             enforceRange(inputs[2], 1, 10000000); // Giá trị tối đa (VNĐ): 1-10 triệu
             enforceRange(inputs[3], 1, 20000000); // Mệnh giá (VNĐ): 1-20 triệu
+        });
+
+        // Xử lý khi nhấn "Xác nhận" trong modal
+        document.getElementById("confirmSubmit").addEventListener("click", function () {
+            document.getElementById("editForm").submit(); // Gửi form
         });
     </script>
 }
