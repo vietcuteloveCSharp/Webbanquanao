@@ -29,31 +29,43 @@
             <div class="mb-3">
                 <label class="form-label"><strong>Đánh giá:</strong></label>
                 <div class="star-rating">
-                    <i class="fa fa-star" data-value=1></i>
-                    <i class="fa fa-star" data-value=2></i>
-                    <i class="fa fa-star" data-value=3></i>
-                    <i class="fa fa-star" data-value=4></i>
-                    <i class="fa fa-star" data-value=5></i>
+                    @for(int i=1; i <= 5; i++)
+                    {
+                        @if(resp.Sao >= i)
+                        {
+                            <i class="fa fa-star text-warning" data-value=1></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-star text-secondary" data-value=1></i>
+                        }
+                        
+                    }
                 </div>
             </div>
 
             <!-- Nội dung đánh giá -->
             <div class="mb-3">
                 <label for="review-content" class="form-label"><strong>Nội dung đánh giá:</strong></label>
-                <textarea class="form-control" id="review-content" rows="4"
-                          placeholder="Nhập đánh giá của bạn"></textarea>
+                <textarea class="form-control" id="review-content" rows="2" disabled
+                          placeholder="Nhập đánh giá của bạn">@resp.NoiDung</textarea>
             </div>
 
             <!-- Upload ảnh -->
             <div class="mb-3">
-                <label class="form-label"><strong>Hình ảnh đánh giá:</strong></label>
-                <input type="file" class="form-control" id="review-images" multiple accept="image/*">
-                <div id="image-preview" class="mt-2"></div>
+                <p>Hình ảnh đã đánh giá</p>
+                <div class="d-flex justify-content-start overflow-auto" style="gap: 15px;">
+                    @if(resp.HinhAnhs.Count > 0)
+                    {
+                        @foreach (var id in resp.HinhAnhs)
+                        {
+                            <img style="height:200px; width:150px;" src="@Url.Action("GetImage", "DanhGia", new { id = id })" class="card-img-top ">
+                        }
+                    }
+                    
+                </div>
             </div>
 
-            @* <input id="idhdct" value=@resp.IdChiTietHoaDon hidden /> *@
-            <!-- Nút gửi đánh giá -->
-            @* <button class="btn btn-primary w-100" id="submit-review">Gửi Đánh Giá</button> *@
         </div>
     </div>
 </div>
