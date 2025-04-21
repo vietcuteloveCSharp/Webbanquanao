@@ -53,7 +53,7 @@
 
             <input id="idhdct" value=@resp.IdChiTietHoaDon hidden />
             <!-- Nút gửi đánh giá -->
-            <button class="btn btn-primary w-100" id="submit-review">Gửi Đánh Giá</button>
+            <button type="submit" class="btn btn-primary w-100" id="submit-review">Gửi Đánh Giá</button>
         </div>
     </div>
 </div>
@@ -119,12 +119,56 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    alert("Đánh giá đã được gửi!");
+                    // alert("Đánh giá đã được gửi!");
+                    window.location.replace("https://localhost:7043/BanHangOnline/DanhGia/DanhSachDanhGia");
                 },
                 error: function () {
                     alert("Lỗi khi gửi đánh giá!");
                 }
             });
         });
+    });
+</script>
+
+<script>
+    document.getElementById('review-images').addEventListener('change', function (e) {
+        const files = e.target.files;
+        const preview = document.getElementById('image-preview');
+        const maxFiles = 5;
+        const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+
+        // Xóa preview cũ
+        preview.innerHTML = '';
+
+        // Kiểm tra số lượng file
+        if (files.length > maxFiles) {
+            alert(`Chỉ được phép tải lên tối đa ${maxFiles} ảnh!`);
+            this.value = ''; // Xóa các file đã chọn
+            return;
+        }
+
+        // Kiểm tra từng file
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Kiểm tra kích thước
+            if (file.size > maxSize) {
+                alert(`Ảnh "${file.name}" vượt quá 3MB!`);
+                this.value = ''; // Xóa các file đã chọn
+                preview.innerHTML = '';
+                return;
+            }
+
+            // // Tạo preview cho ảnh hợp lệ
+            // const reader = new FileReader();
+            // reader.onload = function (e) {
+            //     const img = document.createElement('img');
+            //     img.src = e.target.result;
+            //     img.style.maxWidth = '100px';
+            //     img.style.margin = '5px';
+            //     preview.appendChild(img);
+            // };
+            // reader.readAsDataURL(file);
+        }
     });
 </script>
