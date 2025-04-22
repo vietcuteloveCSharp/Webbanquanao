@@ -9,6 +9,7 @@ namespace DTO.VuvietanhDTO.NhanViens
 {
     public class NhanvienDTO
     {
+        
         public string TaiKhoan { get; set; } = null!;
         public string TenNhanVien { get; set; } = string.Empty;
         public int Id_ChucVu { get; set; }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Entities
 {
+    
     public class CaLamViec
     {
         [Key]
@@ -23,6 +24,9 @@ namespace DAL.Entities
         [DataType(DataType.Time)]
         public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; } = true;
-        public virtual ICollection<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_Nhanviens { get; set; }
+        [ForeignKey("NgayLamViec")]
+        public int IdNgaylamviec { get; set; }
+        public virtual NgayLamViec NgayLamViec { get; set; }
+        public virtual ICollection<CaNhanVien> Canhanviens { get; set; }
     }
 }

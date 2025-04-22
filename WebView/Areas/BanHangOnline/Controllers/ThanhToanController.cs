@@ -29,7 +29,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
             if (tk == null)
             {
-                return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
+                return RedirectToAction("ChuaDangNhap", "DangNhapDangKy");
             }
             // list giỏ hàng của khách hàng
             var lstGioHang = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0).Include(x => x.ChiTietSanPham).ToListAsync();
@@ -98,8 +98,21 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Id_DanhMuc = item.Id_DanhMuc
                 });
             }
+            // Địa chỉ khách hàng
+            var diaChiKh = await _context.DiaChiKhachHangs.Where(x => x.IdKhachHang == tk.Id && x.TrangThai)?
+                .Select(x => new DiaChiKhachHangResp
+                {
+                    Id = x.Id,
+                    ChiTietDiaChi = x.ChiTietDiaChi,
+                    IdPhuong = x.IdPhuong,
+                    IdQuan = x.IdQuan,
+                    IdTinh = x.IdTinh,
+                    IsDefault = x.IsDefault,
+                    TenPhuong = x.TenPhuong,
+                    TenQuan = x.TenQuan,
+                    TenTinh = x.TenTinh
+                }).ToListAsync();
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
-
             resp = new ThanhToanResp
             {
                 GioHang = lstGioHang.Select(x => new GioHangResp
@@ -131,7 +144,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Sdt = tk?.Sdt,
                     Ten = tk?.Ten,
                     TrangThai = tk.TrangThai,
-                }
+                },
+                DiaChiKhachHangs = diaChiKh
             };
             ViewData["SpThanhToan"] = resp;
             HttpContext.Session.Remove("SpThanhToan");

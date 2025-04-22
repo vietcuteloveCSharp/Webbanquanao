@@ -230,6 +230,62 @@ namespace WebView.Areas.BanHangOnline.Controllers
 
             return Json(new { status = 200, data = resp });
         }
+
+        // id sản phẩm
+        [HttpGet]
+        public async Task<IActionResult> HienThiDanhGia(int id)
+        {
+            if (id <= 0)
+            {
+                return Json(null);
+            }
+            // lấy danh sách id của sản phẩm chi tiết
+            var lstSpct = await _context.ChiTietSanPhams.Where(x => x.Id_SanPham == id).Include(x => x.MauSac).Include(x => x.KichThuoc).ToListAsync();
+            var lstIdSpct = lstSpct.Select(x => x.Id).ToList();
+            // lấy danh sách id chi tiết hóa đơn và trạng thái == true
+            var lstCtHoaDon = await _context.ChiTietHoaDons.Where(x => x.TrangThai == true).Where(x => lstIdSpct.Contains(x.Id_ChiTietSanPham)).ToListAsync();
+            var lstIdCthd = lstCtHoaDon.Select(x => x.Id).ToList();
+            // thông tin sản phẩm chi tiết + id chi tiet hoa don
+            var lstSpCtVsIdHoaDonCT = lstCtHoaDon.Select(x => new
+            {
+                idCtHoaDon = x.Id,
+                mauSac = lstSpct.FirstOrDefault(a => a.Id == x.Id_ChiTietSanPham)?.MauSac?.Ten ?? "Đen",
+                kichThuoc = lstSpct.FirstOrDefault(a => a.Id == x.Id_ChiTietSanPham)?.KichThuoc?.Ten ?? "L"
+            });
+            // lấy danh sách đánh giá kèm theo thông tin khách hàng, listid hình ảnh, sản phẩm chi tiết
+            var lstDsDanhGia = await _context.DanhGias.Where(x => lstIdCthd.Contains(x.Id_ChiTietHoaDon)).ToListAsync();
+            var lstIdDanhGia = lstDsDanhGia.Select(x => x.Id).ToList();
+            var lstIdKhachHang = lstDsDanhGia.Select(x => x.Id_KhachHang).ToList();
+
+            // lấy ds khách hàng
+            var lstKhachHang = await _context.KhachHangs.Where(x => lstIdKhachHang.Contains(x.Id)).Select(x => new
+            {
+                Id = x.Id,
+                Ten = x.Ten
+            }).ToListAsync();
+            // lấy ds id hình ảnh
+            var lstIdHinhAnh = await _context.HinhAnhs.Where(x => lstIdDanhGia.Contains(x.Id_DanhGia ?? 0)).Select(x => new
+            {
+                idHinhAnh = x.Id,
+                idDanhGia = x.Id_DanhGia
+            }).ToListAsync();
+
+            //resp: List gồm: Thông tin đánh giá, tên khách hàng, lst hình ảnh
+            var resp = lstDsDanhGia.Select(x => new
+            {
+                tenKhachHang = lstKhachHang?.FirstOrDefault(a => a.Id == x.Id_KhachHang)?.Ten ?? "Hoang",
+                sanPhamChiTiet = lstSpCtVsIdHoaDonCT?.Where(a => a.idCtHoaDon == x.Id_ChiTietHoaDon).Select(a => new
+                {
+                    mauSac = a.mauSac,
+                    kichThuoc = a.kichThuoc
+                })?.FirstOrDefault() ?? null,
+                noiDung = x.NoiDung,
+                sao = x.Sao,
+                ngayTao = x.NgayTao,
+                hinhanhs = lstIdHinhAnh.Where(a => a.idDanhGia == x.Id).Select(a => a.idHinhAnh).ToList()
+            }).ToList();
+            return Json(resp);
+        }
         public IActionResult ClearSession()
         {
             // Xóa  Session có tên "ChiTietSanPham"

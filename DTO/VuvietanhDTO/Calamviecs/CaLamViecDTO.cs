@@ -14,6 +14,6 @@ namespace DTO.VuvietanhDTO.Calamviecs
         public TimeSpan GioBatDau { get; set; }
         public TimeSpan GioKetThuc { get; set; }
         public bool TrangThai { get; set; }
-        public int Id_NhanVien { get; set; }
+        public int IdNgaylamviec { get; set; }
     }
 }

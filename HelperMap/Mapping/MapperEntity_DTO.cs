@@ -32,6 +32,16 @@ namespace HelperMap.Mapping
              .ForMember(dest => dest.TaiKhoan, opt => opt.MapFrom(src => src.TaiKhoan))
              .ForMember(dest => dest.TenNhanVien, opt => opt.MapFrom(src => src.TenNhanVien))
              .ForMember(dest => dest.Id_ChucVu, opt => opt.MapFrom(src => src.Id_ChucVu));
+            CreateMap<NhanVien,NhanVienProfileDTO>()
+                .ForMember(dest => dest.TaiKhoan, opt => opt.MapFrom(src => src.TaiKhoan))
+                .ForMember(dest => dest.Ten, opt => opt.MapFrom(src => src.TenNhanVien))
+                .ForMember(dest => dest.Sdt, opt => opt.MapFrom(src => src.Sdt))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.NgayTao, opt => opt.MapFrom(src => src.NgayTao))
+                .ForMember(dest => dest.NgaySinh, opt => opt.MapFrom(src => src.NgaySinh))
+                .ForMember(dest => dest.DiaChi, opt => opt.MapFrom(src => src.DiaChi))
+                .ForMember(dest => dest.GhiChu, opt => opt.MapFrom(src => src.GhiChu))
+                .ForMember(dest => dest.Id_ChucVu, opt => opt.MapFrom(src => src.Id_ChucVu));
 
             #endregion
             #region MapKhachhang

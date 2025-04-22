@@ -34,6 +34,8 @@ using Service.VuVietAnhService.IRepository.ICalamviec;
 using Service.VuVietAnhService.Repository.Calamviec;
 using Service.VuVietAnhService.IRepository.INgaylamviec;
 using Service.VuVietAnhService.Repository.Ngaylamviec;
+using Service.VuVietAnhService.IRepository.ICanhanvien;
+using Service.VuVietAnhService.Repository.Canhanvien;
 
 namespace WebAPI
 {
@@ -76,13 +78,14 @@ namespace WebAPI
             builder.Services.AddScoped<IThuonghieuSerivce, ThuonghieuService>();
             builder.Services.AddScoped<ICalamviecService,CalamviecService>();
             builder.Services.AddScoped<INgaylamviecService,NgaylamviecService>();
+            builder.Services.AddScoped<INhanVienServices, NhanVienServices>();
 
-         
+
             builder.Services.AddScoped<IChiTietHoaDonService, ChiTietHoaDonService>();
             builder.Services.AddScoped<IChiTietSanPhamServices,     ChiTietSanPhamServices>();
             
             builder.Services.AddScoped<IHoadonService, HoadonService>();
-            
+            builder.Services.AddScoped<ICanhanvienService,CanhanvienService>();
             //cấu hình jwt
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"];
