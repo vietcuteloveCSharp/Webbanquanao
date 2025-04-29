@@ -1,0 +1,146 @@
+﻿@model List<WebView.NghiaDTO.NhanVienDTO>
+
+@{
+    ViewData["Title"] = "Danh sách nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+<style>
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    /* Tạo kiểu dáng cho ô màu sắc */
+    .color-box {
+        border-radius: 50%; /* Làm cho ô màu tròn */
+        border: 1px solid #ddd; /* Thêm viền nhẹ cho ô màu */
+        display: inline-block;
+        width: 25px; /* Kích thước ô màu lớn hơn một chút */
+        height: 25px; /* Kích thước ô màu lớn hơn một chút */
+        margin-right: 5px; /* Khoảng cách giữa các ô màu */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+    }
+
+        /* Thêm hiệu ứng hover cho các ô màu */
+        .color-box:hover {
+            transform: scale(1.2); /* Phóng to khi hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+        }
+
+    /* Tạo kiểu dáng cho các nút hành động */
+    .btn {
+        border-radius: 5px; /* Làm tròn các góc của nút */
+        padding: 8px 12px; /* Thêm padding để nút rộng hơn */
+        font-size: 0.9rem; /* Giảm kích thước font cho các nút */
+        transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền khi hover */
+    }
+
+        .btn:hover {
+            background-color: #007bff; /* Màu nền khi hover */
+            color: white; /* Đổi màu chữ khi hover */
+        }
+
+    .btn-sm {
+        padding: 6px 10px; /* Giảm kích thước nút nhỏ */
+    }
+
+    /* Thêm kiểu cho badge (kích thước) */
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    /* Sửa lại CSS cho badge */
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+    }
+</style>
+<a asp-action="Create" class="btn btn-primary">Thêm nhân viên</a>
+<table class="table table-bordered mt-3" id="myTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên nhân viên</th>
+            <th>Số điện thoại</th>
+            <th>Email</th>
+            <th>Chức vụ</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var nv in Model)
+        {
+            <tr>
+                <td>@nv.Id</td>
+                <td>@nv.TenNhanVien</td>
+                <td>@nv.Sdt</td>
+                <td>@nv.Email</td>
+                <td>@nv.ChucVuDTO.Ten</td>
+                <td>
+                    @if (nv.TrangThai)
+                    {
+                        <span class="badge bg-success">Mở khóa</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Khóa</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-controller="NhanVien" asp-route-Id="@nv.Id" class="btn btn-sm btn-success">
+                        <i class="fa fa-edit"></i> Sửa
+                    </a>
+                    <form asp-action="ToggleStatus" asp-route-id="@nv.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            @if (nv.TrangThai)
+                            {
+                                <span>Khóa</span>
+                            }
+                            else
+                            {
+                                <span>Mở khóa</span>
+                            }
+                        </button>
+                    </form>
+                    <a asp-action="Delete" asp-controller="NhanVien" asp-route-Id="@nv.Id" class="btn btn-sm btn-danger confirmDeletion">
+                        <i class="fa fa-trash"></i> Xóa
+                    </a>
+                  
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,29 @@
+﻿@model WebView.NghiaDTO.ChucVuDTO
+
+@{
+    ViewData["Title"] = "Thêm mới Chức vụ";
+}
+
+<h2>Thêm mới Chức vụ</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Tên Chức vụ</label>
+        <input asp-for="Ten" class="form-control" required />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <textarea asp-for="Mota" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

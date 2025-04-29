@@ -1,0 +1,120 @@
+﻿@model WebView.NghiaDTO.NhanVienDTO
+
+@{
+    ViewData["Title"] = "Thêm nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <label for="TaiKhoan">Tài khoản</label>
+        <input type="text" asp-for="TaiKhoan" class="form-control" id="TaiKhoan" />
+        <span asp-validation-for="TaiKhoan" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="MatKhau">Mật khẩu</label>
+        <input type="password" asp-for="MatKhau" class="form-control" id="MatKhau" />
+        <span asp-validation-for="MatKhau" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="TenNhanVien">Tên nhân viên</label>
+        <input type="text" asp-for="TenNhanVien" class="form-control" required />
+        <span asp-validation-for="TenNhanVien" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Sdt">Số điện thoại</label>
+        <input asp-for="Sdt" type="tel" class="form-control" maxlength="10" pattern="[0-9]*" inputmode="numeric" onkeydown="return event.key.match(/[0-9]/) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" />
+        <span asp-validation-for="Sdt" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" asp-for="Email" class="form-control" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="NgaySinh">Ngày sinh</label>
+        <input type="date" asp-for="NgaySinh" class="form-control" id="NgaySinh" required />
+    </div>
+    <div class="form-group">
+        <label for="DiaChi">Địa chỉ</label>
+        <input type="text" asp-for="DiaChi" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Id_ChucVu">Chức vụ</label>
+        <select asp-for="Id_ChucVu" class="form-control" id="Id_ChucVu">
+            @foreach (var cv in ViewBag.ChucVus)
+            {
+                <option value="@cv.Id">@cv.Ten</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="TrangThai">Trạng thái</label>
+        <select asp-for="TrangThai" class="form-control">
+            <option value="true">Mở khóa</option>
+            <option value="false">Khóa</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Thêm</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var chucVuDropdown = document.getElementById("Id_ChucVu");
+            var taiKhoanInput = document.getElementById("TaiKhoan");
+            var matKhauInput = document.getElementById("MatKhau");
+            var sdtInput = document.getElementById("Sdt");
+            var taiKhoanField = taiKhoanInput.parentElement;
+            var matKhauField = matKhauInput.parentElement;
+
+            function toggleTaiKhoanMatKhau() {
+                var selectedValue = parseInt(chucVuDropdown.value);
+                var nhanVienId = @ViewBag.NhanVienId;
+
+                if (selectedValue === nhanVienId) {
+                    taiKhoanField.style.display = "none";
+                    matKhauField.style.display = "none";
+                    taiKhoanInput.value = ""; // Xóa giá trị
+                    matKhauInput.value = ""; // Xóa giá trị
+                    taiKhoanInput.removeAttribute("required"); // Bỏ required
+                    matKhauInput.removeAttribute("required"); // Bỏ required
+                    taiKhoanInput.disabled = true; // Vô hiệu hóa để không gửi dữ liệu
+                    matKhauInput.disabled = true; // Vô hiệu hóa để không gửi dữ liệu
+                } else {
+                    taiKhoanField.style.display = "block";
+                    matKhauField.style.display = "block";
+                    taiKhoanInput.setAttribute("required", "required"); // Thêm required
+                    matKhauInput.setAttribute("required", "required"); // Thêm required
+                    taiKhoanInput.disabled = false; // Kích hoạt lại
+                    matKhauInput.disabled = false; // Kích hoạt lại
+                }
+            }
+
+            // Chỉ cho phép nhập số vào Sdt và giới hạn 10 ký tự
+            sdtInput.addEventListener("input", function () {
+                sdtInput.value = sdtInput.value.replace(/[^0-9]/g, '');
+                if (sdtInput.value.length > 10) {
+                    sdtInput.value = sdtInput.value.slice(0, 10);
+                }
+            });
+
+            chucVuDropdown.addEventListener("change", toggleTaiKhoanMatKhau);
+            toggleTaiKhoanMatKhau(); // Gọi khi load trang
+        });
+    </script>
+}

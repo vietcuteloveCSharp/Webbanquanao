@@ -20,5 +20,6 @@ namespace DAL.Entities
 
         public virtual ICollection<GioHang>? GioHangs { get; set; } = new List<GioHang>();
         public virtual ICollection<HoaDon>? HoaDons { get; set; } = new List<HoaDon>();
+        public virtual ICollection<DiaChiKhachHang>? DiaChiKhachHangs { get; set; } = new List<DiaChiKhachHang>();
     }
 }

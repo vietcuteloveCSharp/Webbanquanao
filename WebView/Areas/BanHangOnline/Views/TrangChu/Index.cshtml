@@ -4,7 +4,7 @@
     var lstSanPham = ViewData["lstSanPham"] as DictionarySanPhamResp;
     decimal TinhPhanTramGiamGia(decimal giaBanDau, decimal giaBan){
 
-        return (((giaBanDau - giaBan) / giaBanDau) * 100);
+        return Math.Round((((giaBanDau - giaBan) / giaBanDau) * 100));
     }
 }
 <style>
@@ -133,6 +133,46 @@
         margin-left: 5px;
         color: red;
     }
+
+    .box {
+       /*  width: 300px;
+        height: 150px; */
+        padding:10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px -5px 10px rgba(204, 204, 204, 0.5), 0px 5px 10px rgba(204, 204, 204, 0.5);
+        transition: box-shadow 0.3s ease-in-out;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 50px auto;
+        text-align: center;
+    }
+
+    .box-item {
+        height: 527px;
+        padding: 10px 10px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px -5px 10px rgba(204, 204, 204, 0.5), 0px 5px 10px rgba(204, 204, 204, 0.5);
+        transition: box-shadow 0.3s ease-in-out;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 10px 0px;
+        text-align: center;
+        max-width: 350px;
+        margin-left: 26px;
+    }
+
+        /* Khi di chuột vào, shadow sẽ đậm hơn */
+        .box:hover {
+            box-shadow: 0px -8px 15px rgba(204, 204, 204, 0.8), 0px 8px 15px rgba(204, 204, 204, 0.8);
+        }
 </style>
 @* Slider show *@
 <div id="fullScreenCarousel" class="carousel slide" data-bs-ride="false">
@@ -142,7 +182,7 @@
                  class="d-block w-100" alt="Image 2">
         </div>
         <div class="carousel-item">
-            <img src="https://media.canifa.com/Simiconnector/BannerSlider/c/a/canifas_topbanner_desktop-ud-25.11.webp"
+            <img src="https://2885371169.e.cdneverest.net/media/Simiconnector/BannerSlider/c/h/chaohe_topbanner_desktop-240325.webp"
                  class="d-block w-100" alt="Image 3">
         </div>
         <div class="carousel-item">
@@ -166,10 +206,10 @@
     {
        foreach (var item in lstSanPham.DictionarySanPham)
         {
-            <div class="mt-3 mb-3">
+            <div class="mt-3 mb-3 box">
                 <div class="d-flex justify-content-between">
                     <span class="ten-danhmuc">@item.Key.TenDanhMuc</span>
-                    <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span>
+                   @*  <span class="link-danhmuc"><a href="/BanHangOnline/TimKiem/GetDanhMuc?id=@item.Key.Id">Xem thêm<i class="fa-solid fa-arrow-right"></i></a></span> *@
                 </div>
                 <div class="row">
                     <!-- Phần 1: Hình ảnh tổng quát -->
@@ -183,24 +223,24 @@
                     <div class="product-slider col-8">
                         @foreach (var sp in item.Value)
                         {
-                        
-                        <div class="product-card">
-                                <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id">
-                                <img class="imgsub" src="@sp.ListHinHAnh?.FirstOrDefault()?.Url" alt="@sp.Ten">
-                            </a>
-                            <div class="d-flex flex-column justify-content-start">
-                                    <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
-                                <p class="price">@sp.GiaBan đ</p>
-                                @if (sp.GiaBanDau != 0)
-                                    {
-                                        <div class="d-flex justify-content-start">
-                                            <p class="old-price">@sp.GiaBanDau đ</p>
-                                            <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
-                                        </div>
-                                    }
+                            <div class="box-item">
+                                <div class="product-card border-1">
+                                    <a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id">
+                                    <img class="imgsub" src="@sp.ListHinHAnh?.FirstOrDefault()?.Url" alt="@sp.Ten">
+                                </a>
+                                <div class="d-flex flex-column justify-content-start">
+                                        <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
+                                    <p class="price">@sp.GiaBan vnd</p>
+                                    @if (sp.GiaBanDau != sp.GiaBan)
+                                        {
+                                            <div class="d-flex justify-content-start">
+                                                <p class="old-price">@sp.GiaBanDau vnd</p>
+                                                <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
+                                            </div>
+                                        }
+                                </div>
                             </div>
                         </div>
-
                         }
                     </div>
                 </div>
@@ -300,7 +340,7 @@
             infinite: true,
             speed: 300,
             slidesToShow: 2,
-            centerMode: true,
+            centerMode: false,
             variableWidth: true
         });
     });

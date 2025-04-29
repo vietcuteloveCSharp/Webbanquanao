@@ -11,7 +11,7 @@ namespace DAL.Entities
         public string Ten { get; set; } = string.Empty;
         [MaxLength(20)]
         public string MaHex { get; set; } = string.Empty;
-
+      
         public virtual ICollection<ChiTietSanPham> ChiTietSanPhams { get; set; }
     }
 }

@@ -12,8 +12,10 @@ namespace DTO.VuvietanhDTO.HoadonsDTO
     {
         public int Id { get; set; }
         public string TongTien { get; set; }
+        public decimal PhiVanChuyen { get; set; }
+        public string? DiaChiGiaoHang { get; set; } = string.Empty;
         public DateTime NgayTao { get; set; } = DateTime.Now;
-        public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXuLy;
+        public ETrangThaiHD TrangThai { get; set; } = ETrangThaiHD.ChoXacNhan;
         public int Id_NhanVien { get; set; }
         public int Id_KhachHang { get; set; }
     }

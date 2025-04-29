@@ -1,0 +1,78 @@
+﻿@using WebView.Models.Vnpay;
+@model PaymentResponseModel;
+
+@{
+    ViewData["title"] = "Kết quả thực hiện đặt hàng";
+}
+@if (Model == null)
+{
+    <h1 class="text-center mb-4 text-success">Đặt thành công đơn hàng</h1>
+    <p class="text-center mb-4 text-danger">Chờ cửa hàng xác nhận đơn hàng</p>
+
+}
+else
+{
+    
+<h1 class="text-center mb-4 text-success">Thanh toán thành công đơn hàng</h1>
+
+<div class="card shadow">
+    <div class="card-body">
+      
+
+        <p class="text-muted">@Model.OrderDescription</p>
+
+        <table class="table table-bordered mt-3">
+            <thead class="table-light">
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mã giao dịch</td>
+                    <td>@Model.TransactionId</td>
+                </tr>
+                <tr>
+                    <td>VnpTxnRef</td>
+                    <td>@Model.VnpTxnRef</td>
+                </tr>
+                <tr>
+                    <td>Số tiền thanh toán</td>
+                    <td>@Model.Amount</td>
+                </tr>
+                <tr>
+                    <td>Phương thức thanh toán</td>
+                    <td>@Model.PaymentMethod</td>
+                </tr>
+                <tr>
+                    <td>Mã thanh toán</td>
+                    <td>@Model.PaymentId</td>
+                </tr>
+                <tr>
+                    <td>Mô tả giao dịch</td>
+                    <td>@Model.OrderDescription</td>
+                </tr>
+                <tr>
+                    <td>VnPay Response Code</td>
+                    <td>@Model.VnPayResponseCode</td>
+                </tr>
+                @* <tr>
+                    <td>Status</td>
+                    <td>
+                        <span class="badge @Model.Success ? " bg-success" : "bg-danger" ">
+                        @Model.Success ? " Success" : "Failed"
+                                </span>
+                    </td>
+                </tr> *@
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+}
+<script>
+    sessionStorage.removeItem("ListGiamGia");
+</script>

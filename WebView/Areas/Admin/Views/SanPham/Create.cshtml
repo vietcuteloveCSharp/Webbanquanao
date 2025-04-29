@@ -3,23 +3,104 @@
 @{
     ViewData["Title"] = "Thêm Sản Phẩm Mới";
 }
+<style>
+    .chi-tiet-table {
+        display: table;
+        width: 100%;
+        max-width: 600px;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
 
+    .chi-tiet-header {
+        display: table-row;
+        background-color: #f1f5f9;
+        color: #333;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+    }
+
+        .chi-tiet-header .header-cell {
+            display: table-cell;
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+    .chiTietSanPham-item {
+        display: table-row;
+        transition: background-color 0.2s ease;
+    }
+
+        .chiTietSanPham-item .form-group {
+            display: table-cell;
+            padding: 8px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .chiTietSanPham-item:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .chiTietSanPham-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .chiTietSanPham-item .form-group select,
+        .chiTietSanPham-item .form-group input {
+            width: 100px;
+            height: 36px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+            .chiTietSanPham-item .form-group select:focus,
+            .chiTietSanPham-item .form-group input:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            }
+
+        .chiTietSanPham-item .form-group button {
+            width: 60px;
+            height: 36px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+            .chiTietSanPham-item .form-group button:hover {
+                background-color: #dc3545;
+                filter: brightness(90%);
+            }
+
+    #addChiTietContainer {
+        margin-top: 10px;
+    }
+</style>
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="Ten">Tên Sản Phẩm</label>
         <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" required />
+        <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="Gia">Giá</label>
-        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" required />
+        <input class="form-control typing-price" id="Gia" name="Gia" value="@Model.Gia" value="1" required />
+        <span asp-validation-for="Gia" class="text-danger"></span>
     </div>
     <div id="price-convert"></div>
-    <div class="form-group">
-        <label for="NgayTao">Ngày Tạo</label>
-        <input type="date" class="form-control" id="NgayTao" name="NgayTao" value="@Model.NgayTao.ToString("yyyy-MM-dd")" />
-    </div>
 
     <div class="form-group">
         <label for="Id_ThuongHieu">Thương Hiệu</label>
@@ -42,56 +123,213 @@
     </div>
 
     <div id="chiTietSanPhamContainer">
-        <div class="chiTietSanPham-item" id="chiTietSanPham-template" style="display: none;">
-            <div class="form-group">
-                <label for="Id_MauSac">Màu Sắc</label>
-                <select class="form-control" name="chiTietSanPhams[INDEX].Id_MauSac">
-                    @foreach (var item in ViewBag.MauSacs as SelectList)
-                    {
-                        <option value="@item.Value">@item.Text</option>
-                    }
-                </select>
+        <div class="chi-tiet-table">
+            <div class="chi-tiet-header">
+                <div class="header-cell">Màu Sắc</div>
+                <div class="header-cell">Kích Thước</div>
+                <div class="header-cell">Số Lượng</div>
+                <div class="header-cell">Xóa</div>
             </div>
-
-            <div class="form-group">
-                <label for="Id_KichThuoc">Kích Thước</label>
-                <select class="form-control" name="chiTietSanPhams[INDEX].Id_KichThuoc">
-                    @foreach (var item in ViewBag.KichThuocs as SelectList)
-                    {
-                        <option value="@item.Value">@item.Text</option>
-                    }
-                </select>
+            <!-- Mục đầu tiên hiển thị ngay khi vào trang -->
+            <div class="chiTietSanPham-item">
+                <div class="form-group">
+                    <select class="form-control chiTiet-mauSac" name="chiTietSanPhams[0].Id_MauSac">
+                        @foreach (var item in ViewBag.MauSacs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control chiTiet-kichThuoc" name="chiTietSanPhams[0].Id_KichThuoc">
+                        @foreach (var item in ViewBag.KichThuocs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="form-control" name="chiTietSanPhams[0].SoLuong" value="1" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="SoLuong">Số Lượng</label>
-                <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="0" />
+            <!-- Template cho các mục mới (ẩn) -->
+            <div class="chiTietSanPham-item" id="chiTietSanPham-template" style="display: none;">
+                <div class="form-group">
+                    <select class="form-control chiTiet-mauSac" name="chiTietSanPhams[INDEX].Id_MauSac">
+                        @foreach (var item in ViewBag.MauSacs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control chiTiet-kichThuoc" name="chiTietSanPhams[INDEX].Id_KichThuoc">
+                        @foreach (var item in ViewBag.KichThuocs as SelectList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="form-control" name="chiTietSanPhams[INDEX].SoLuong" value="1" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger remove-item">Xóa</button>
+                </div>
             </div>
-
-            <button type="button" class="btn btn-danger remove-item">Xóa</button>
         </div>
     </div>
 
-    <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
-    <div class="form-group">
-        <label for="ImageUrl">Link ảnh</label>
-        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" placeholder="Nhập link ảnh từ mạng" value="@Model.HinhAnhs?.FirstOrDefault()?.Url" />
+    <div id="addChiTietContainer">
+        <button type="button" id="addChiTiet" class="btn btn-secondary">Thêm Màu & Kích Thước</button>
     </div>
-    <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
-</form>
+    <div class="form-group">
+        <label for="ImageUrls">Link Ảnh</label>
+        <div id="imageUrlsContainer">
+            @if (ViewBag.ImageUrls != null)
+            {
+                foreach (var url in ViewBag.ImageUrls as List<string>)
+                {
+                    <div class="image-url-item">
+                        <input type="text" class="form-control mb-2" name="ImageUrls" value="@url" placeholder="Nhập link ảnh từ mạng" />
+                        <div class="invalid-feedback text-danger">
+                            Link ảnh không hợp lệ. Vui lòng nhập URL hợp lệ (png, jpg, jpeg, gif, webp, svg).
+                        </div>
 
-<a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="image-url-item">
+                    <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                </div>
+            }
+        </div>
+
+        <button type="button" id="addImageUrl" class="btn btn-secondary">Thêm Link Ảnh</button>
+
+    </div>
+    <!-- Nút Confirm và Lưu -->
+    <button type="button" class="btn btn-primary" id="confirmButton">Xác Nhận</button>
+    <button type="submit" class="btn btn-primary" id="submitButton" style="display: none;">Lưu</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+</form>
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác Nhận Thêm Sản Phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn thêm sản phẩm này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Đồng Ý</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts{
-    @{
+ @*    @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    } *@
     <script>
-       // Ẩn/Hiện các input dựa trên lựa chọn của người dùng
-        document.getElementById("ImageOption").addEventListener("change", function () {
-            const selectedOption = this.value;
-            document.getElementById("urlInputContainer").style.display = (selectedOption === "url") ? "block" : "none";
+        document.addEventListener("DOMContentLoaded", function () {
+            // Thêm input mới cho link ảnh
+            document.getElementById("addImageUrl").addEventListener("click", function () {
+                const container = document.getElementById("imageUrlsContainer");
+                const newInput = document.createElement("div");
+                newInput.className = "image-url-item";
+                newInput.innerHTML = `
+                            <input type="text" class="form-control mb-2" name="ImageUrls" placeholder="Nhập link ảnh từ mạng" />
+                            <button type="button" class="btn btn-danger btn-sm remove-image-url">Xóa</button>`;
+                container.appendChild(newInput);
+            });
+
+            // Xóa input link ảnh
+            document.getElementById("imageUrlsContainer").addEventListener("click", function (e) {
+                if (e.target.classList.contains("remove-image-url")) {
+                    e.target.closest(".image-url-item").remove();
+                }
+            });
+
+            // Validate các link ảnh trước khi submit form
+            document.querySelector("form").addEventListener("submit", function (e) {
+                const imageInputs = document.querySelectorAll('input[name="ImageUrls"]');
+                const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg))$/i;
+                let isValid = true;
+                const seenUrls = new Set(); // Dùng Set để kiểm tra trùng lặp
+
+                imageInputs.forEach(input => {
+                    const value = input.value.trim();
+                    const errorDiv = input.nextElementSibling;
+
+                    // Xóa class is-invalid nếu URL hợp lệ
+                    input.classList.remove("is-invalid");
+
+                    // Kiểm tra nếu URL đã tồn tại trong Set
+                    if (value && seenUrls.has(value)) {
+                        isValid = false;
+                        input.classList.add("is-invalid");
+                        if (!errorDiv || !errorDiv.classList.contains("text-danger")) {
+                            const error = document.createElement("div");
+                            error.className = "invalid-feedback text-danger";
+                            error.innerText = "Link ảnh bị trùng. Vui lòng nhập một URL khác.";
+                            input.parentNode.appendChild(error);
+                        }
+                    } else if (value && !urlPattern.test(value)) {
+                        isValid = false;
+                        input.classList.add("is-invalid");
+                        if (!errorDiv || !errorDiv.classList.contains("text-danger")) {
+                            const error = document.createElement("div");
+                            error.className = "invalid-feedback text-danger"; // Thêm màu đỏ
+                            error.innerText = "Link ảnh không hợp lệ. Vui lòng nhập URL hợp lệ (png, jpg, jpeg, gif, webp, svg).";
+                            input.parentNode.appendChild(error);
+                        }
+                    } else {
+                        // Nếu không có lỗi, loại bỏ các thông báo lỗi
+                        if (errorDiv && errorDiv.classList.contains("text-danger")) {
+                            errorDiv.remove();
+                        }
+                    }
+
+                    // Nếu URL hợp lệ, thêm vào Set để kiểm tra trùng
+                    if (value && urlPattern.test(value)) {
+                        seenUrls.add(value);
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault(); // Ngăn form submit nếu có lỗi
+                }
+            });
         });
+
     </script>
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".typing-price").on("input", function () {
+                var input = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(input);
+            });
+        });
+
+    </script>
+
+  
     <script>
         $(".typing-price").on("input", function () {
             // Lấy giá trị từ input và bỏ tất cả ký tự không phải số
@@ -111,20 +349,66 @@
         });
     </script>
     <script>
-        $(document).ready(function () {
-            let index = 0;
+        document.addEventListener('DOMContentLoaded', function () {
+            const addButton = document.getElementById('addChiTiet');
+            const container = document.getElementById('chiTietSanPhamContainer');
+            const template = document.getElementById('chiTietSanPham-template');
 
-            $("#addChiTiet").click(function () {
-                const template = $("#chiTietSanPham-template").clone(true)
-                    .removeAttr("id")
-                    .css("display", "block");
-                template.html(template.html().replace(/INDEX/g, index));
-                $("#chiTietSanPhamContainer").append(template);
-                index++;
+            // Hàm cập nhật lại chỉ số index của các mục
+            function updateIndexes() {
+                const items = container.querySelectorAll('.chiTietSanPham-item:not(#chiTietSanPham-template)');
+                items.forEach((item, index) => {
+                    const mauSacSelect = item.querySelector('.chiTiet-mauSac');
+                    const kichThuocSelect = item.querySelector('.chiTiet-kichThuoc');
+                    const soLuongInput = item.querySelector('input[type="number"]');
+
+                    mauSacSelect.name = `chiTietSanPhams[${index}].Id_MauSac`;
+                    kichThuocSelect.name = `chiTietSanPhams[${index}].Id_KichThuoc`;
+                    soLuongInput.name = `chiTietSanPhams[${index}].SoLuong`;
+                });
+            }
+
+            // Thêm mục mới
+            addButton.addEventListener('click', function () {
+                const index = container.querySelectorAll('.chiTietSanPham-item:not(#chiTietSanPham-template)').length;
+
+                // Clone template và hiển thị
+                const newItem = template.cloneNode(true);
+                newItem.id = ''; // Xóa id để không trùng với template
+                newItem.style.display = 'table-row'; // Hiển thị mục mới
+
+                // Cập nhật chỉ số index trong name của các input/select
+                const mauSacSelect = newItem.querySelector('.chiTiet-mauSac');
+                const kichThuocSelect = newItem.querySelector('.chiTiet-kichThuoc');
+                const soLuongInput = newItem.querySelector('input[type="number"]');
+
+                mauSacSelect.name = `chiTietSanPhams[${index}].Id_MauSac`;
+                kichThuocSelect.name = `chiTietSanPhams[${index}].Id_KichThuoc`;
+                soLuongInput.name = `chiTietSanPhams[${index}].SoLuong`;
+
+                // Thêm vào bảng
+                container.querySelector('.chi-tiet-table').appendChild(newItem);
             });
 
-            $(document).on("click", ".remove-item", function () {
-                $(this).closest(".chiTietSanPham-item").remove();
+            // Xóa mục
+            document.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-item')) {
+                    const item = e.target.closest('.chiTietSanPham-item');
+                    if (item.id !== 'chiTietSanPham-template') { // Đảm bảo không xóa template
+                        item.remove();
+                        updateIndexes(); // Cập nhật lại chỉ số sau khi xóa
+                    }
+                }
+            });
+            // Xử lý nút Confirm
+            confirmButton.addEventListener('click', function () {
+                $('#confirmModal').modal('show'); // Hiển thị modal xác nhận
+            });
+
+            // Xử lý nút Đồng Ý trong modal
+            document.getElementById('confirmSubmit').addEventListener('click', function () {
+                $('#confirmModal').modal('hide'); // Ẩn modal
+                submitButton.click(); // Gửi form
             });
         });
     </script>

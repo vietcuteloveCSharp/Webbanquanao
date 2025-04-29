@@ -1,0 +1,213 @@
+﻿@using DAL.Entities
+@{
+    var type = ViewData["type"] ;
+}
+@model KhachHang;
+@if (ViewData["message"] != null)
+{
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+  <!-- Position it: -->
+  <!-- - `.toast-container` for spacing between toasts -->
+  <!-- - `.position-absolute`, `top-0` & `end-0` to position the toasts in the upper right corner -->
+  <!-- - `.p-3` to prevent the toasts from sticking to the edge of the container  -->
+  <div class="toast-container position-absolute top-0 end-0 p-3">
+
+    <!-- Then put toasts within -->
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+      <div class="toast-header">
+        <strong class="me-auto">Thông báo</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body text-success">
+        @ViewData["message"]
+      </div>
+    </div>
+
+  </div>
+</div>
+}
+<div class="container mb-5 mt-5">
+    <div class="d-flex">
+        <div style="width: 62px;height: 62px; border-radius: 50%;overflow: hidden;align-items: center;position: relative;display: flex;justify-content: center;">
+            <img src="https://pm2ec.s3.ap-southeast-1.amazonaws.com/customer/84981642651_1721662556880-376279814.jpg"
+                 style="width: 100%;
+                height: 100%;
+                text-align: center;
+                object-fit: cover;
+                color: transparent;
+                text-indent: 500px;" alt="">
+        </div>
+        <div class="ms-3">
+            <p class="mb-1">Xin chào,</p>
+            <span class="fw-bold">@Model.Ten</span>
+        </div>
+    </div>
+    <div class="row mt-3 gap-3">
+        <div class="col-2 border border-1 p-3">
+            <div class=" flex-column  w-100 h-100">
+                @{
+                    switch (type)
+                    {
+                        case "taikhoan":
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "donhang":
+
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-danger ">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "diachicuatoi":
+
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "doimatkhau":
+                          
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                   Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                    }
+                }
+               
+            </div>
+
+        </div>
+        <div class="col-9 border border-1 p-3">
+                @{
+                    switch (type)
+                    {
+                        case "taikhoan":
+                            @Html.Partial("TaiKhoanCuaToiPartial")
+                             break;
+                        case "doimatkhau":
+                            @Html.Partial("DoiMatKhauPartial")
+                            break;
+                        case "diachicuatoi":
+                            @Html.Partial("DiaChiKhachHangPartial")
+                            break;
+                        case "donhang":
+                            @Html.Partial("DonHangPartial")
+                            break;
+
+                    }
+               }
+        </div>
+    </div>
+</div>
+
+
+
+

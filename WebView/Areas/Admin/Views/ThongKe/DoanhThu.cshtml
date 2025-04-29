@@ -1,0 +1,247 @@
+﻿@model WebView.NghiaDTO.DoanhThuViewModel
+
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<style>
+    .text-center {
+        text-align: center;
+    }
+
+    .text-primary {
+        color: #007bff;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .font-weight-bold {
+        font-weight: bold;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .form-row .col {
+            flex: 1;
+        }
+
+    .btn-primary {
+        width: 100%;
+        background: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+    .btn-secondary {
+        width: 100%;
+    }
+
+    .table-container {
+        margin-top: 40px;
+    }
+
+    .filter-form-container {
+        margin-bottom: 30px;
+    }
+
+    .card-summary {
+        margin-top: 30px;
+    }
+
+    .filter-form-container label {
+        font-weight: bold;
+    }
+
+    .filter-form-container .form-row {
+        margin-bottom: 15px;
+    }
+
+    .form-container {
+        margin-bottom: 40px;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+    }
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<div class="table-container">
+    <!-- Doanh thu theo hóa đơn -->
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-chart-line"></i> Thống kê doanh thu
+            </h3>
+            <!-- Form lọc cho Doanh thu -->
+            <div class="filter-form-container mb-4">
+                <form id="filterForm">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="startDate">Ngày bắt đầu</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="endDate">Ngày kết thúc</label>
+                            <input type="date" id="endDate" class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="dayRange">Chọn số ngày</label>
+                            <select id="dayRange" class="form-control">
+                                <option value="">Không chọn</option>
+                                <option value="3">3 ngày trước</option>
+                                <option value="7">7 ngày trước</option>
+                                <option value="30">1 tháng trước</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row mt-3">
+                        <div class="col-md-2 d-flex align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter"></i> Lọc doanh thu
+                            </button>
+                        </div>
+                        <div class="col d-flex align-items-center">
+                            <button type="button" id="resetRevenueFilterButton" class="btn btn-secondary">
+                                <i class="fas fa-undo-alt"></i> Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Tổng doanh thu -->
+            <div class="card card-summary">
+                <div class="card-body text-center">
+                    <h4 class="text-success mb-4">
+                        <i class="fas fa-money-bill-wave"></i> Tổng doanh thu:
+                        <span id="totalRevenue" class="font-weight-bold">
+                            @Model.TotalRevenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                        </span>
+                    </h4>
+                </div>
+            </div>
+            <!-- Biểu đồ doanh thu hóa đơn -->
+            <div class="chart-container mb-4">
+                <canvas id="revenueChart" width="900px" height="300px"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo biến biểu đồ doanh thu
+            let revenueChart;
+
+            // Hàm khởi tạo biểu đồ doanh thu
+            function renderRevenueChart(data) {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                if (revenueChart) revenueChart.destroy();
+                revenueChart = new Chart(ctx, {
+                    type: 'line', // Biểu đồ đường
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Doanh thu',
+                            data: data.revenues,
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                            borderColor: '#28a745',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4 // Đường cong mượt
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true, position: 'top' },
+                            tooltip: { enabled: true }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Ngày tạo' } },
+                            y: {
+                                title: { display: true, text: 'Doanh thu (VND)' },
+                                beginAtZero: true, // Bắt đầu từ 0
+                                min: 0, // Không cho phép giá trị âm
+                                ticks: {
+                                    callback: function (value) {
+                                        return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Hàm tải dữ liệu biểu đồ doanh thu
+            function loadRevenueChartData(startDate, endDate) {
+                $.getJSON('/Admin/ThongKe/ThongKeDoanhThuTheoNgay', { startDate, endDate }, function (data) {
+                    // Lọc bỏ giá trị âm (nếu có) và đảm bảo doanh thu >= 0
+                    const filteredHoaDons = data.hoaDons.map(item => ({
+                        ngayTao: item.ngayTao,
+                        total: Math.max(0, item.total) // Đảm bảo không có số âm
+                    }));
+
+                    const chartData = {
+                        labels: filteredHoaDons.map(item => new Date(item.ngayTao).toLocaleDateString('vi-VN')),
+                        revenues: filteredHoaDons.map(item => item.total)
+                    };
+                    renderRevenueChart(chartData);
+
+                    // Tính tổng doanh thu (loại bỏ giá trị âm)
+                    const totalRevenue = filteredHoaDons.reduce((sum, item) => sum + item.total, 0);
+                    $('#totalRevenue').text(totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                }).fail(function () {
+                    alert('Lỗi khi tải dữ liệu doanh thu.');
+                });
+            }
+
+            // Xử lý form lọc doanh thu
+            $('#filterForm').submit(function (e) {
+                e.preventDefault();
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
+                const dayRange = $('#dayRange').val();
+                let finalStartDate = startDate;
+                let finalEndDate = endDate;
+
+                if (dayRange) {
+                    const today = new Date();
+                    finalEndDate = today.toISOString().split('T')[0];
+                    const start = new Date();
+                    start.setDate(today.getDate() - parseInt(dayRange));
+                    finalStartDate = start.toISOString().split('T')[0];
+                }
+
+                loadRevenueChartData(finalStartDate, finalEndDate);
+            });
+
+            // Xử lý nút reset
+            $('#resetRevenueFilterButton').click(function () {
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#dayRange').val('');
+                loadRevenueChartData();
+            });
+
+            // Tải dữ liệu ban đầu
+            loadRevenueChartData();
+        });
+    </script>
+}

@@ -1,0 +1,135 @@
+﻿@model WebView.NghiaDTO.NhanVienDTO
+
+@{
+    ViewData["Title"] = "Chỉnh sửa nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="TaiKhoan">Tài khoản</label>
+        <input asp-for="TaiKhoan" class="form-control" id="TaiKhoan" />
+        <span asp-validation-for="TaiKhoan" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MatKhau">Mật khẩu</label>
+        <input type="password" asp-for="MatKhau" class="form-control" id="MatKhau" />
+        <span asp-validation-for="MatKhau" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TenNhanVien">Tên nhân viên</label>
+        <input asp-for="TenNhanVien" class="form-control" required />
+        <span asp-validation-for="TenNhanVien" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Sdt">Số điện thoại</label>
+        <input asp-for="Sdt" type="tel" class="form-control" maxlength="10" pattern="[0-9]*" inputmode="numeric" onkeydown="return event.key.match(/[0-9]/) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" />
+        <span asp-validation-for="Sdt" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" type="email" class="form-control" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NgaySinh">Ngày sinh</label>
+        <input asp-for="NgaySinh" type="date" class="form-control" required />
+        <span asp-validation-for="NgaySinh" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DiaChi">Địa chỉ</label>
+        <input asp-for="DiaChi" class="form-control" required />
+        <span asp-validation-for="DiaChi" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Id_ChucVu">Chức vụ</label>
+        <select asp-for="Id_ChucVu" class="form-control" id="Id_ChucVu">
+            @foreach (var cv in ViewBag.ChucVus)
+            {
+                <option value="@cv.Id" selected="@(cv.Id == Model.Id_ChucVu ? "selected" : null)">@cv.Ten</option>
+            }
+        </select>
+        <span asp-validation-for="Id_ChucVu" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TrangThai">Trạng thái</label>
+        <select asp-for="TrangThai" class="form-control">
+            <option value="true" selected="@(Model.TrangThai ? "selected" : null)">Mở khóa</option>
+            <option value="false" selected="@(!Model.TrangThai ? "selected" : null)">Khóa</option>
+        </select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var chucVuDropdown = document.getElementById("Id_ChucVu");
+            var taiKhoanInput = document.getElementById("TaiKhoan");
+            var matKhauInput = document.getElementById("MatKhau");
+            var sdtInput = document.getElementById("Sdt");
+            var taiKhoanField = taiKhoanInput.parentElement;
+            var matKhauField = matKhauInput.parentElement;
+            var nhanVienId = @ViewBag.NhanVienId;
+
+            function toggleTaiKhoanMatKhau() {
+                var selectedValue = parseInt(chucVuDropdown.value);
+
+                if (selectedValue === nhanVienId) {
+                    taiKhoanField.style.display = "none";
+                    matKhauField.style.display = "none";
+                    taiKhoanInput.value = "";
+                    matKhauInput.value = "";
+                    taiKhoanInput.removeAttribute("required");
+                    matKhauInput.removeAttribute("required");
+                    taiKhoanInput.disabled = true; // Vô hiệu hóa để không gửi
+                    matKhauInput.disabled = true;  // Vô hiệu hóa để không gửi
+                } else {
+                    taiKhoanField.style.display = "block";
+                    matKhauField.style.display = "block";
+                    taiKhoanInput.setAttribute("required", "required");
+                    matKhauInput.removeAttribute("required"); // MatKhau không bắt buộc nếu không đổi
+                    taiKhoanInput.disabled = false;
+                    matKhauInput.disabled = false;
+                }
+            }
+
+            // Chỉ cho phép nhập số vào Sdt
+            sdtInput.addEventListener("input", function () {
+                sdtInput.value = sdtInput.value.replace(/[^0-9]/g, '');
+                if (sdtInput.value.length > 10) {
+                    sdtInput.value = sdtInput.value.slice(0, 10);
+                }
+            });
+
+            chucVuDropdown.addEventListener("change", toggleTaiKhoanMatKhau);
+            toggleTaiKhoanMatKhau();
+        });
+    </script>
+}

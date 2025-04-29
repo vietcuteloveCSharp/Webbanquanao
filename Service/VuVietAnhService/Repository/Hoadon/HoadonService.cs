@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using DAL.Context;
+using DAL.Entities;
 using DTO.VuvietanhDTO.HoadonsDTO;
 using Enum.EnumVVA;
+using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.IHoadon;
 using System;
 using System.Collections.Generic;
@@ -44,15 +46,37 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             IsValidTrangThaiTransition(hoaDon.TrangThai, nextTrangThaiHD);
             // Cập nhật trạng thái mới
             hoaDon.TrangThai = nextTrangThaiHD;
-
+            if (nextTrangThaiHD == ETrangThaiHD.DaXacNhan)
+            {
+                var listCthd = _context.ChiTietHoaDons.Where(ct => ct.Id_HoaDon == id).ToList();
+                foreach (var item in listCthd)
+                {
+                    var ctsp = await _context.ChiTietSanPhams
+                    .FirstOrDefaultAsync(x => x.Id == item.Id_ChiTietSanPham);
+                    if (ctsp != null)
+                    {
+                        if (ctsp.SoLuong < item.SoLuong)
+                        {
+                            throw new InvalidOperationException($"Sản phẩm {_context.SanPhams.Find(ctsp.Id_SanPham).Ten} không còn đủ số lượng");
+                        }
+                        else
+                        {
+                            // Cập nhật số lượng sản phẩm trong bảng ChiTietSanPham
+                            ctsp.SoLuong -= item.SoLuong;
+                            _context.ChiTietSanPhams.Update(ctsp);
+                            //Cập nhật số lượng sản phẩm trong bảng SanPham
+                            _context.SanPhams.Find(ctsp.Id_SanPham).SoLuong -= item.SoLuong;
+                            _context.SanPhams.Update(_context.SanPhams.Find(ctsp.Id_SanPham));
+                        }
+                    }
+                }   
+            }
             // Lưu thay đổi vào cơ sở dữ liệu
             _context.HoaDons.Update(hoaDon);
             await _context.SaveChangesAsync();
-
             // Trả về DTO cập nhật
             // Sử dụng AutoMapper để ánh xạ từ HoaDon sang UpdateTrangThaiDTO
             var updateResult = _mapper.Map<UpdateTrangThaiDTO>(hoaDon);
-
             return updateResult;
         }
         public void IsValidTrangThaiTransition(ETrangThaiHD current, ETrangThaiHD next)
@@ -65,43 +89,27 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
             var isValid = current switch
             {
-                // Chờ xử lý: Có thể chuyển sang "Hoàn thành đơn" hoặc "Chờ xác nhận"
-                ETrangThaiHD.ChoXuLy =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.ChoXacNhan,
-
-                // Chờ xác nhận: Có thể chuyển sang "Chờ thanh toán", "Đang vận chuyển COD" hoặc "Hủy đơn"
+                // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" hoặc "Hủy đơn"
                 ETrangThaiHD.ChoXacNhan =>
-                    next == ETrangThaiHD.ChoThanhToan ||
-                    next == ETrangThaiHD.DangVanChuyenCOD ||
-                    next == ETrangThaiHD.HuyDon,
-
-                // Chờ thanh toán: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
+                    next == ETrangThaiHD.DaXacNhan || next == ETrangThaiHD.HuyDon,
+                // Đã xác nhận: Có thể chuyển sang "Đang vận chuyển" hoặc "Hủy đơn"
+                ETrangThaiHD.DaXacNhan =>
+                    next == ETrangThaiHD.DangVanChuyen || next == ETrangThaiHD.HuyDon,
+                // Chờ thanh toán: Không thể chuyển sang "Hủy đơn"
                 ETrangThaiHD.ChoThanhToan =>
-                    next == ETrangThaiHD.DangVanChuyen ||
-                    next == ETrangThaiHD.DangVanChuyenCOD||
-                    next == ETrangThaiHD.HuyDon,
-
-                // Đang vận chuyển: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
+                    next != ETrangThaiHD.HuyDon &&
+                    (next == ETrangThaiHD.DaXacNhan || next == ETrangThaiHD.HoanThanhDon),
+                // Đang vận chuyển: Không thể chuyển sang "Hủy đơn"
                 ETrangThaiHD.DangVanChuyen =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HoanHang,
-                
-                // Đang vận chuyển COD: Có thể chuyển sang "Hoàn thành đơn", "Hoàn hàng" hoặc "Hủy đơn"
-                ETrangThaiHD.DangVanChuyenCOD =>
-                    next == ETrangThaiHD.HoanThanhDon ||
-                    next == ETrangThaiHD.HoanHang,
-                 
+                    next == ETrangThaiHD.HoanThanhDon,
+
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
-
-                // Hoàn hàng: Không thể chuyển tiếp
-                ETrangThaiHD.HoanHang => false,
 
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
 
-                // Mặc định
+                // Mặc định: Không hợp lệ
                 _ => false
             };
             if (!isValid)
@@ -112,6 +120,14 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             }
         }
 
+
+        public async Task<IEnumerable<FullHoaDonDTO>> GetAllHoaDon()
+        {
+            var AllHoaDon = await _context.HoaDons.ToListAsync();
+            if (!AllHoaDon.Any()) return new List<FullHoaDonDTO>();
+            var AllHoaDonDTO = _mapper.Map<List<FullHoaDonDTO>>(AllHoaDon);
+            return AllHoaDonDTO;
+        }
     }
 }
 

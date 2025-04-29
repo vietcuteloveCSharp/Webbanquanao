@@ -42,10 +42,10 @@ namespace WebView.Areas.Admin.Controllers
                     TenThuongHieu = group.First().SanPham.ThuongHieu?.Ten,  // Lấy tên thương hiệu
                     SoLuong = group.Sum(ct => ct.SoLuong),  // Tổng số lượng của sản phẩm
                                                             // Gộp các màu sắc và kích thước
-                    TenMauSac = string.Join(", ", group.Select(ct => ct.MauSac.Ten).Distinct()), // Gộp tên màu sắc
+                    MaHex = string.Join(", ", group.Select(ct => ct.MauSac.MaHex).Distinct()), // Gộp tên màu sắc
                     TenKichThuoc = string.Join(", ", group.Select(ct => ct.KichThuoc.Ten).Distinct()), // Gộp tên kích thước
-                      // Lấy danh sách hình ảnh từ bảng HinhAnhs
-            HinhAnhList = _context.HinhAnhs
+                                                                                                       // Lấy danh sách hình ảnh từ bảng HinhAnhs
+                    HinhAnhList = _context.HinhAnhs
                 .Where(ha => ha.Id_SanPham == group.Key) // Lọc hình ảnh theo Id_SanPham
                 .Select(ha => ha.Url) // Chỉ lấy cột đường dẫn hình ảnh
                 .ToList()
@@ -79,20 +79,33 @@ namespace WebView.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SanPhamDTO sanPhamDTO, string? ImageUrl)
+        public async Task<IActionResult> Create(SanPhamDTO sanPhamDTO, List<string>? ImageUrls)
         {
             if (ModelState.IsValid)
             {
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
+                    // Kiểm tra tên sản phẩm có bị trùng hay không
+                    var existingProduct = await _context.SanPhams
+                        .FirstOrDefaultAsync(sp => sp.Ten.ToLower() == sanPhamDTO.Ten.ToLower());
+
+                    if (existingProduct != null)
+                    {
+                        ModelState.AddModelError("Ten", "Tên sản phẩm đã tồn tại.");
+                        PopulateDropDownLists(sanPhamDTO);
+                        ViewBag.ImageUrls = ImageUrls;
+                        return View(sanPhamDTO);
+                    }
+                    ModelState.Clear();
+
                     // Lưu sản phẩm chính vào bảng SanPham
                     var sanPham = new SanPham
                     {
                         Ten = sanPhamDTO.Ten,
                         MoTa = sanPhamDTO.MoTa,
                         Gia = sanPhamDTO.Gia,
-                        SoLuong = sanPhamDTO.SoLuong,
+                        SoLuong = 0, // Số lượng sẽ được tính từ ChiTietSanPhams
                         NgayTao = DateTime.Now,
                         Id_ThuongHieu = sanPhamDTO.Id_ThuongHieu,
                         Id_DanhMuc = sanPhamDTO.Id_DanhMuc
@@ -100,35 +113,73 @@ namespace WebView.Areas.Admin.Controllers
                     _context.SanPhams.Add(sanPham);
                     await _context.SaveChangesAsync();
 
-                    // Xử lý ảnh từ URL
-                    if (!string.IsNullOrEmpty(ImageUrl) &&
-                        Uri.TryCreate(ImageUrl, UriKind.Absolute, out Uri? uriResult) &&
-                        (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                    // Xử lý nhiều ảnh từ URL
+                    if (ImageUrls != null && ImageUrls.Any())
                     {
-                        _context.HinhAnhs.Add(new HinhAnh
+                        foreach (var imageUrl in ImageUrls)
                         {
-                            Id_SanPham = sanPham.Id,
-                            Url = ImageUrl,
-                            ImageSourceType = 1 // Ảnh từ URL
-                        });
+                            if (!string.IsNullOrEmpty(imageUrl) &&
+                                Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri? uriResult) &&
+                                (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                            {
+                                _context.HinhAnhs.Add(new HinhAnh
+                                {
+                                    Id_SanPham = sanPham.Id,
+                                    Url = imageUrl,
+                                    ImageSourceType = 1 // Ảnh từ URL
+                                });
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ImageUrls", $"URL '{imageUrl}' không hợp lệ.");
+                            }
+                        }
                     }
 
-
                     // Lưu danh sách ChiTietSanPham
-                    foreach (var chiTiet in sanPhamDTO.ChiTietSanPhams)
+                    int totalQuantity = 0;
+                    if (sanPhamDTO.ChiTietSanPhams != null && sanPhamDTO.ChiTietSanPhams.Any())
                     {
-                        if (chiTiet.Id_MauSac > 0 && chiTiet.Id_KichThuoc > 0 && chiTiet.SoLuong > 0)
-                        {
-                            _context.ChiTietSanPhams.Add(new ChiTietSanPham
+                        var mergedDetails = sanPhamDTO.ChiTietSanPhams
+                            .GroupBy(ct => new { ct.Id_MauSac, ct.Id_KichThuoc })
+                            .Select(group => new ChiTietSanPhamDTO
                             {
-                                Id_SanPham = sanPham.Id,
-                                Id_MauSac = chiTiet.Id_MauSac,
-                                Id_KichThuoc = chiTiet.Id_KichThuoc,
-                                SoLuong = chiTiet.SoLuong,
-                                TrangThai = chiTiet.TrangThai ?? true,
-                                NgayTao = DateTime.Now
-                            });
+                                Id_MauSac = group.Key.Id_MauSac,
+                                Id_KichThuoc = group.Key.Id_KichThuoc,
+                                SoLuong = group.Sum(ct => ct.SoLuong),
+                                TrangThai = group.First().TrangThai
+                            }).ToList();
+
+                        foreach (var chiTiet in mergedDetails)
+                        {
+                            if (chiTiet.Id_MauSac > 0 && chiTiet.Id_KichThuoc > 0 && chiTiet.SoLuong > 0)
+                            {
+                                _context.ChiTietSanPhams.Add(new ChiTietSanPham
+                                {
+                                    Id_SanPham = sanPham.Id,
+                                    Id_MauSac = chiTiet.Id_MauSac,
+                                    Id_KichThuoc = chiTiet.Id_KichThuoc,
+                                    SoLuong = chiTiet.SoLuong,
+                                    TrangThai = chiTiet.TrangThai ?? true,
+                                    NgayTao = DateTime.Now
+                                });
+                                totalQuantity += chiTiet.SoLuong;
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ChiTietSanPhams", "Thông tin chi tiết sản phẩm không hợp lệ.");
+                            }
                         }
+                    }
+
+                    // Cập nhật tổng số lượng sản phẩm
+                    sanPham.SoLuong = totalQuantity;
+
+                    if (!ModelState.IsValid)
+                    {
+                        await transaction.RollbackAsync();
+                        PopulateDropDownLists(sanPhamDTO);
+                        return View(sanPhamDTO);
                     }
 
                     await _context.SaveChangesAsync();
@@ -144,11 +195,13 @@ namespace WebView.Areas.Admin.Controllers
                 }
             }
 
-            // Nếu có lỗi, trả về view với dữ liệu hiện tại
             TempData["error"] = "Có lỗi xảy ra khi thêm sản phẩm.";
             PopulateDropDownLists(sanPhamDTO);
+            ViewBag.ImageUrls = ImageUrls;
             return View(sanPhamDTO);
         }
+
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -173,7 +226,7 @@ namespace WebView.Areas.Admin.Controllers
                 HinhAnhs = sanPham.HinhAnhs.Select(ha => new HinhAnhDTO
                 {
                     Id = ha.Id,
-                    Id_SanPham = ha.Id_SanPham,
+                    Id_SanPham = ha.Id_SanPham ?? 0,
                     Url = ha.Url,
                     ImageSourceType = 0
                 }).ToList(),
@@ -182,18 +235,150 @@ namespace WebView.Areas.Admin.Controllers
                     Id_MauSac = ct.Id_MauSac,
                     Id_KichThuoc = ct.Id_KichThuoc,
                     SoLuong = ct.SoLuong,
-                    TrangThai = ct.TrangThai
                 }).ToList()
             };
 
-            ViewBag.MauSacs = new SelectList(await _context.MauSacs.ToListAsync(), "Id", "Ten");
-            ViewBag.KichThuocs = new SelectList(await _context.KichThuocs.ToListAsync(), "Id", "Ten");
-            ViewBag.ThuongHieus = new SelectList(await _context.ThuongHieus.ToListAsync(), "Id", "Ten");
-            ViewBag.DanhMucs = new SelectList(await _context.DanhMucs.ToListAsync(), "Id", "Ten");
-            // Khởi tạo các dropdown (màu sắc, kích thước)
+
             PopulateDropDownLists(sanPhamDTO);
             return View(sanPhamDTO);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(SanPhamDTO model, List<string> ImageUrls, List<int> DeletedImageIds)
+        {
+            // Kiểm tra tên sản phẩm có bị trùng hay không
+            var existingProduct = await _context.SanPhams
+                .FirstOrDefaultAsync(sp => sp.Ten.ToLower() == model.Ten.ToLower() && sp.Id != model.Id);
+
+            if (existingProduct != null)
+            {
+                ModelState.AddModelError("Ten", "Tên sản phẩm đã tồn tại.");
+                model.HinhAnhs = await _context.HinhAnhs
+                    .Where(ha => ha.Id_SanPham == model.Id)
+                    .Select(ha => new WebView.NghiaDTO.HinhAnhDTO
+                    {
+                        Id = ha.Id,
+                        Url = ha.Url
+                    })
+                    .ToListAsync();
+                ViewBag.ImageUrls = ImageUrls;
+                PopulateDropDownLists(model);
+                return View(model);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Có lỗi xảy ra khi cập nhật sản phẩm.";
+                model.HinhAnhs = await _context.HinhAnhs
+                    .Where(ha => ha.Id_SanPham == model.Id)
+                    .Select(ha => new WebView.NghiaDTO.HinhAnhDTO
+                    {
+                        Id = ha.Id,
+                        Url = ha.Url
+                    })
+                    .ToListAsync();
+                ViewBag.ImageUrls = ImageUrls;
+                PopulateDropDownLists(model);
+                return View(model);
+            }
+
+            try
+            {
+                var sanPham = await _context.SanPhams
+                    .Include(sp => sp.ChiTietSanPhams)
+                    .Include(sp => sp.HinhAnhs)
+                    .FirstOrDefaultAsync(sp => sp.Id == model.Id);
+
+                if (sanPham == null)
+                    return NotFound();
+
+                // Cập nhật thông tin sản phẩm
+                sanPham.Ten = model.Ten;
+                sanPham.MoTa = model.MoTa;
+                sanPham.Gia = model.Gia;
+                sanPham.SoLuong = model.SoLuong;
+                sanPham.NgayTao = model.NgayTao;
+                sanPham.Id_ThuongHieu = model.Id_ThuongHieu;
+                sanPham.Id_DanhMuc = model.Id_DanhMuc;
+
+                // Nhóm và cộng dồn chi tiết sản phẩm trùng nhau
+                var groupedChiTiet = model.ChiTietSanPhams
+                    .GroupBy(ct => new { ct.Id_MauSac, ct.Id_KichThuoc })
+                    .Select(g => new ChiTietSanPham
+                    {
+                        Id_SanPham = sanPham.Id,
+                        Id_MauSac = g.Key.Id_MauSac,
+                        Id_KichThuoc = g.Key.Id_KichThuoc,
+                        SoLuong = g.Sum(x => x.SoLuong)
+                    })
+                    .ToList();
+                sanPham.SoLuong = groupedChiTiet.Sum(ct => ct.SoLuong);
+                // Xóa các chi tiết sản phẩm cũ và thêm danh sách đã nhóm
+                _context.ChiTietSanPhams.RemoveRange(sanPham.ChiTietSanPhams);
+                sanPham.ChiTietSanPhams = groupedChiTiet;
+
+                // Xóa hình ảnh được chọn
+                if (DeletedImageIds != null && DeletedImageIds.Any())
+                {
+                    var imagesToDelete = sanPham.HinhAnhs.Where(ha => DeletedImageIds.Contains(ha.Id)).ToList();
+                    _context.HinhAnhs.RemoveRange(imagesToDelete);
+                }
+
+                // Thêm hình ảnh mới
+                foreach (var imageUrl in ImageUrls ?? Enumerable.Empty<string>())
+                {
+                    if (!string.IsNullOrEmpty(imageUrl) && Uri.TryCreate(imageUrl, UriKind.Absolute, out var uriResult) &&
+                        (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                    {
+                        if (!sanPham.HinhAnhs.Any(ha => ha.Url == imageUrl))
+                        {
+                            sanPham.HinhAnhs.Add(new HinhAnh
+                            {
+                                Id_SanPham = sanPham.Id,
+                                Url = imageUrl,
+                                ImageSourceType = 1
+                            });
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("ImageUrls", $"URL '{imageUrl}' không hợp lệ.");
+                    }
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    TempData["error"] = "Có lỗi xảy ra khi cập nhật sản phẩm.";
+                    model.HinhAnhs = sanPham.HinhAnhs.Select(ha => new WebView.NghiaDTO.HinhAnhDTO
+                    {
+                        Id = ha.Id,
+                        Url = ha.Url
+                    }).ToList();
+                    PopulateDropDownLists(model);
+                    return View(model);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["success"] = "Cập nhật sản phẩm thành công!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = $"Đã xảy ra lỗi khi cập nhật sản phẩm: {ex.Message}";
+                model.HinhAnhs = await _context.HinhAnhs
+                    .Where(ha => ha.Id_SanPham == model.Id)
+                    .Select(ha => new WebView.NghiaDTO.HinhAnhDTO
+                    {
+                        Id = ha.Id,
+                        Url = ha.Url
+                    })
+                    .ToListAsync();
+                PopulateDropDownLists(model);
+                return View(model);
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteImage(int id)
@@ -208,96 +393,6 @@ namespace WebView.Areas.Admin.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SanPhamDTO model, string? ImageUrl, List<int> DeletedImageIds)
-        {
-            if (!ModelState.IsValid)
-            {
-                TempData["error"] = "Có lỗi xảy ra khi cập nhật sản phẩm.";
-                PopulateDropDownLists(model);
-                return View(model);
-            }
-
-            try
-            {
-                // Lấy sản phẩm hiện tại từ cơ sở dữ liệu
-                var sanPham = await _context.SanPhams
-                    .Include(sp => sp.ChiTietSanPhams)
-                    .Include(sp => sp.HinhAnhs)
-                    .FirstOrDefaultAsync(sp => sp.Id == model.Id);
-
-                if (sanPham == null)
-                    return NotFound();
-
-                // Cập nhật thông tin sản phẩm chính
-                sanPham.Ten = model.Ten;
-                sanPham.MoTa = model.MoTa;
-                sanPham.Gia = model.Gia;
-                sanPham.SoLuong = model.SoLuong;
-                sanPham.NgayTao = model.NgayTao;
-                sanPham.Id_ThuongHieu = model.Id_ThuongHieu;
-                sanPham.Id_DanhMuc = model.Id_DanhMuc;
-                if (DeletedImageIds != null && DeletedImageIds.Any())
-                {
-                    sanPham.HinhAnhs = sanPham.HinhAnhs
-                        .Where(ha => !DeletedImageIds.Contains(ha.Id))
-                        .ToList();
-                }
-
-
-                // Thêm hình ảnh từ URL nếu có
-                if (!string.IsNullOrEmpty(ImageUrl) && Uri.TryCreate(ImageUrl, UriKind.Absolute, out Uri? uriResult) &&
-                    (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
-                {
-                    sanPham.HinhAnhs.Add(new HinhAnh
-                    {
-                        Id_SanPham = sanPham.Id,
-                        Url = ImageUrl,
-                        ImageSourceType = 1 // 1 có thể là loại URL
-                    });
-                }
-
-                // Cập nhật hoặc thêm mới chi tiết sản phẩm
-                if (model.ChiTietSanPhams != null)
-                {
-                    foreach (var chiTiet in model.ChiTietSanPhams)
-                    {
-                        var existingDetail = sanPham.ChiTietSanPhams
-                            .FirstOrDefault(ct => ct.Id_MauSac == chiTiet.Id_MauSac && ct.Id_KichThuoc == chiTiet.Id_KichThuoc);
-
-                        if (existingDetail != null)
-                        {
-                            existingDetail.SoLuong = chiTiet.SoLuong;
-                            existingDetail.TrangThai = chiTiet.TrangThai ?? true;
-                        }
-                        else
-                        {
-                            sanPham.ChiTietSanPhams.Add(new ChiTietSanPham
-                            {
-                                Id_SanPham = sanPham.Id,
-                                Id_MauSac = chiTiet.Id_MauSac,
-                                Id_KichThuoc = chiTiet.Id_KichThuoc,
-                                SoLuong = chiTiet.SoLuong,
-                                TrangThai = chiTiet.TrangThai ?? true,
-                                NgayTao = DateTime.Now
-                            });
-                        }
-                    }
-                }
-
-                // Lưu thay đổi
-                await _context.SaveChangesAsync();
-                TempData["success"] = "Cập nhật sản phẩm thành công!";
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = "Đã xảy ra lỗi khi cập nhật sản phẩm: " + ex.Message;
-                PopulateDropDownLists(model);
-                return View(model);
-            }
-        }
 
         // Tách xử lý hình ảnh URL
         private void HandleImageUrl(SanPham sanPham, string imageUrl)
@@ -392,8 +487,20 @@ namespace WebView.Areas.Admin.Controllers
 
         private void PopulateDropDownLists(SanPhamDTO sanPhamDTO = null)
         {
-            ViewBag.ThuongHieus = new SelectList(_context.ThuongHieus, "Id", "Ten", sanPhamDTO?.Id_ThuongHieu);
-            ViewBag.DanhMucs = new SelectList(_context.DanhMucs, "Id", "TenDanhMuc", sanPhamDTO?.Id_DanhMuc);
+            // Lọc thương hiệu có trạng thái true
+            ViewBag.ThuongHieus = new SelectList(
+                _context.ThuongHieus.Where(th => th.TrangThai == true), // Lọc trạng thái true
+                "Id",
+                "Ten",
+                sanPhamDTO?.Id_ThuongHieu
+            );
+            // Chỉ lấy danh mục có trạng thái true
+            ViewBag.DanhMucs = new SelectList(
+                _context.DanhMucs.Where(dm => dm.TrangThai == true), // Lọc trạng thái true
+                "Id",
+                "TenDanhMuc",
+                sanPhamDTO?.Id_DanhMuc
+            );
             ViewBag.MauSacs = new SelectList(_context.MauSacs, "Id", "Ten");
             ViewBag.KichThuocs = new SelectList(_context.KichThuocs, "Id", "Ten");
         }
@@ -419,6 +526,16 @@ namespace WebView.Areas.Admin.Controllers
                 .Include(ct => ct.MauSac)
                 .Include(ct => ct.KichThuoc)
                 .Where(ct => ct.Id_SanPham == id)
+                .GroupBy(ct => new { ct.Id_MauSac, ct.Id_KichThuoc })
+                .Select(g => new ChiTietSanPhamDTO
+                {
+                    Id_MauSac = g.Key.Id_MauSac,
+                    Id_KichThuoc = g.Key.Id_KichThuoc,
+                    MauSac = g.FirstOrDefault().MauSac,
+                    KichThuoc = g.FirstOrDefault().KichThuoc,
+                    SoLuong = g.Sum(ct => ct.SoLuong),
+                    NgayTao = g.Min(ct => ct.NgayTao) // Hoặc dùng giá trị phù hợp
+                })
                 .ToListAsync();
 
             if (!productDetails.Any())
@@ -432,8 +549,6 @@ namespace WebView.Areas.Admin.Controllers
 
             return View();
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> StoreProductQuantity(ChiTietSanPhamDTO productQuantityDTO)
@@ -450,38 +565,57 @@ namespace WebView.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            product.SoLuong += productQuantityDTO.SoLuong;
-
-            var chiTietSanPham = await _context.ChiTietSanPhams
-                .FirstOrDefaultAsync(ct => ct.Id_SanPham == productQuantityDTO.Id_SanPham &&
-                                           ct.Id_MauSac == productQuantityDTO.Id_MauSac &&
-                                           ct.Id_KichThuoc == productQuantityDTO.Id_KichThuoc);
-
-            if (chiTietSanPham != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                chiTietSanPham.SoLuong += productQuantityDTO.SoLuong;
-            }
-            else
-            {
-                var newProductQuantity = new ChiTietSanPham
+                // Kiểm tra nếu sản phẩm với màu sắc và kích thước đã tồn tại
+                var existingDetail = await _context.ChiTietSanPhams
+                    .FirstOrDefaultAsync(ct => ct.Id_SanPham == productQuantityDTO.Id_SanPham &&
+                                               ct.Id_MauSac == productQuantityDTO.Id_MauSac &&
+                                               ct.Id_KichThuoc == productQuantityDTO.Id_KichThuoc);
+
+                if (existingDetail != null)
                 {
-                    Id_SanPham = productQuantityDTO.Id_SanPham,
-                    SoLuong = productQuantityDTO.SoLuong,
-                    Id_MauSac = productQuantityDTO.Id_MauSac,
-                    Id_KichThuoc = productQuantityDTO.Id_KichThuoc,
-                    NgayTao = DateTime.Now
-                };
+                    // Nếu tồn tại, tăng số lượng
+                    existingDetail.SoLuong += productQuantityDTO.SoLuong;
+                }
+                else
+                {
+                    // Nếu chưa tồn tại, thêm bản ghi mới
+                    var newProductDetail = new ChiTietSanPham
+                    {
+                        Id_SanPham = productQuantityDTO.Id_SanPham,
+                        SoLuong = productQuantityDTO.SoLuong,
+                        Id_MauSac = productQuantityDTO.Id_MauSac,
+                        Id_KichThuoc = productQuantityDTO.Id_KichThuoc,
+                        NgayTao = DateTime.Now
+                    };
+                    _context.ChiTietSanPhams.Add(newProductDetail);
+                }
 
-                _context.Add(newProductQuantity);
+                // Lưu thay đổi chi tiết sản phẩm trước
+                await _context.SaveChangesAsync();
+
+                // Cập nhật tổng số lượng sản phẩm từ bảng ChiTietSanPhams
+                product.SoLuong = await _context.ChiTietSanPhams
+                    .Where(ct => ct.Id_SanPham == productQuantityDTO.Id_SanPham)
+                    .SumAsync(ct => ct.SoLuong);
+
+                _context.SanPhams.Update(product);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData["success"] = "Thêm số lượng sản phẩm thành công.";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                TempData["error"] = $"Lỗi khi thêm số lượng sản phẩm: {ex.Message}";
             }
 
-            await _context.SaveChangesAsync();
-
-            TempData["success"] = "Thêm số lượng sản phẩm thành công";
-            return RedirectToAction("AddQuantity", "SanPham", new { Id = productQuantityDTO.Id_SanPham });
+            return RedirectToAction("AddQuantity", new { id = productQuantityDTO.Id_SanPham });
         }
-
-      
 
     }
 }

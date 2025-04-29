@@ -2,6 +2,7 @@
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
 
 namespace WebView.Areas.Admin.Controllers
@@ -40,8 +41,6 @@ namespace WebView.Areas.Admin.Controllers
             return View();
         }
 
-
-        // 2. POST: Xử lý thêm mới danh mục
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DanhMucDTO model)
@@ -49,11 +48,23 @@ namespace WebView.Areas.Admin.Controllers
             // Kiểm tra xem ModelState có hợp lệ không
             if (ModelState.IsValid)
             {
+                // Kiểm tra xem tên danh mục đã tồn tại trong cơ sở dữ liệu chưa
+                var existingTenDanhMuc = await _context.DanhMucs
+                    .FirstOrDefaultAsync(d => d.TenDanhMuc.Trim().ToLower() == model.TenDanhMuc.Trim().ToLower());
+
+                // Nếu tên đã tồn tại, thêm lỗi vào ModelState
+                if (existingTenDanhMuc != null)
+                {
+                    ModelState.AddModelError("TenDanhMuc", "Tên danh mục đã tồn tại.");
+                    return View(model); // Trả về view với lỗi
+                }
+
+                // Nếu tên chưa tồn tại, tạo mới danh mục
                 var entity = new DanhMuc
                 {
                     TenDanhMuc = model.TenDanhMuc,
                     NgayTao = DateTime.Now, // Ngày tạo mặc định
-                    TrangThai = model.TrangThai // Trạng thái sẽ lấy từ model, nếu không chọn sẽ có giá trị mặc định true
+                    TrangThai = model.TrangThai // Trạng thái sẽ lấy từ model
                 };
 
                 // Thêm vào cơ sở dữ liệu
@@ -68,7 +79,6 @@ namespace WebView.Areas.Admin.Controllers
             // Nếu có lỗi trong model, trả về lại view với model cũ
             return View(model);
         }
-
 
         // 3. GET: Trang chỉnh sửa danh mục
         [HttpGet]
@@ -88,20 +98,32 @@ namespace WebView.Areas.Admin.Controllers
             return View(model);
         }
 
-        // 3. POST: Xử lý chỉnh sửa danh mục
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DanhMucDTO model)
         {
             if (ModelState.IsValid)
             {
+                // Lấy bản ghi hiện tại từ cơ sở dữ liệu
                 var entity = await _context.DanhMucs.FindAsync(model.Id);
                 if (entity == null) return NotFound();
 
-                // Cập nhật các thuộc tính
+                // Kiểm tra xem tên danh mục đã tồn tại trong cơ sở dữ liệu chưa, ngoại trừ bản ghi hiện tại
+                var existingTenDanhMuc = await _context.DanhMucs
+                    .FirstOrDefaultAsync(d => d.TenDanhMuc.Trim().ToLower() == model.TenDanhMuc.Trim().ToLower() && d.Id != model.Id);
+
+                // Nếu tên đã tồn tại, thêm lỗi vào ModelState
+                if (existingTenDanhMuc != null)
+                {
+                    ModelState.AddModelError("TenDanhMuc", "Tên danh mục đã tồn tại.");
+                    return View(model); // Trả về view với lỗi
+                }
+
+                // Cập nhật các thuộc tính của danh mục
                 entity.TenDanhMuc = model.TenDanhMuc;
                 entity.TrangThai = model.TrangThai;
 
+                // Cập nhật vào cơ sở dữ liệu
                 _context.DanhMucs.Update(entity);
                 await _context.SaveChangesAsync();
 
@@ -109,7 +131,8 @@ namespace WebView.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(model); // Trả lại form nếu có lỗi
+            // Nếu có lỗi trong model, trả về lại form với lỗi
+            return View(model);
         }
 
 

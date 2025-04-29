@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebView.Extensions;
+using WebView.Services;
 using WebView.Services.Vnpay;
 
 
@@ -11,6 +12,7 @@ using WebView.Services.Vnpay;
             {
                 clients.BaseAddress = new Uri("https://localhost:7169");
             });
+            builder.Services.AddHttpClient<ApiService>();
             // DI class GetHttpClient
             builder.Services.AddScoped<GetHttpClient>();
             //connectDB
@@ -41,6 +43,7 @@ using WebView.Services.Vnpay;
 
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -56,13 +59,16 @@ app.MapAreaControllerRoute(
     name: "BanTaiQuay",
     areaName: "BanTaiQuay",
     pattern: "{area:exists}/{controller=BanNhanh}/{action=Index}/{id?}");
-
+//app.MapAreaControllerRoute(
+//    name: "Admin",
+//    areaName: "Admin",
+//    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "Areas",
-    pattern: "{area:exists}/{controller=SanPham}/{action=Index}/{id?}");
-app.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Account}/{action=Login}/{id?}");
+//app.MapControllerRoute(
+//               name: "default",
+//               pattern: "{controller=Home}/{action=Index}/{id?}");
 //Seedingdata
 //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<WebBanQuanAoDbContext>();
 //SeedData.SeedingData(context);
