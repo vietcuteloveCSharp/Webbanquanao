@@ -270,26 +270,26 @@ namespace WebView.Areas.Admin.Controllers
             }
         }
         [HttpPost("FilterStatus")]
-        public async Task<IActionResult> FilterStatus(int FilterStatus)
+        public async Task<IActionResult> FilterStatus(int filterorder)
         {
             // Tải danh sách hóa đơn
             listHoaDonView = await LoadData();
 
             // Kiểm tra nếu trạng thái là "Tất cả"
-            if (FilterStatus == ETrangThaiHD.None.GetHashCode()) // Giả sử `None` là trạng thái tương ứng với "Tất cả"
+            if (filterorder == ETrangThaiHD.None.GetHashCode()) // Giả sử `None` là trạng thái tương ứng với "Tất cả"
             {
                 ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào.");
                 return View("Index");
             }
-            if (FilterStatus != 0)
+            if (filterorder != 0)
             {
                 //ModelState.AddModelError(string.Empty, $"Không tìm thấy hóa đơn với trạng thái khac 0 {(ETrangThaiHD)FilterStatus}.");
-                listHoaDonView = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == FilterStatus).ToList();
+                listHoaDonView = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == filterorder).ToList();
                 return View("Index", listHoaDonView);
             }
 
             // Lọc danh sách theo trạng thái
-            var filteredList = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == FilterStatus).ToList();
+            var filteredList = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == filterorder).ToList();
             // Trả về View với danh sách được lọc
             return View("Index", filteredList);
         }

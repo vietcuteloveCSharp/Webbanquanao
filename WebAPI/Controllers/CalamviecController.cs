@@ -1,12 +1,7 @@
-﻿using Azure.Core;
-using DTO.VuvietanhDTO.Calamviecs;
-using DTO.VuvietanhDTO.Chucvus;
+﻿using DTO.VuvietanhDTO.Calamviecs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.VuVietAnhService.IRepository.ICalamviec;
-using Service.VuVietAnhService.IRepository.IChucvu;
-using Service.VuVietAnhService.Repository.Calamviec;
-using Service.VuVietAnhService.Repository.Chucvu;
 
 namespace WebAPI.Controllers
 {

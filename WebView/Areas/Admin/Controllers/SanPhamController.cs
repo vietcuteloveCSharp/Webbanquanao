@@ -224,7 +224,7 @@ namespace WebView.Areas.Admin.Controllers
                 HinhAnhs = sanPham.HinhAnhs.Select(ha => new HinhAnhDTO
                 {
                     Id = ha.Id,
-                    Id_SanPham = (int)ha.Id_SanPham,
+                    Id_SanPham = ha.Id_SanPham ?? 0,
                     Url = ha.Url,
                     ImageSourceType = 0
                 }).ToList(),
