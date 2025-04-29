@@ -1,13 +1,6 @@
-﻿using DAL.Entities;
-using DTO.VuvietanhDTO.Calamviecs;
-using DTO.VuvietanhDTO.Ngaylamviecs;
-using Microsoft.AspNetCore.Http;
+﻿using DTO.VuvietanhDTO.Ngaylamviecs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Service.VuVietAnhService.IRepository.ICalamviec;
 using Service.VuVietAnhService.IRepository.INgaylamviec;
-using Service.VuVietAnhService.Repository.Calamviec;
-using Service.VuVietAnhService.Repository.Ngaylamviec;
 
 namespace WebAPI.Controllers
 {

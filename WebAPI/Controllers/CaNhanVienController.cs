@@ -1,8 +1,6 @@
 ﻿using DTO.VuvietanhDTO.Canhanviens;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.VuVietAnhService.IRepository.ICanhanvien;
-using Service.VuVietAnhService.Repository.Canhanvien;
 
 namespace WebAPI.Controllers
 {
