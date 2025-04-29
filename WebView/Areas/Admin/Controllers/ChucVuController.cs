@@ -1,11 +1,13 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Authorize(Roles = "admin")]
     public class ChucVuController : Controller
     {
         private readonly WebBanQuanAoDbContext _context;

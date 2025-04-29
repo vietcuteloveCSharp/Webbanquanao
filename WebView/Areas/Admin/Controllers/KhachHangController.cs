@@ -1,5 +1,6 @@
 ﻿using DAL.Context;
 using DTO.VuvietanhDTO.KhachHangs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
@@ -7,6 +8,7 @@ using WebView.NghiaDTO;
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class KhachHangController : Controller
     {
         private readonly WebBanQuanAoDbContext _context;

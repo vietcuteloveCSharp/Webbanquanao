@@ -69,7 +69,7 @@ namespace Service.VuVietAnhService.Repository.Account
                     return response;
                 }
                 ///USE KHAC
-                var role = await _chucvuService.GetChucVuById(account.Id_ChucVu);
+                //var role = await _chucvuService.GetChucVuById(account.Id_ChucVu);
                 // Kiểm tra mật khẩu
                 if (account.MatKhau != loginResquest.MatKhau)
                 {
@@ -85,6 +85,7 @@ namespace Service.VuVietAnhService.Repository.Account
                 response.Success = true;
                 response.Message = "Đăng nhập thành công.";
                 response.Token = token;
+                response.Id_ChucVu = account.Id_ChucVu;
                 return response;
 
             }

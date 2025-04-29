@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DAL.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Responses.Responses;
 using Responses.Resquests;
 using System.Text;
+using WebView.Repository;
 using WebView.Services;
 
 namespace WebView.Areas.Admin.Controllers
@@ -11,14 +13,22 @@ namespace WebView.Areas.Admin.Controllers
     public class AccountController : Controller
     {
         private readonly ApiService _apiService;
+        
         public AccountController(ApiService apiService)
         {
             _apiService = apiService;
+            
         }
         [HttpGet]
         public IActionResult Login()
         {
             return View();
+        }
+     
+        public async Task<IActionResult> Logout()
+        {
+            Response.Cookies.Delete("JWTToken");
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
@@ -39,11 +49,18 @@ namespace WebView.Areas.Admin.Controllers
                 var loginResponse = JsonConvert.DeserializeObject<ResponseText>(jsonData);
                 if (loginResponse.Success)
                 {
-                    // Lưu token JWT vào session 
-                    HttpContext.Session.SetString("JWTToken", loginResponse.Token);
-                    // Xử lý thành công, có thể chuyển hướng hoặc trả về dữ liệu
+                    // Lưu token vào Cookie 
+                    Response.Cookies.Append(
+                        "JWTToken",
+                        loginResponse.Token,
+                        new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Expires = DateTime.Now.AddHours(1)
+                        }
+                    );
+
                     return RedirectToAction("Index", "SanPham");
-                    // Chuyển hướng tới trang sản phẩm admin
                 }
                 // Xử lý khi đăng nhập thất bại
                 ModelState.AddModelError(string.Empty, loginResponse.Message);

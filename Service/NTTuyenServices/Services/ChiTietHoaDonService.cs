@@ -36,6 +36,7 @@ namespace Service.NTTuyenServices.Services
 
         public async Task<List<FullChiTietHoaDonDTO>> GetAll()
         {
+            
             var value =await  _context.ChiTietHoaDons.ToListAsync();
             return _mapper.Map<List<FullChiTietHoaDonDTO>>(value);
         }

@@ -1,170 +1,302 @@
-﻿using DAL.Entities;
-using DTO.VuvietanhDTO.NhanViens;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using WebView.Areas.Admin.ViewModels;
+﻿    using DAL.Context;
+    using DAL.Entities;
+    using DTO.VuvietanhDTO.Calamviecs;
+    using DTO.VuvietanhDTO.Canhanviens;
+    using DTO.VuvietanhDTO.Chucvus;
+    using DTO.VuvietanhDTO.Ngaylamviecs;
+    using DTO.VuvietanhDTO.NhanViens;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using WebView.Areas.Admin.ViewModels;
 
-namespace WebView.Areas.Admin.Controllers
-{
-    [Area("Admin")]
-    [Authorize()]
-    public class ShiftController : Controller
+
+    namespace WebView.Areas.Admin.Controllers
     {
-       
-        public ShiftController()
-        {
-        }
-        public async Task<List<NgayLamViec>> GetDayWork()
-        {
-            List<NgayLamViec> list = new List<NgayLamViec>() 
-            {
-                new NgayLamViec
-                {
-                    Id = 1,
-                    Ngay = DateTime.Now,
-                    IsNgayNghi = false,
-                    GhiChu = "Ngày làm việc bình thường"
-                },
-                new NgayLamViec
-                {
-                    Id = 2,
-                    Ngay = DateTime.Now.AddDays(1),
-                    IsNgayNghi = false,
-                    GhiChu = "Ngày làm việc bình thường"
-                },
+        [Area("Admin")]
+        [Authorize(Roles = "admin")]
 
-            };
+        public class ShiftController : Controller
+        { 
+            private readonly WebBanQuanAoDbContext _context;
 
-            return list;
-        }
-        public async Task<List<CaLamViec>> GetShift()
-        {
-            List<CaLamViec> list = new List<CaLamViec>()
+            public ShiftController(WebBanQuanAoDbContext webBanQuanAoDbContext)
             {
-                new CaLamViec
-                {
-                    Id = 1,
-                    TenCa = Enum.EnumVVA.EnumTenCa.CaSang,
-                    GioBatDau = new TimeSpan(8,0,0),
-                    GioKetThuc = new TimeSpan(12,0,0)
-                },
-                new CaLamViec
-                {
-                    Id = 2,
-                    TenCa = Enum.EnumVVA.EnumTenCa.CaChieu,
-                    GioBatDau = new TimeSpan(13,0,0),
-                    GioKetThuc = new TimeSpan(18,0,0)
-                },
-            };
-            return list;
-        }
-        public async Task<List<CaLamViec_NgayLamViec_NhanVien>> GetShiftEmployeeByDayWorkId(int Id_NgayLamViec)
-        {
-            List<CaLamViec_NgayLamViec_NhanVien> list = new List<CaLamViec_NgayLamViec_NhanVien>()
-            {
-                new CaLamViec_NgayLamViec_NhanVien
-                {
-                    Id = 1,
-                    Id_CaLamViec = 1,
-                    Id_NgayLamViec = 1,
-                    Id_NhanVien = 1
-                },
-                new CaLamViec_NgayLamViec_NhanVien
-                {
-                    Id = 1,
-                    Id_CaLamViec = 2,
-                    Id_NgayLamViec = 1,
-                    Id_NhanVien = 2
-                },
-            };
-            return list;
-        }
-        
-        public async Task<NhanVienProfileDTO> GetNhanVienById(int id)
-        {
-            NhanVienProfileDTO result = new NhanVienProfileDTO();
-            using (HttpClient client = new HttpClient())
-            {
-                
-                client.BaseAddress = new Uri("AppSettings:BaseApiAddress/NhanVien/Get_NhanVien_ByID");
-                var response = await client.GetAsync($"AppSettings:BaseApiAddress/NhanVien/Get_NhanVien_ByID ={id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var nhanVien = await response.Content.ReadAsStringAsync();
-                    result = Newtonsoft.Json.JsonConvert.DeserializeObject<NhanVienProfileDTO>(nhanVien);
-                }
-                else
-                {
-                    throw new Exception("Nhân viên không tồn tại");
-                }
+                _context = webBanQuanAoDbContext;
             }
-            return result;
-        }
-        public async Task<List<DayWorkViewModel>> LoadData()
-        {
-            List<DayWorkViewModel> list = new List<DayWorkViewModel>();
-            var dayWorks = await GetDayWork();
-            var shifts = await GetShift();
-            foreach (var dayWork in dayWorks)
+            public async Task<List<NgayLamViecDTO>> GetAllNgayLamViec()
             {
-                var shiftEmployees = await GetShiftEmployeeByDayWorkId(dayWork.Id);
-                var shiftViews = new List<ShiftView>();
-                foreach (var shift in shifts)
+                List<NgayLamViecDTO> result = new List<NgayLamViecDTO>();
+
+                using (var httpClient = new HttpClient())
                 {
-                    var shiftView = new ShiftView
+                    var response = await httpClient.GetAsync("https://localhost:7169/api/NgaylamViec/Get-All-NgayLamViec");
+                    if (response.IsSuccessStatusCode)
                     {
-                        Id = shift.Id,
-                        TenCa = shift.TenCa,
-                        GioBatDau = shift.GioBatDau,
-                        GioKetThuc = shift.GioKetThuc,
-                        NhanViens = new List<NhanVienProfileDTO>()
-                    };
-                    foreach (var shiftEmployee in shiftEmployees)
-                    {
-                        if (shiftEmployee.Id_CaLamViec == shift.Id && shiftEmployee.Id_NgayLamViec == dayWork.Id)
-                        {
-                            var nhanVien = await GetNhanVienById(shiftEmployee.Id_NhanVien);
-                            shiftView.NhanViens.Add(nhanVien);
-                        }
+                        var responcontent = await response.Content.ReadAsStringAsync();
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<NgayLamViecDTO>>(responcontent);
+                        return result;
                     }
-                    shiftViews.Add(shiftView);
                 }
-                list.Add(new DayWorkViewModel
-                {
-                    Id = dayWork.Id,
-                    Ngay = dayWork.Ngay,
-                    IsNgayNghi = dayWork.IsNgayNghi,
-                    GhiChu = dayWork.GhiChu,
-                    ShiftViews = shiftViews
-                });
+                return result;
             }
-            return list;
-        }
-         
-        public async Task<IActionResult> ShiftView()
-        {
-            var weekData = new List<DayShifts>();
-            int weekOffSet = 0; // Tuần hiện tại
-
-            // Tính ngày Thứ Hai và Chủ Nhật của tuần hiện tại
-                var monday= GetMonday(DateTime.Now).AddDays(7*weekOffSet);
-                var sunday = monday.AddDays(6); // Ngày Chủ Nhật
-
-            // Lặp qua từng ngày trong tuần để gọi API
-            for (var date = monday; date <= sunday; date = date.AddDays(1))
+            public async Task<List<CaLamViecDTO>> GetCaLamViecByIdNgayLamViec(int id)
             {
-                var formattedDate = date.ToString("yyyy-MM-dd");
-                var shifts = await GetShiftsForDate(formattedDate);
-
-                weekData.Add(new DayShifts
+                List<CaLamViecDTO> result = new List<CaLamViecDTO>();
+                using (var httpClient = new HttpClient())
                 {
-                    Date = date,
-                    Shifts = shifts
-                });
+                    var response = await httpClient.GetAsync($"https://localhost:7169/api/Calamviec/Get_By_IdNgayLamViec/{id}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responcontent = await response.Content.ReadAsStringAsync();
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CaLamViecDTO>>(responcontent);
+                        return result;
+                    }
+                }
+                return result;
+            }
+            public async Task<List<NhanvienDTO>> GetNhanVienByCa(int id)
+            {
+                List<NhanvienDTO> result = new List<NhanvienDTO>();
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync($"https://localhost:7169/api/CaNhanVien/get-nhanviens-by-ca/{id}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responcontent = await response.Content.ReadAsStringAsync();
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<NhanvienDTO>>(responcontent);
+                        return result;
+                    }
+                }
+                return result;
+            }
+            public async Task<ChucvuDTO> GetChucVuById(int id)
+            {
+                ChucvuDTO result = new ChucvuDTO();
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync($"https://localhost:7169/api/Chucvu/{id}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responcontent = await response.Content.ReadAsStringAsync();
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<ChucvuDTO>(responcontent);
+                        return result;
+                    }
+                }
+                return result;
+            }
+            public async Task<List<Schedule>> GetSchedules()
+            {   
+                List<Schedule> schedules = new List<Schedule>();
+                var ngayLamViecs = await GetAllNgayLamViec();
+                foreach (var item in ngayLamViecs)
+                {
+                    List<Shift> Listshifts = new List<Shift>();
+                    List<CaLamViecDTO> shifts = await GetCaLamViecByIdNgayLamViec(item.Id);
+                    foreach (var shift in shifts)
+                    {
+                        List<Employee> ListEmployees = new List<Employee>();
+                        List<NhanvienDTO> nhanViens = await GetNhanVienByCa(shift.Id);
+
+                        foreach (var nhanVien in nhanViens)
+                        {
+                            Employee employee = new Employee
+                            {
+                                Id = nhanVien.Id,
+                                Name = nhanVien.TenNhanVien,
+                                Role = GetChucVuById(nhanVien.Id_ChucVu).Result.Ten
+                            };
+                            ListEmployees.Add(employee);
+                        }
+                        Shift shiftItem = new Shift
+                        {
+                            Id = shift.Id,
+                            ShiftName = shift.TenCa.ToString(),
+                            StartTime = shift.GioBatDau,
+                            EndTime = shift.GioKetThuc,
+                            Employees = ListEmployees
+                        };
+                        Listshifts.Add(shiftItem);
+                    }
+             
+                    schedules.Add(new Schedule
+                    {
+                        Id_NgayLamViec = item.Id,
+                        status = item.IsNgayNghi,
+                        Date = item.Ngay,
+                        Shifts = Listshifts
+                    });
+
+                }
+                return schedules;
+            }
+            public async Task<IActionResult> Index()
+            {
+                List<Schedule> Model = await GetSchedules();
+                Model= Model.Where(x => x.status == false).ToList();
+                if (!Model.Any())
+                {
+                    ModelState.AddModelError(string.Empty, "Không có bất kỳ lịch làm việc nào");
+                    return View();
+                }
+                return View(Model);
+            }
+        private async Task LoadViewBagData()
+        {
+            try
+            {
+                ViewBag.Cashiers = await _context.NhanViens
+                    .Include(nv => nv.ChucVu)
+                    .Where(e => e.ChucVu != null && e.ChucVu.Ten == "Thu ngân")
+                    .Select(e => new { Id = e.Id, Name = e.TenNhanVien })
+                    .ToListAsync();
+
+                ViewBag.SalesStaff = await _context.NhanViens
+                    .Include(nv => nv.ChucVu)
+                    .Where(e => e.ChucVu != null && e.ChucVu.Ten == "Nhân viên bán hàng")
+                    .Select(e => new { Id = e.Id, Name = e.TenNhanVien })
+                    .ToListAsync();
+            }
+            catch
+            {
+                ViewBag.Cashiers = new List<dynamic>();
+                ViewBag.SalesStaff = new List<dynamic>();
+            }
+        }
+            [HttpGet]
+            public async Task<IActionResult> CreateSchedule()
+            {
+                await LoadViewBagData();
+
+                return View();
             }
 
-            return View(weekData);
+            [HttpPost]
+            public async Task<IActionResult> CreateSchedule(
+                DateTime workDate,
+                bool status,
+                List<int> morningShift,
+                List<int> afternoonShift,
+                List<int> nightShift)
+            {
+            var ngaylamviecExits = await _context.NgayLamviecs.FirstOrDefaultAsync(x => x.Ngay == workDate);
+            if (ngaylamviecExits!=null)
+            {
+                ModelState.AddModelError(string.Empty, $"Ngày {workDate} đã được lên lịch ");
+                 await LoadViewBagData();
+                return View();
+            }
+            _context.NgayLamviecs.Add(new NgayLamViec
+                {
+                    Ngay = workDate,
+                    IsNgayNghi = true,
+                    GhiChu = "Lịch làm việc"
+                });
+                _context.SaveChanges();
+            _context.CaLamViecs.Add(new CaLamViec
+                {
+                    IdNgaylamviec = _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id,
+                    TenCa = Enum.EnumVVA.EnumTenCa.CaSang,
+                    TrangThai = true,
+                    GioBatDau = new TimeSpan(08, 00, 00),
+                    GioKetThuc = new TimeSpan(12, 00, 00),
+                });
+                _context.CaLamViecs.Add(new CaLamViec
+                {
+                    IdNgaylamviec = _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id,
+                    TenCa = Enum.EnumVVA.EnumTenCa.CaChieu,
+                    TrangThai = true,
+                    GioBatDau = new TimeSpan(13, 00, 00),
+                    GioKetThuc = new TimeSpan(17, 00, 00),
+                });
+                _context.CaLamViecs.Add(new CaLamViec
+                {
+                    IdNgaylamviec = _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id,
+                    TenCa = Enum.EnumVVA.EnumTenCa.CaToi,
+                    TrangThai= true,
+                    GioBatDau = new TimeSpan(18, 00, 00),
+                    GioKetThuc = new TimeSpan(22, 00, 00),
+                });
+            _context.SaveChanges();
+            // Lưu các ca làm việc vào cơ sở dữ liệu
+            foreach (var id in morningShift)
+                {
+                    var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaSang && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
+                    if (caLamViec != null)
+                    {
+                        _context.CaNhanViens.Add(new CaNhanVien
+                        {
+                            IdCaLamViec = caLamViec.Id,
+                            IdNhanVien = id
+                        });
+                    }
+                }
+                foreach (var id in afternoonShift)
+                {
+                    var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaChieu && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
+                    if (caLamViec != null)
+                    {
+                        _context.CaNhanViens.Add(new CaNhanVien
+                        {
+                            IdCaLamViec = caLamViec.Id,
+                            IdNhanVien = id
+                        });
+                    }
+                }
+                foreach (var id in nightShift)
+                {
+                    var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaToi && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
+                    if (caLamViec != null)
+                    {
+                        _context.CaNhanViens.Add(new CaNhanVien
+                        {
+                            IdCaLamViec = caLamViec.Id,
+                            IdNhanVien = id
+                        });
+                    }
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+        public async Task<IActionResult> Details(int id)
+        {
+            var schedule = await _context.NgayLamviecs
+                .Include(n => n.CaLamViecs)
+                .ThenInclude(c => c.Canhanviens)
+                .ThenInclude(cn => cn.NhanVien)
+                .ThenInclude(n => n.ChucVu)
+                .Where(n => n.Id == id)
+                .Select(n => new Schedule
+                {
+                    Id_NgayLamViec = n.Id,
+                    Date = n.Ngay,
+                    status = n.IsNgayNghi,
+                    Shifts = n.CaLamViecs.Select(c => new Shift
+                    {
+                        Id = c.Id,
+                        ShiftName = c.TenCa.ToString(),
+                        StartTime = c.GioBatDau,
+                        EndTime = c.GioKetThuc,
+                        Employees = c.Canhanviens.Select(cn => new Employee
+                        {
+                            Id = cn.NhanVien.Id,
+                            Name = cn.NhanVien.TenNhanVien,
+                            Role = cn.NhanVien.ChucVu.Ten
+                        }).ToList()
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
 
+            if (schedule == null)
+            {
+                return NotFound();
+            }
+
+            return View(schedule);
         }
+
+
     }
+
 }

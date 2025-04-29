@@ -1,5 +1,6 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,8 +11,10 @@ using WebView.NghiaDTO;
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class SanPhamController : Controller
     {
+        
         private readonly WebBanQuanAoDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
         public SanPhamController(WebBanQuanAoDbContext dbcontext, IWebHostEnvironment webHostEnvironment)
@@ -21,6 +24,10 @@ namespace WebView.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            var token = HttpContext.Session.GetString("JWTToken");
+            Console.WriteLine("Token từ session: " + token);
+
+
             var chiTietSanPhams = await _context.ChiTietSanPhams
                 .Include(ct => ct.SanPham)  // Bao gồm bảng SanPham để lấy tên sản phẩm, HinhAnh, DanhMuc, và ThuongHieu
                 .ThenInclude(sp => sp.DanhMuc) // Bao gồm DanhMuc qua SanPham
