@@ -146,10 +146,10 @@
                         <input type="text" name="DiaChiGiaoHang" value="" id="diachigiaohang-order" hidden />
                     }
                     <input type="text" name="PhuongThucThanhToan" value="vnpay" id="phuongthucthanhtoan-order" hidden />
-                    <p><strong>Tạm tính:</strong> <span id="subtotal">0 vn₫</span></p>
-                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vn₫</span></p>
-                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vn₫</span></p>
-                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">0 vn₫</span></p>
+                    <p><strong>Tạm tính:</strong> <span id="subtotal">0 vnđ</span></p>
+                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vnđ</span></p>
+                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vnđ</span></p>
+                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">0 vnđ</span></p>
                     <button class="btn btn-danger w-100">Đặt hàng</button>
                 </div>
             </form>
@@ -194,10 +194,10 @@
                             </td>
                             <td>
                                 <div class="text-start">
-                                    <p class="text-danger fw-bold mb-1">@item.SanPham.GiaBan vn₫</p>
+                                    <p class="text-danger fw-bold mb-1">@item.SanPham.GiaBan vnđ</p>
                                     @if (item.SanPham.GiaBanDau > 0)
                                     {
-                                        <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau vn₫</p>
+                                        <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau vnđ</p>
                                     }
                                 </div>
                             </td>
@@ -211,7 +211,7 @@
                             <td>
                                 <div class="d-flex flex-column align-items-start">
                                     <p class="fw-bold mb-0 text-start total-price">
-                                        @(item.SoLuong * item.SanPham.GiaBan) vn₫
+                                        @(item.SoLuong * item.SanPham.GiaBan) vnđ
                                     </p>
                                 </div>
                             </td>
@@ -411,7 +411,6 @@
     const totalAmount = document.getElementById('total-amount');
 
     const diachigiaohangOrder = document.getElementById('diachigiaohang-order');
-    diachigiaohangOrder.value = "";
 
     //Event bắt sự kiện submit
     document.getElementById("shipping-form").addEventListener("submit", function (event) {
@@ -424,7 +423,7 @@
         } 
     });
     function changeVndToNumber(params) {
-        let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vn₫', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
+        let total = Math.round(params.replaceAll('.', '').replaceAll(',', '.').replaceAll('vnd', '').replaceAll('vnđ', '').replaceAll('đ', '').replaceAll('₫', '').replaceAll('-', '').trim());
         return total;
     }
     
@@ -785,13 +784,12 @@
             });
             const data = await response.json();
 
-            @* let numberRan = Math.random() * 0.09; *@
             let totalFee = Math.round(data.data.total * 0.1);
             document.getElementById("phivanchuyen-order").value = totalFee;
             feeResult.textContent = `${formatCurrency(totalFee)}`;
 
             document.getElementById("phivanchuyen-order").value = totalFee;
-                totalThanhToan();
+            totalThanhToan();
     }
      LoadTienShip();
     // tạo thông báo
@@ -854,6 +852,8 @@
                 document.querySelector('#ward-def').value = idphuong;
                 document.querySelector('#diachichitiet-def').value = chitietdiachi;
                 LoadTienShip();
+                document.querySelector('#diachigiaohang-order').value = id;
+                totalThanhToan();
             }
         });
     }

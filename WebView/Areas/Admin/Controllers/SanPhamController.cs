@@ -1,10 +1,8 @@
 ﻿using DAL.Context;
 using DAL.Entities;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using WebView.NghiaDTO;
 
 namespace WebView.Areas.Admin.Controllers

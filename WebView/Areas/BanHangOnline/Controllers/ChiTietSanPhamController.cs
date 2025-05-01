@@ -114,7 +114,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 .FirstOrDefaultAsync(x => x.Id_SanPham == spReq.idSP && x.Id_MauSac == spReq.idMs && x.Id_KichThuoc == spReq.idKt);
             if (spct == null)
             {
-                return Json(new { status = 404, success = false, message = "Không tìm thấy sản phẩm" });
+                return Json(new { status = 404, success = false, message = "Thêm sản phẩm vào giỏ hàng thất bại" });
             }
             string mess = "";
             // Kiểm tra giỏ hàng khách hàng đã tồn tại sản phẩm chi tiết tương tự hay chưa
