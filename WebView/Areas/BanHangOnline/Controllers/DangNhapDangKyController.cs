@@ -78,7 +78,13 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["IsError"] = true;
                 return View("Index");
             }
-            if (_context.KhachHangs.Any(x => x.TaiKhoan.Equals(param.TaikhoanDK)))
+            if (param.NgaySinhDK.Value >= DateTime.Now)
+            {
+                ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
+            }
+            if (_context.KhachHangs.Any(x => x.TaiKhoan.Equals(param.TaikhoanDK.Trim())))
             {
                 ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
                 ViewData["IsError"] = true;
@@ -90,6 +96,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["IsError"] = true;
                 return View("Index");
             }
+
             _context.KhachHangs.Add(new KhachHang
             {
                 TaiKhoan = param.TaikhoanDK.Trim(),
