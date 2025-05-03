@@ -31,7 +31,7 @@ namespace DAL.Context
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
-        public virtual DbSet<BaseShift> BaseShifts { get; set; }
+       
 
        
 
