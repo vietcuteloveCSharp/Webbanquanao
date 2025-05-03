@@ -86,7 +86,7 @@ namespace WebView.Areas.Admin.Controllers
                 return View();
 
             }
-            ModelState.AddModelError(string.Empty, $"Tên tài khoản hoặc mật khẩu không chính xác 2 ");
+            ModelState.AddModelError(string.Empty, $"Tên tài khoản hoặc mật khẩu không chính xác ");
             return View();
         }
 
