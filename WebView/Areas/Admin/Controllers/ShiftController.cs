@@ -224,7 +224,7 @@
                     var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaSang && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
                     if (caLamViec != null)
                     {
-                        _context.CaNhanViens.Add(new CaNhanVien
+                        _context.Canhanviens.Add(new CaNhanVien
                         {
                             IdCaLamViec = caLamViec.Id,
                             IdNhanVien = id
@@ -236,7 +236,7 @@
                     var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaChieu && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
                     if (caLamViec != null)
                     {
-                        _context.CaNhanViens.Add(new CaNhanVien
+                        _context.Canhanviens.Add(new CaNhanVien
                         {
                             IdCaLamViec = caLamViec.Id,
                             IdNhanVien = id
@@ -248,7 +248,7 @@
                     var caLamViec = _context.CaLamViecs.FirstOrDefault(x => x.TenCa == Enum.EnumVVA.EnumTenCa.CaToi && x.IdNgaylamviec == _context.NgayLamviecs.FirstOrDefault(x => x.Ngay == workDate).Id);
                     if (caLamViec != null)
                     {
-                        _context.CaNhanViens.Add(new CaNhanVien
+                        _context.Canhanviens.Add(new CaNhanVien
                         {
                             IdCaLamViec = caLamViec.Id,
                             IdNhanVien = id
