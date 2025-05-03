@@ -1,8 +1,11 @@
 ﻿using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Responses.Responses;
 using Responses.Resquests;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using WebView.Repository;
 using WebView.Services;
@@ -49,6 +52,11 @@ namespace WebView.Areas.Admin.Controllers
                 var loginResponse = JsonConvert.DeserializeObject<ResponseText>(jsonData);
                 if (loginResponse.Success)
                 {
+
+                   
+                    var tokenHandle = new JwtSecurityTokenHandler();
+                    var jwtToken = tokenHandle.ReadJwtToken(loginResponse.Token);
+                    var roleClaim = jwtToken.Claims.FirstOrDefault(c=>c.Type == ClaimTypes.Role)?.Value;
                     // Lưu token vào Cookie 
                     Response.Cookies.Append(
                         "JWTToken",
@@ -56,18 +64,29 @@ namespace WebView.Areas.Admin.Controllers
                         new CookieOptions
                         {
                             HttpOnly = true,
-                            Expires = DateTime.Now.AddHours(1)
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            //Expires = DateTime.Now.AddHours(1)
                         }
                     );
-
-                    return RedirectToAction("Index", "SanPham");
+                    if (roleClaim == "admin") 
+                    {
+                        return RedirectToAction("Index","SanPham");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Bạn không có quyền truy cập");
+                        Response.Cookies.Delete("JWTToken");
+                        return View();
+                    }
+                   
                 }
                 // Xử lý khi đăng nhập thất bại
                 ModelState.AddModelError(string.Empty, loginResponse.Message);
                 return View();
 
             }
-            ModelState.AddModelError(string.Empty, "Tên tài khoản hoặc mật khẩu không chính xác");
+            ModelState.AddModelError(string.Empty, $"Tên tài khoản hoặc mật khẩu không chính xác 2 ");
             return View();
         }
 

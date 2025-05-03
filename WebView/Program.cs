@@ -48,7 +48,7 @@ options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     {
         OnMessageReceived = context =>
         {
-            // Đọc token từ Cookie thay vì header
+            // Đọc token từ Cookie 
             context.Token = context.Request.Cookies["JWTToken"];
             return Task.CompletedTask;
         }

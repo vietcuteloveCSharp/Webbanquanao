@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _accountSerivce.LoginAccount(loginRequest);
-                Console.WriteLine($"API Login Response: {JsonConvert.SerializeObject(result)}");
+                //Console.WriteLine($"API Login Response: {JsonConvert.SerializeObject(result)}");
 
 
                 if (result.Success)
