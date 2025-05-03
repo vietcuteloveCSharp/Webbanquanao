@@ -223,7 +223,8 @@ public class DanhGiaController : Controller
                     NgayTao = DateTime.Now,
                     FileName = file.FileName,
                     ImageData = imageData,
-                    ContentType = file.ContentType
+                    ContentType = file.ContentType,
+                    ImageSourceType = 0
                 };
 
                 _context.HinhAnhs.Add(image);
@@ -260,11 +261,13 @@ public class DanhGiaController : Controller
                                 .Include(x => x.MauSac)
                                 .Include(x => x.KichThuoc)
                                 .FirstOrDefaultAsync();
-        var spdadanhgia = await _context.DanhGias.Where(x => x.Id_ChiTietHoaDon == id).FirstOrDefaultAsync();
+        var spdadanhgia = await _context.DanhGias.Where(x => x.Id_ChiTietHoaDon == id && x.TrangThai == 1).FirstOrDefaultAsync();
         if (spdadanhgia == null)
         {
             return Redirect("/BanHangOnline/DanhGia/DanhSachDanhGia");
         }
+        var lstHinhAnh = await _context.HinhAnhs.Where(x => x.Id_DanhGia == spdadanhgia.Id).Select(x => x.Id).ToListAsync();
+
         resp = new DanhGiaSanPhamResp
         {
             IdChiTietHoaDon = id,
@@ -300,58 +303,21 @@ public class DanhGiaController : Controller
             TrangThai = true,
             NoiDung = spdadanhgia.NoiDung,
             Sao = spdadanhgia.Sao,
+            HinhAnhs = lstHinhAnh
         };
         ViewData["spdanhgia"] = resp;
 
         return View("XemChiTiet");
     }
-    // 🖼 Xử lý upload ảnh vào database
-    [HttpPost]
-    public async Task<IActionResult> Upload(List<IFormFile> files)
-    {
-        if (files == null || files.Count == 0)
-        {
-            ModelState.AddModelError("", "Vui lòng chọn ít nhất một file.");
-            return View();
-        }
 
-        foreach (var file in files)
-        {
-            if (file.Length > 0)
-            {
-                using var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream);
-                var imageData = memoryStream.ToArray();
-
-                var image = new Image
-                {
-                    FileName = file.FileName,
-                    ImageData = imageData,
-                    ContentType = file.ContentType
-                };
-
-                _context.Images.Add(image);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        return RedirectToAction("Gallery"); // Chuyển đến trang Gallery sau khi upload
-    }
-
-    // 📥 Lấy ảnh từ database để hiển thị trên trang
     [HttpGet]
     public async Task<IActionResult> GetImage(int id)
     {
-        var image = await _context.Images.FindAsync(id);
+        var image = await _context.HinhAnhs.Where(x => x.Id == id).FirstAsync();
         if (image == null) return NotFound();
 
         return File(image.ImageData, image.ContentType);
     }
 
-    // 📸 Trang Gallery để hiển thị ảnh đã upload
-    public async Task<IActionResult> Gallery()
-    {
-        var images = await _context.Images.ToListAsync();
-        return View(images);
-    }
+
 }

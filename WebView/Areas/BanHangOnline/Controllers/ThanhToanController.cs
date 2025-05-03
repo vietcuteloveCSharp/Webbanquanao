@@ -29,7 +29,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
             if (tk == null)
             {
-                return Json(new { status = 401, success = false, message = "Chưa đăng nhập" });
+                return RedirectToAction("ChuaDangNhap", "DangNhapDangKy");
             }
             // list giỏ hàng của khách hàng
             var lstGioHang = await _context.GioHangs.Where(x => x.Id_KhachHang == tk.Id && x.SoLuong > 0).Include(x => x.ChiTietSanPham).ToListAsync();
@@ -98,8 +98,21 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Id_DanhMuc = item.Id_DanhMuc
                 });
             }
+            // Địa chỉ khách hàng
+            var diaChiKh = await _context.DiaChiKhachHangs.Where(x => x.IdKhachHang == tk.Id && x.TrangThai)?
+                .Select(x => new DiaChiKhachHangResp
+                {
+                    Id = x.Id,
+                    ChiTietDiaChi = x.ChiTietDiaChi,
+                    IdPhuong = x.IdPhuong,
+                    IdQuan = x.IdQuan,
+                    IdTinh = x.IdTinh,
+                    IsDefault = x.IsDefault,
+                    TenPhuong = x.TenPhuong,
+                    TenQuan = x.TenQuan,
+                    TenTinh = x.TenTinh
+                }).ToListAsync();
             // Tổng hợp lại toàn bộ dựa trên list giỏ hàng
-
             resp = new ThanhToanResp
             {
                 GioHang = lstGioHang.Select(x => new GioHangResp
@@ -131,7 +144,8 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     Sdt = tk?.Sdt,
                     Ten = tk?.Ten,
                     TrangThai = tk.TrangThai,
-                }
+                },
+                DiaChiKhachHangs = diaChiKh
             };
             ViewData["SpThanhToan"] = resp;
             HttpContext.Session.Remove("SpThanhToan");
@@ -244,6 +258,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             {
                 tongTienHoaDon = Math.Round(req.PhiVanChuyen);
             }
+            var diachigiaohang = _context.DiaChiKhachHangs.Where(x => x.Id == int.Parse(req.DiaChiGiaoHang) && x.IdKhachHang == tk.Id).FirstOrDefault();
             var hoaDonDb = _context.HoaDons.Add(new HoaDon
             {
                 Id_KhachHang = tk.Id,
@@ -251,7 +266,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 TrangThai = req.PhuongThucThanhToan.Trim().ToLower() == "vnpay" ? Enum.EnumVVA.ETrangThaiHD.ChoThanhToan : Enum.EnumVVA.ETrangThaiHD.ChoXacNhan,
                 NgayTao = DateTime.Now,
                 PhiVanChuyen = req.PhiVanChuyen,
-                DiaChiGiaoHang = req.DiaChiGiaoHang,
+                DiaChiGiaoHang = $"{diachigiaohang.ChiTietDiaChi.Trim()}, {diachigiaohang.TenPhuong.Trim()}, {diachigiaohang.TenQuan.Trim()}, {diachigiaohang.TenTinh.Trim()}",
 
             }).Entity;
             _context.SaveChanges();
@@ -440,14 +455,14 @@ namespace WebView.Areas.BanHangOnline.Controllers
             var hoaDon = await _context.HoaDons.Where(x => x.Id == sessionHoaDon.IdHoaDon && x.TrangThai == Enum.EnumVVA.ETrangThaiHD.ChoThanhToan).Include(x => x.ChiTietHoaDons).FirstOrDefaultAsync();
             if (hoaDon == null)
             {
-                ViewData["message"] = "Lỗi hệ thống";
+                ViewData["message"] = "Thanh toán thất bại";
                 return View("ThanhToanThatBai");
             }
             // xác nhận thành công thanh toán
             if (response.VnPayResponseCode == "00")
             {
                 // thay đổi trạng thái của hóa đơn
-                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.ChoXacNhan;
+                hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaXacNhan;
                 _context.SaveChanges();
                 // thêm ThanhToanHoaDons
                 var ptThanhToan = new PhuongThucThanhToan();
@@ -479,28 +494,33 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 });
                 _context.SaveChanges();
                 // Sửa : số lượng trong ChiTietSanPham,
-                //var lstIdCTSP = hoaDon.ChiTietHoaDons.Select(x => x.Id_ChiTietSanPham);
-                //var lstIdspctAndSoLuong = hoaDon.ChiTietHoaDons.Select(x => new
-                //{
-                //    IdSpCt = x.Id_ChiTietSanPham,
-                //    SoLuong = x.SoLuong,
-                //}).ToList();
-                //var lstSpChiTiet = await _context.ChiTietSanPhams.Where(x => lstIdCTSP.Contains(x.Id)).Include(x => x.SanPham).ToListAsync();
-                //foreach (var item in lstSpChiTiet)
-                //{
-                //    if (lstIdspctAndSoLuong.Any(x => x.IdSpCt == item.Id))
-                //    {
-                //        var soLuongDaBan = lstIdspctAndSoLuong.First(x => x.IdSpCt == item.Id).SoLuong;
-                //        item.SoLuong = item.SoLuong - soLuongDaBan;
-                //        if (item.SoLuong < 0)
-                //        {
-                //            item.SoLuong = 0;
-                //            item.TrangThai = false;
-                //        }
-                //        item.SanPham.SoLuong = item.SanPham.SoLuong - soLuongDaBan;
-                //        _context.SaveChanges();
-                //    }
-                //}
+                var lstIdCTSP = hoaDon.ChiTietHoaDons.Select(x => x.Id_ChiTietSanPham);
+                var lstIdspctAndSoLuong = hoaDon.ChiTietHoaDons.Select(x => new
+                {
+                    IdSpCt = x.Id_ChiTietSanPham,
+                    SoLuong = x.SoLuong,
+                }).ToList();
+                var lstSpChiTiet = await _context.ChiTietSanPhams.Where(x => lstIdCTSP.Contains(x.Id)).Include(x => x.SanPham).ToListAsync();
+                foreach (var item in lstSpChiTiet)
+                {
+                    if (lstIdspctAndSoLuong.Any(x => x.IdSpCt == item.Id))
+                    {
+                        var soLuongDaBan = lstIdspctAndSoLuong.First(x => x.IdSpCt == item.Id).SoLuong;
+                        item.SoLuong = item.SoLuong - soLuongDaBan;
+                        if (item.SoLuong <= 0)
+                        {
+                            item.SoLuong = 0;
+                            item.TrangThai = false;
+                        }
+                        item.SanPham.SoLuong = item.SanPham.SoLuong - soLuongDaBan;
+                        if (item.SanPham.SoLuong <= 0)
+                        {
+                            item.SanPham.SoLuong = 0;
+                            item.SanPham.TrangThai = false;
+                        }
+                        _context.SaveChanges();
+                    }
+                }
 
                 lstSessionThanhToan.Remove(sessionHoaDon);
                 HttpContext.Session.Remove("SessionThanhToan");

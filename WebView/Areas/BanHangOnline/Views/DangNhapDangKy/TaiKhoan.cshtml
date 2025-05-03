@@ -60,6 +60,16 @@
                                 </a>
                             </div>
                             <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
                                 <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn btn-outline-danger ">
                                     Đổi mật khẩu
                                 </a>
@@ -80,6 +90,49 @@
                             <div class="mb-3">
                                 <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-danger ">
                                     Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-outline-danger ">
+                                    Đổi mật khẩu
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DangXuat" class="w-100 h-100  btn btn-outline-danger ">
+                                    Đăng xuất
+                                </a>
+                            </div>
+                            break;
+                        case "diachicuatoi":
+
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/TaiKhoan" class="w-100 h-100 btn btn-outline-danger ">
+                                    Tài khoản của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DonHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-danger ">
+                                    Địa chỉ của tôi
                                 </a>
                             </div>
                             <div class="mb-3">
@@ -106,6 +159,16 @@
                                 </a>
                             </div>
                             <div class="mb-3">
+                                <a href="/BanHangOnline/DanhGia/DanhSachDanhGia" class="w-100 h-100 btn btn-outline-danger ">
+                                    Danh sách đánh giá sản phẩm
+                                </a>
+                            </div>
+                            <div class="mb-3">
+                                <a href="/BanHangOnline/DangNhapdangky/DiaChiKhachHang" class="w-100 h-100 btn btn-outline-danger ">
+                                    Địa chỉ của tôi
+                                </a>
+                            </div>
+                            <div class="mb-3">
                                 <a href="/BanHangOnline/DangNhapdangky/DoiMatKhau" class="w-100 h-100  btn  btn-danger ">
                                     Đổi mật khẩu
                                 </a>
@@ -123,7 +186,6 @@
 
         </div>
         <div class="col-9 border border-1 p-3">
-            @* <div class="tab-content " id="v-pills-tabContent"> *@
                 @{
                     switch (type)
                     {
@@ -133,17 +195,15 @@
                         case "doimatkhau":
                             @Html.Partial("DoiMatKhauPartial")
                             break;
+                        case "diachicuatoi":
+                            @Html.Partial("DiaChiKhachHangPartial")
+                            break;
                         case "donhang":
                             @Html.Partial("DonHangPartial")
                             break;
 
                     }
                }
-                
-               
-               
-
-            @* </div> *@
         </div>
     </div>
 </div>

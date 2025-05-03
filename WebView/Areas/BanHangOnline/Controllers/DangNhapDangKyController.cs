@@ -78,7 +78,13 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["IsError"] = true;
                 return View("Index");
             }
-            if (_context.KhachHangs.Any(x => x.TaiKhoan.Equals(param.TaikhoanDK)))
+            if (param.NgaySinhDK.Value >= DateTime.Now)
+            {
+                ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
+                ViewData["IsError"] = true;
+                return View("Index");
+            }
+            if (_context.KhachHangs.Any(x => x.TaiKhoan.Equals(param.TaikhoanDK.Trim())))
             {
                 ViewData["State"] = JsonSerializer.Serialize("Đăng ký thất bại.");
                 ViewData["IsError"] = true;
@@ -90,6 +96,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["IsError"] = true;
                 return View("Index");
             }
+
             _context.KhachHangs.Add(new KhachHang
             {
                 TaiKhoan = param.TaikhoanDK.Trim(),
@@ -343,6 +350,167 @@ namespace WebView.Areas.BanHangOnline.Controllers
             _context.SaveChanges();
             ViewData["message"] = "Đổi mật khẩu thành công";
             return View("TaiKhoan", kh);
+        }
+
+        public async Task<IActionResult> DiaChiKhachHang()
+        {
+            ViewData["type"] = "diachicuatoi";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.Id == tk.Id);
+            if (kh == null)
+            {
+                return View("ChuaDangNhap");
+
+            }
+            var resp = await _context.DiaChiKhachHangs.AsNoTracking().Where(x => x.IdKhachHang == kh.Id).Where(x => x.TrangThai)?
+                                .Select(x => new DiaChiKhachHangResp
+                                {
+                                    Id = x.Id,
+                                    ChiTietDiaChi = x.ChiTietDiaChi,
+                                    IdPhuong = x.IdPhuong,
+                                    IdQuan = x.IdQuan,
+                                    IdTinh = x.IdTinh,
+                                    IsDefault = x.IsDefault,
+                                    TenPhuong = x.TenPhuong,
+                                    TenQuan = x.TenQuan,
+                                    TenTinh = x.TenTinh
+                                }).OrderByDescending(x => x.IsDefault).ThenBy(x => x.Id).ToListAsync();
+            ViewData["diachigiaohang"] = resp;
+            return View("TaiKhoan", kh);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DiaChiKhachHang([FromBody] DiaChiKhachHangParam request)
+        {
+            ViewData["type"] = "diachicuatoi";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            if (request == null || string.IsNullOrEmpty(request.IdTinh) || string.IsNullOrEmpty(request.IdPhuong) || string.IsNullOrEmpty(request.IdQuan))
+            {
+                ViewData["mess"] = "Thêm thất bại địa chỉ";
+                ViewData["status"] = false;
+                return Json(new { status = true, mess = "Thêm thất bại địa chỉ" });
+            }
+            if (_context.DiaChiKhachHangs.Count(x => x.IdKhachHang == tk.Id) == 0)
+            {
+                request.IsDefault = true;
+            }
+            else
+            {
+                if (request.IsDefault)
+                {
+                    var diachibd = _context.DiaChiKhachHangs.Where(x => x.IdKhachHang == tk.Id && x.IsDefault == true && x.TrangThai).ToList();
+                    foreach (var item in diachibd)
+                    {
+                        item.IsDefault = false;
+                    }
+                    _context.SaveChanges();
+                }
+            }
+            await _context.DiaChiKhachHangs.AddAsync(new DAL.Entities.DiaChiKhachHang
+            {
+                ChiTietDiaChi = request.ChiTietDiaChi,
+                IdKhachHang = tk.Id,
+                IdPhuong = request.IdPhuong,
+                IdQuan = request.IdQuan,
+                IdTinh = request.IdTinh,
+                IsDefault = request.IsDefault,
+                TenPhuong = request.TenPhuong,
+                TenQuan = request.TenQuan,
+                TenTinh = request.TenTinh,
+                TrangThai = true
+            });
+            _context.SaveChanges();
+            ViewData["mess"] = "Thêm thành công địa chỉ";
+            ViewData["status"] = true;
+
+            return Json(new { status = true, mess = "Thêm thành công địa chỉ" });
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChinhSuaDiaChi([FromBody] ChinhSuaDiaChiKhachHangParam request)
+        {
+            ViewData["type"] = "diachicuatoi";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            if (request == null || string.IsNullOrEmpty(request.Id))
+            {
+                ViewData["mess"] = "Chỉnh sửa thất bại địa chỉ";
+                ViewData["status"] = false;
+                return Json(new { status = false, mess = "Chỉnh sửa thất bại địa chỉ" });
+            }
+            var diachi = await _context.DiaChiKhachHangs.FirstOrDefaultAsync(x => x.Id == int.Parse(request.Id) && x.TrangThai);
+            if (diachi == null)
+            {
+                ViewData["mess"] = "Chỉnh sửa thất bại địa chỉ";
+                ViewData["status"] = false;
+                return Json(new { status = false, mess = "Chỉnh sửa thất bại địa chỉ" });
+
+            }
+            if (diachi.IsDefault == false && request.IsDefault)
+            {
+                var diachimacdinh = _context.DiaChiKhachHangs.FirstOrDefault(x => x.IsDefault && x.TrangThai);
+                if (diachimacdinh != null)
+                {
+                    diachimacdinh.IsDefault = false;
+                    _context.SaveChanges();
+                }
+            }
+            diachi.ChiTietDiaChi = string.IsNullOrEmpty(request.ChiTietDiaChi) ? diachi.ChiTietDiaChi : request.ChiTietDiaChi.Trim();
+            diachi.IdPhuong = string.IsNullOrEmpty(request.IdPhuong) ? diachi.IdPhuong : request.IdPhuong.Trim();
+            diachi.IdQuan = string.IsNullOrEmpty(request.IdQuan) ? diachi.IdQuan : request.IdQuan.Trim();
+            diachi.IdTinh = string.IsNullOrEmpty(request.IdTinh) ? diachi.IdTinh : request.IdTinh.Trim();
+            diachi.IsDefault = request.IsDefault;
+            diachi.TenPhuong = string.IsNullOrEmpty(request.TenPhuong) ? diachi.TenPhuong : request.TenPhuong.Trim();
+            diachi.TenQuan = string.IsNullOrEmpty(request.TenQuan) ? diachi.TenQuan : request.TenQuan.Trim();
+            diachi.TenTinh = string.IsNullOrEmpty(request.TenTinh) ? diachi.TenTinh : request.TenTinh.Trim();
+            _context.SaveChanges();
+
+            ViewData["mess"] = "Chỉnh sửa thành công địa chỉ";
+            ViewData["status"] = true;
+
+            return Json(new { status = true, mess = "Chỉnh sửa thành công địa chỉ" });
+        }
+        [HttpDelete]
+        public async Task<IActionResult> XoaDiaChi(int id)
+        {
+            ViewData["type"] = "diachicuatoi";
+            var tk = HttpContext.Session.GetObjectFromJson<KhachHang>("TaiKhoan");
+            if (tk == null)
+            {
+                return View("ChuaDangNhap");
+            }
+            if (_context.DiaChiKhachHangs.Count() <= 1)
+            {
+                return Json(new { status = false, mess = "Xóa dịa chỉ thất bại" });
+            }
+            var diachi = await _context.DiaChiKhachHangs.FirstOrDefaultAsync(x => x.Id == id && x.TrangThai);
+            if (diachi == null)
+            {
+                return Json(new { status = false, mess = "Xóa dịa chỉ thất bại" });
+            }
+            if (_context.DiaChiKhachHangs.Count(x => x.TrangThai) <= 1)
+            {
+                return Json(new { status = false, mess = "Xóa dịa chỉ thất bại" });
+            }
+            diachi.TrangThai = false;
+            if (diachi.IsDefault)
+            {
+                var diachimacdinhmoi = _context.DiaChiKhachHangs.FirstOrDefault(x => x.TrangThai && diachi.Id != x.Id);
+                diachimacdinhmoi.IsDefault = true;
+            }
+            _context.SaveChanges();
+
+            return Json(new { status = true, mess = "Xóa địa chỉ thành công" });
         }
         public IActionResult DangXuat()
         {

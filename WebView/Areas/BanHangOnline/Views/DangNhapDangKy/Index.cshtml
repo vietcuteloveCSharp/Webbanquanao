@@ -67,16 +67,6 @@
                            placeholder="Nhập số điện thoại" required>
                     <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
                 </div>
-                @* <div class="mb-3">
-                    <label class="form-label">Giới tính <span class="text-danger">*</span></label>
-                    <div>
-                        <input type="radio" id="genderFemale" name="genderDK" value="Nữ" checked>
-                        <label for="genderFemale" class="me-3">Nữ</label>
-                        <input type="radio" id="genderMale" name="genderDK" value="Nam">
-                        <label for="genderMale">Nam</label>
-                    </div>
-                    <div class="invalid-feedback">Vui lòng chọn giới tính.</div>
-                </div> *@
                 <div class="mb-3">
                     <label for="emailDK" class="form-label">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" id="emailDK" name="EmailDK"
@@ -148,71 +138,147 @@
         }
     }
     // Validation cho form
-    // Validation cho form
     (function () {
         'use strict';
 
         const registerForm = document.querySelector('#registerForm');
-        // forms.forEach(form => {
+        
         registerForm.addEventListener('submit', event => {
-            // Lấy các trường mật khẩu
-            const password = document.getElementById('registerPassword');
-            const confirmPassword = document.getElementById('confirmPassword');
-            let isValid = true;
+                // Lấy các trường mật khẩu
+                const password = document.getElementById('registerPassword');
+                const confirmPassword = document.getElementById('confirmPassword');
+                const taikhoanDK = document.getElementById('taikhoanDK');
+                const registerPhone = document.getElementById('registerPhone');
+                const nameFull = document.getElementById('nameFull');
+                const emailDK = document.getElementById('emailDK');
+                const dob = document.getElementById('dob');
 
+                let isValid = true;
+                // Biểu thức chính quy để kiểm tra định dạng email
+                const emailPattern = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                // Biểu thức chính quy cho số điện thoại Việt Nam (10 chữ số, đầu số hợp lệ)
+                const phonePattern = /^(0)(32|33|34|35|36|37|38|39|70|71|72|73|74|75|76|77|78|79|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99)[0-9]{7}$/;
+                // Kiểm tra độ dài của tên đăng nhập
+                if (taikhoanDK && taikhoanDK.value.trim().length < 6) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
 
-            // Kiểm tra độ dài của mật khẩu
-            if (password && password.value.length < 6) {
-                event.preventDefault();
-                event.stopPropagation();
-                isValid = false;
+                    // Hiển thị lỗi cho trường tên đăng nhập
+                    taikhoanDK.classList.add('is-invalid');
+                    taikhoanDK.nextElementSibling.textContent = "Tài khoản phải có ít nhất 6 ký tự.";
+                } else {
+                    taikhoanDK.classList.remove('is-invalid');
+                }
+                // Kiểm tra độ dài của tên
+                if (nameFull && nameFull.value.trim().length < 10) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
 
-                // Hiển thị lỗi cho trường mật khẩu
-                password.classList.add('is-invalid');
-                password.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
-            } else {
-                password.classList.remove('is-invalid');
-            }
+                    // Hiển thị lỗi cho tên
+                    nameFull.classList.add('is-invalid');
+                    nameFull.nextElementSibling.textContent = "Họ và tên phải có ít nhất 10 ký tự.";
+                } else {
+                    nameFull.classList.remove('is-invalid');
+                }
+                // Kiểm tra độ dài của số điện thoại
+                if (registerPhone && !phonePattern.test(registerPhone.value.trim())) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
 
-            // Kiểm tra độ dài của mật khẩu xác nhận
-            if (confirmPassword && confirmPassword.value.length < 6) {
-                event.preventDefault();
-                event.stopPropagation();
-                isValid = false;
+                    // Hiển thị lỗi cho trường số điện thoại
+                    registerPhone.classList.add('is-invalid');
+                    registerPhone.nextElementSibling.textContent = "Số điện thoại không hợp lệ";
+                } else {
+                    registerPhone.classList.remove('is-invalid');
+                }
+                // Kiểm tra định dạng của email
+                if (emailDK && !emailPattern.test(emailDK.value.trim())) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
 
-                // Hiển thị lỗi cho trường mật khẩu xác nhận
-                confirmPassword.classList.add('is-invalid');
-                confirmPassword.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
-            } else {
-                confirmPassword.classList.remove('is-invalid');
-            }
+                    // Hiển thị lỗi cho email
+                    emailDK.classList.add('is-invalid');
+                    emailDK.nextElementSibling.textContent = "Email không đúng định dạng.";
+                } else {
+                    emailDK.classList.remove('is-invalid');
+                }
 
-            // Kiểm tra mật khẩu và mật khẩu xác nhận có khớp không
-            if (isValid && password && confirmPassword && password.value !== confirmPassword.value) {
-                event.preventDefault();
-                event.stopPropagation();
-                isValid = false;
+                // Kiểm tra ngày sinh
+                // Lấy ngày hiện tại
+                const today = new Date();
 
-                // Hiển thị lỗi cho trường mật khẩu xác nhận
-                confirmPassword.classList.add('is-invalid');
-                confirmPassword.nextElementSibling.textContent = "Mật khẩu xác nhận không khớp.";
-            } else if (isValid) {
-                confirmPassword.classList.remove('is-invalid');
-            }
+                // Chuyển giá trị ngày sinh thành đối tượng Date
+                const dobInput = new Date(dob.value);
+                const minAge = 18;
+                const minDate = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate());
+                
+                if (dobInput > minDate) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
 
-            registerForm.classList.add('was-validated');
+                    // Hiển thị lỗi cho ngày sinh
+                    dob.classList.add('is-invalid');
+                    dob.nextElementSibling.textContent = "Bạn phải ít nhất 18 tuổi.";
+                } else {
+                    dob.classList.remove('is-invalid');
+                }
+
+                // Kiểm tra độ dài của mật khẩu
+                if (password && password.value.trim().length < 6) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
+
+                    // Hiển thị lỗi cho trường mật khẩu
+                    password.classList.add('is-invalid');
+                    password.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
+                } else {
+                    password.classList.remove('is-invalid');
+                }
+
+                // Kiểm tra độ dài của mật khẩu xác nhận
+                if (confirmPassword && confirmPassword.value.trim().length < 6) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
+
+                    // Hiển thị lỗi cho trường mật khẩu xác nhận
+                    confirmPassword.classList.add('is-invalid');
+                    confirmPassword.nextElementSibling.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
+                } else {
+                    confirmPassword.classList.remove('is-invalid');
+                }
+
+                // Kiểm tra mật khẩu và mật khẩu xác nhận có khớp không
+                if (isValid && password && confirmPassword && password.value.trim() !== confirmPassword.value.trim()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isValid = false;
+
+                    // Hiển thị lỗi cho trường mật khẩu xác nhận
+                    confirmPassword.classList.add('is-invalid');
+                    confirmPassword.nextElementSibling.textContent = "Mật khẩu xác nhận không khớp.";
+                } else if (isValid) {
+                    confirmPassword.classList.remove('is-invalid');
+                }
+
+                registerForm.classList.add('was-validated');
         });
-        // });
 
-        const forms = document.querySelector('#loginForm');
-        forms.addEventListener('submit', event => {
+            const forms = document.querySelector('#loginForm');
+            forms.addEventListener('submit', event => {
             // Lấy các trường mật khẩu
             const password = document.getElementById('loginPasswordDN');
             let isValid = true;
 
 
             // Kiểm tra độ dài của mật khẩu
-            if (password.value.length < 6) {
+            if (password.value.trim().length < 6) {
                 event.preventDefault();
                 event.stopPropagation();
                 isValid = false;
@@ -241,7 +307,12 @@
     // Hiển thị thông báo
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-bg-${isError == false ? 'danger' : 'success'} border-0 show`;
+        if (isError == 'false') {
+            toast.className = `toast align-items-center text-bg-success border-0 show`;
+
+        } else if (isError == 'true') {
+            toast.className = `toast align-items-center text-bg-danger border-0 show`;
+        }
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
                         <div class="d-flex">

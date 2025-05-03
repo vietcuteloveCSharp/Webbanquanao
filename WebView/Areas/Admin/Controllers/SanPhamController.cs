@@ -1,11 +1,8 @@
 ﻿using DAL.Context;
 using DAL.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using WebView.NghiaDTO;
 
 namespace WebView.Areas.Admin.Controllers
@@ -233,7 +230,7 @@ namespace WebView.Areas.Admin.Controllers
                 HinhAnhs = sanPham.HinhAnhs.Select(ha => new HinhAnhDTO
                 {
                     Id = ha.Id,
-                    Id_SanPham = ha.Id_SanPham,
+                    Id_SanPham = ha.Id_SanPham ?? 0,
                     Url = ha.Url,
                     ImageSourceType = 0
                 }).ToList(),
