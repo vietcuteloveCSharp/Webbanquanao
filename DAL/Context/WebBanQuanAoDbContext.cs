@@ -10,8 +10,8 @@ namespace DAL.Context
         public virtual DbSet<ChiTietKhuyenMai> ChiTietKhuyenMais { get; set; }
         public virtual DbSet<ChiTietMaGiamGia> ChiTietMaGiamGias { get; set; }
         public virtual DbSet<ChiTietSanPham> ChiTietSanPhams { get; set; }
-        public virtual DbSet<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_NhanViens { get; set; }
-        public virtual DbSet<CaNhanVien> CaNhanViens { get; set; }
+    
+        public virtual DbSet<CaNhanVien> Canhanviens { get; set; }
         public virtual DbSet<DanhGia> DanhGias { get; set; }
         public virtual DbSet<ChucVu> ChucVus { get; set; }
         public virtual DbSet<CuaHang> CuaHangs { get; set; }    
