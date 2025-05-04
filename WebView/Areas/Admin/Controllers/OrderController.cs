@@ -13,10 +13,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles ="admin")]
     public class OrderController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -268,7 +270,7 @@ namespace WebView.Areas.Admin.Controllers
             {
                 return View(listHoaDonView);
             }
-        }
+        }   
         [HttpPost("FilterStatus")]
         public async Task<IActionResult> FilterStatus(int filterorder)
         {

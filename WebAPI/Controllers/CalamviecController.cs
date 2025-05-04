@@ -88,6 +88,27 @@ namespace WebAPI.Controllers
             }
 
         }
+        //get ca lam viec theo ngay
+        [HttpGet("Get_By_IdNgayLamViec/{id_ngaylamviec:int}")]
+        public async Task<IActionResult> GetCaLamViecByIdNgayLamViec(int id_ngaylamviec)
+        {
+            try
+            {
+                var caLamViec = await _calamviecService.GetCaLamViecByIdNgayLamViec(id_ngaylamviec);
+                return Ok(caLamViec);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Bắt exception khi không tìm thấy chức vụ và trả về NotFound
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Bắt tất cả các exception khác và trả về InternalServerError
+                return StatusCode(500, new { Message = "Đã xảy ra lỗi khi xử lý yêu cầu.", Details = ex.Message });
+            }
+
+        }
         //update ca làm việc
         [HttpPut("update/{id:int}")]
         public async Task<IActionResult> UpdateCaLamViec(int id, [FromBody] UpdateCaLamViecDTO updateCaLamViecDTO)

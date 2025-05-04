@@ -16,7 +16,8 @@ namespace WebView.Services
 
         public async Task<HttpResponseMessage> PostAsync(string url, object data, string token)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization =
+     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             var json = JsonConvert.SerializeObject(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");

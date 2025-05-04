@@ -70,7 +70,16 @@ namespace Service.VuVietAnhService.Repository.Calamviec
             var caLamViecDTO = _mapper.Map<CaLamViecDTO>(caLamViec);
             return caLamViecDTO;
         }
-
+        public async Task<List<CaLamViecDTO>> GetCaLamViecByIdNgayLamViec(int id)
+        {
+            var caLamViec = await _context.CaLamViecs.Where(c => c.IdNgaylamviec == id).ToListAsync();
+            if (caLamViec == null)
+            {
+                throw new KeyNotFoundException($"Không tìm thấy ca làm việc với ID_NgayLamViec {id}.");
+            }
+            var caLamViecDTO = _mapper.Map<List<CaLamViecDTO>>(caLamViec);
+            return caLamViecDTO;
+        }
         public async Task<bool> CreateCaLamViec(CreateCaLamViecDTO createCaLamViecDTO)
         {
             ArgumentNullException.ThrowIfNull(createCaLamViecDTO);

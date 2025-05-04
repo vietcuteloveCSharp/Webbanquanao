@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DAL.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Responses.Responses;
 using Responses.Resquests;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using WebView.Repository;
 using WebView.Services;
 
 namespace WebView.Areas.Admin.Controllers
@@ -11,14 +16,22 @@ namespace WebView.Areas.Admin.Controllers
     public class AccountController : Controller
     {
         private readonly ApiService _apiService;
+        
         public AccountController(ApiService apiService)
         {
             _apiService = apiService;
+            
         }
         [HttpGet]
         public IActionResult Login()
         {
             return View();
+        }
+     
+        public async Task<IActionResult> Logout()
+        {
+            Response.Cookies.Delete("JWTToken");
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
@@ -39,18 +52,41 @@ namespace WebView.Areas.Admin.Controllers
                 var loginResponse = JsonConvert.DeserializeObject<ResponseText>(jsonData);
                 if (loginResponse.Success)
                 {
-                    // Lưu token JWT vào session 
-                    HttpContext.Session.SetString("JWTToken", loginResponse.Token);
-                    // Xử lý thành công, có thể chuyển hướng hoặc trả về dữ liệu
-                    return RedirectToAction("Index", "SanPham");
-                    // Chuyển hướng tới trang sản phẩm admin
+
+                   
+                    var tokenHandle = new JwtSecurityTokenHandler();
+                    var jwtToken = tokenHandle.ReadJwtToken(loginResponse.Token);
+                    var roleClaim = jwtToken.Claims.FirstOrDefault(c=>c.Type == ClaimTypes.Role)?.Value;
+                    // Lưu token vào Cookie 
+                    Response.Cookies.Append(
+                        "JWTToken",
+                        loginResponse.Token,
+                        new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            //Expires = DateTime.Now.AddHours(1)
+                        }
+                    );
+                    if (roleClaim == "admin") 
+                    {
+                        return RedirectToAction("Index","SanPham");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Bạn không có quyền truy cập");
+                        Response.Cookies.Delete("JWTToken");
+                        return View();
+                    }
+                   
                 }
                 // Xử lý khi đăng nhập thất bại
                 ModelState.AddModelError(string.Empty, loginResponse.Message);
                 return View();
 
             }
-            ModelState.AddModelError(string.Empty, "Tên tài khoản hoặc mật khẩu không chính xác");
+            ModelState.AddModelError(string.Empty, $"Tên tài khoản hoặc mật khẩu không chính xác ");
             return View();
         }
 
