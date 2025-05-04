@@ -141,7 +141,7 @@
                         <select class="form-control chiTiet-kichThuoc" asp-for="ChiTietSanPhams[@i].Id_KichThuoc" asp-items="ViewBag.KichThuocs"></select>
                     </div>
                     <div class="form-group">
-                        <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" />
+                        <input type="number" class="form-control" name="ChiTietSanPhams[@i].SoLuong" value="@Model.ChiTietSanPhams[i].SoLuong" min="0" onkeypress="return onlyNumbers(event)" oninput="restrictInput(this)" />
                     </div>
                     <div class="form-group">
                         <button type="button" class="btn btn-danger remove-item">Xóa</button>
@@ -215,6 +215,21 @@
    @*  @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     } *@
+    <script>
+        function onlyNumbers(event) {
+            // Chỉ cho phép các phím số (0-9)
+            return (event.charCode >= 48 && event.charCode <= 57);
+        }
+
+        function restrictInput(element) {
+            // Loại bỏ mọi ký tự không phải số
+            element.value = element.value.replace(/[^0-9]/g, '');
+            // Đảm bảo giá trị không nhỏ hơn 0, mặc định là 1 nếu không hợp lệ
+            if (element.value === '' || parseInt(element.value) < 0) {
+                element.value = '1';
+            }
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Lấy danh sách URL hình ảnh hiện tại

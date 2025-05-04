@@ -335,7 +335,8 @@
             if ($('#myTable').length) {
                 $('#myTable').DataTable({
                     dom: 'Bfrtip',
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                    order: [[0, 'desc']] // Sắp xếp cột đầu tiên (Id) theo thứ tự giảm dần
                 });
             }
 

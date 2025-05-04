@@ -165,7 +165,7 @@ namespace WebView.Areas.Admin.Controllers
                                     Id_MauSac = chiTiet.Id_MauSac,
                                     Id_KichThuoc = chiTiet.Id_KichThuoc,
                                     SoLuong = chiTiet.SoLuong,
-                                    TrangThai = chiTiet.TrangThai ?? true,
+                                    TrangThai = chiTiet.TrangThai,
                                     NgayTao = DateTime.Now
                                 });
                                 totalQuantity += chiTiet.SoLuong;
@@ -437,7 +437,7 @@ namespace WebView.Areas.Admin.Controllers
                 {
                     // Cập nhật chi tiết sản phẩm
                     existingDetail.SoLuong = dto.SoLuong;
-                    existingDetail.TrangThai = dto.TrangThai ?? true;
+                    existingDetail.TrangThai = dto.TrangThai;
                 }
                 else
                 {
@@ -448,7 +448,7 @@ namespace WebView.Areas.Admin.Controllers
                         Id_MauSac = dto.Id_MauSac,
                         Id_KichThuoc = dto.Id_KichThuoc,
                         SoLuong = dto.SoLuong,
-                        TrangThai = dto.TrangThai ?? true,
+                        TrangThai = dto.TrangThai,
                         NgayTao = DateTime.Now
                     });
                 }

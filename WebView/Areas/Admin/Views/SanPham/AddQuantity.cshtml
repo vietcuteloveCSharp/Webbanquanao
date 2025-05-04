@@ -21,7 +21,7 @@
         <!-- Form nhập số lượng -->
         <div class="mb-3">
             <label class="form-label">Số lượng</label>
-            <input type="number" min="1" value="1" max="1000" asp-for="SoLuong" class="form-control" required>
+            <input type="number" min="1" value="1" max="1000" asp-for="SoLuong" class="form-control" required onkeypress="return onlyNumbers(event)" oninput="restrictInput(this)" />
             <span asp-validation-for="SoLuong" class="text-danger"></span>
         </div>
 
@@ -97,6 +97,25 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function onlyNumbers(event) {
+            // Chỉ cho phép các phím số (0-9)
+            return (event.charCode >= 48 && event.charCode <= 57);
+        }
+
+        function restrictInput(element) {
+            // Loại bỏ mọi ký tự không phải số
+            element.value = element.value.replace(/[^0-9]/g, '');
+            // Đảm bảo giá trị không nhỏ hơn 1, mặc định là 1 nếu không hợp lệ
+            if (element.value === '' || parseInt(element.value) < 1) {
+                element.value = '1';
+            }
+            // Đảm bảo giá trị không vượt quá max (1000)
+            if (parseInt(element.value) > 1000) {
+                element.value = '1000';
+            }
+        }
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const colorDropdown = document.getElementById("colorDropdown");

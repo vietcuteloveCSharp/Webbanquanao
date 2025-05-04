@@ -90,7 +90,7 @@
     @* Số lượng mã giảm giá *@
     <div class="form-group">
         <label asp-for="SoLuong">Số lượng</label>
-        <input asp-for="SoLuong" class="form-control" type="number" min="1" />
+        <input asp-for="SoLuong" class="form-control" type="number" min="1" pattern="[1-9][0-9]*" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" />
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
 
@@ -121,6 +121,36 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            const soLuongInput = $('input[name="SoLuong"]');
+
+            // Ngăn nhập số âm, số thập phân và ký tự không phải số
+            soLuongInput.on('input', function () {
+                let value = $(this).val();
+                if (value < 1 || isNaN(value) || !Number.isInteger(Number(value))) {
+                    $(this).val(1); // Đặt lại giá trị tối thiểu là 1
+                }
+            });
+
+            // Ngăn paste dữ liệu không hợp lệ
+            soLuongInput.on('paste', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Không hợp lệ',
+                    text: 'Vui lòng nhập số lượng bằng tay!',
+                });
+            });
+
+            // Ngăn nhập số 0 ở đầu
+            soLuongInput.on('keydown', function (e) {
+                if (e.key === '0' && $(this).val().length === 0) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const loaiGiamGia = document.getElementById("LoaiGiamGia");

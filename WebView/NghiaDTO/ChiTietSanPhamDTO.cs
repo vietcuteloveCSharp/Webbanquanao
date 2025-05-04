@@ -12,7 +12,7 @@ namespace WebView.NghiaDTO{
         public int Id { get; set; }
         public int SoLuong { get; set; }
         public DateTime NgayTao { get; set; } = DateTime.Now;
-        public bool? TrangThai { get; set; } //Ẩn hiển show sản phẩm 
+        public bool TrangThai { get; set; } //Ẩn hiển show sản phẩm 
 
         public int Id_SanPham { get; set; }
         public int Id_MauSac { get; set; }

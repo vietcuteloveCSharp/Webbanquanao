@@ -140,7 +140,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -237,11 +236,19 @@
                 $('#startDate').val('');
                 $('#endDate').val('');
                 $('#dayRange').val('');
-                loadRevenueChartData();
+                loadRevenueChartData(); // Reset về trạng thái mặc định
             });
 
-            // Tải dữ liệu ban đầu
-            loadRevenueChartData();
+            // Tải dữ liệu ban đầu với 7 ngày trước
+            (function () {
+                const today = new Date();
+                const endDate = today.toISOString().split('T')[0];
+                const start = new Date();
+                start.setDate(today.getDate() - 7); // 7 ngày trước
+                const startDate = start.toISOString().split('T')[0];
+                $('#dayRange').val('7'); // Đặt giá trị mặc định cho dropdown
+                loadRevenueChartData(startDate, endDate);
+            })();
         });
     </script>
 }
