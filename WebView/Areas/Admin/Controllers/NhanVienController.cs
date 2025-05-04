@@ -52,7 +52,7 @@ public class NhanVienController : Controller
 
         // Lấy ID của chức vụ "Nhân viên"
         ViewBag.NhanVienId = _context.ChucVus
-            .Where(cv => cv.Ten == "Nhân Viên")
+            .Where(cv => cv.Ten == "Nhân viên bán hàng")
             .Select(cv => cv.Id)
             .FirstOrDefault();
 
@@ -66,7 +66,7 @@ public class NhanVienController : Controller
     public async Task<IActionResult> Create(NhanVienDTO nhanVienDTO)
     {
         var nhanVienId = _context.ChucVus
-            .Where(cv => cv.Ten == "Nhân Viên")
+            .Where(cv => cv.Ten == "Nhân viên bán hàng")
             .Select(cv => cv.Id)
             .FirstOrDefault();
 
@@ -170,7 +170,7 @@ public class NhanVienController : Controller
             .ToList();
 
         ViewBag.NhanVienId = _context.ChucVus
-            .Where(cv => cv.Ten == "Nhân Viên")
+            .Where(cv => cv.Ten == "Nhân viên bán hàng")
             .Select(cv => cv.Id)
             .FirstOrDefault();
 
