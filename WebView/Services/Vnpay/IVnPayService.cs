@@ -6,6 +6,6 @@ namespace WebView.Services.Vnpay
     {
         string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
         PaymentResponseModel PaymentExecute(IQueryCollection collections);
-
+        StringContent RefundPayment(RefundRequest request, HttpContext context);
     }
 }
