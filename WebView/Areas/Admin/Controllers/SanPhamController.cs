@@ -454,7 +454,6 @@ namespace WebView.Areas.Admin.Controllers
                 }
             }
         }
-        // Phương thức DELETE để thực hiện xóa ngay mà không cần xác nhận
         public async Task<IActionResult> Delete(int id)
         {
             // Kiểm tra nếu id là null
@@ -466,6 +465,7 @@ namespace WebView.Areas.Admin.Controllers
             // Lấy sản phẩm và các chi tiết liên quan
             var sanPham = await _context.SanPhams
                 .Include(sp => sp.ChiTietSanPhams) // Bao gồm ChiTietSanPhams liên quan đến sản phẩm
+                .Include(sp => sp.HinhAnhs) // Bao gồm HinhAnhs liên quan đến sản phẩm
                 .FirstOrDefaultAsync(sp => sp.Id == id);
 
             // Kiểm tra nếu sản phẩm không tồn tại
@@ -473,6 +473,9 @@ namespace WebView.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            // Xóa tất cả HinhAnhs liên quan đến sản phẩm
+            _context.HinhAnhs.RemoveRange(sanPham.HinhAnhs);
 
             // Xóa tất cả ChiTietSanPhams liên quan đến sản phẩm
             _context.ChiTietSanPhams.RemoveRange(sanPham.ChiTietSanPhams);
@@ -484,7 +487,7 @@ namespace WebView.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
 
             // Thêm thông báo thành công
-            TempData["success"] = "Xóa sản phẩm và thuộc tính thành công!";
+            TempData["success"] = "Xóa sản phẩm, thuộc tính và hình ảnh thành công!";
 
             // Chuyển hướng về trang danh sách sản phẩm
             return RedirectToAction("Index");
