@@ -78,7 +78,7 @@
     @* Thêm số lượng voucher *@
     <div class="form-group">
         <label asp-for="SoLuong">Số lượng</label>
-        <input asp-for="SoLuong" class="form-control" type="number" min="1" />
+        <input asp-for="SoLuong" class="form-control" type="number" min="1" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" />
         <span asp-validation-for="SoLuong" class="text-danger"></span>
     </div>
 
@@ -122,6 +122,29 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            // Lấy input số lượng
+            const soLuongInput = $('input[name="SoLuong"]');
+
+            // Ngăn nhập số âm và ký tự không phải số
+            soLuongInput.on('input', function () {
+                let value = $(this).val();
+                // Chỉ cho phép số dương và loại bỏ ký tự không phải số
+                if (value < 1 || isNaN(value)) {
+                    $(this).val(1); // Đặt lại giá trị tối thiểu là 1
+                } else {
+                    $(this).val(Math.floor(value)); // Chỉ lấy số nguyên
+                }
+            });
+
+            // Ngăn paste ký tự không hợp lệ
+            soLuongInput.on('paste', function (e) {
+                e.preventDefault();
+                alert('Vui lòng nhập số lượng bằng tay, không được dán!');
+            });
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const loaiGiamGia = document.getElementById("LoaiGiamGia");
