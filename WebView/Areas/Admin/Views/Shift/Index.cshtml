@@ -1,0 +1,83 @@
+﻿@using WebView.Areas.Admin.ViewModels
+@model List<Schedule>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-center mb-0">Lịch làm việc</h2>
+            <a asp-action="CreateSchedule" asp-controller="Shift" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm lịch trình
+            </a>
+        </div>
+
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th style="width: 20%">Ngày</th>
+                    <th style="width: 30%">Ca làm việc</th>
+                    <th style="width: 40%">Nhân viên</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var schedule in Model)
+                    {
+                        <tr>
+                            <td rowspan="@(schedule.Shifts.Count + 1)">
+                                @schedule.Date.ToString("dd/MM/yyyy")
+                                <div class="mt-2">
+                                    <a asp-controller="Shift"
+                                       asp-action="Details"
+                                       asp-route-id="@schedule.Id_NgayLamViec"
+                                       class="btn btn-sm btn-block btn-info">
+                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        @foreach (var shift in schedule.Shifts)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@shift.ShiftName</strong><br>
+                                    <small class="text-muted">@shift.StartTime - @shift.EndTime</small>
+                                </td>
+                                <td>
+                                    @foreach (var employee in shift.Employees)
+                                    {
+                                        <div class="mb-1">
+                                            <span class="badge badge-primary">@employee.Role</span>
+                                            @employee.Name
+                                        </div>
+                                    }
+                                </td>
+                                
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            Không có lịch làm việc nào
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

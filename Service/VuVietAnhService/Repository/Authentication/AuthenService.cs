@@ -40,7 +40,7 @@ namespace Service.VuVietAnhService.Repository.Authentication
             new Claim(JwtRegisteredClaimNames.Sub, nhanvienDTO.TaiKhoan),
             new Claim(JwtRegisteredClaimNames.Name, nhanvienDTO.TenNhanVien),
             new Claim("RoleId", nhanvienDTO.Id_ChucVu.ToString()), // lưu id_chucvu
-            new Claim(ClaimTypes.Role, roleName) // Lưu `ten_chucvu` sau khi tra cứu
+            new Claim(ClaimTypes.Role, roleName) // Lưu `ten_chucvu` sau khi tra cứu roleName
             };
 
             var jwtSettings = _configuration.GetSection("JwtSettings");

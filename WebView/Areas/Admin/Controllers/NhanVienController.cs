@@ -1,10 +1,12 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebView.NghiaDTO;
 
 [Area("Admin")]
+[Authorize(Roles ="admin")]
 public class NhanVienController : Controller
 {
     private readonly WebBanQuanAoDbContext _context;

@@ -9,7 +9,7 @@ namespace DTO.VuvietanhDTO.Calamviecs
 {
     public class CaLamViecDTO
     {
-
+        public int Id { get; set; }
         public EnumTenCa TenCa { get; set; }
         public TimeSpan GioBatDau { get; set; }
         public TimeSpan GioKetThuc { get; set; }

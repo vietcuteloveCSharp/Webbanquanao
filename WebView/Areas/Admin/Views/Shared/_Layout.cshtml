@@ -264,7 +264,7 @@
         <div class="header-right">
             <a href="/bantaiquay/bannhanh"><i class="fas fa-store"></i> Bán tại quầy</a>
             <a href="/BanHangOnline"><i class="fas fa-home"></i> Trang chủ</a>
-            <a href="/Admin"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            <a asp-controller="Account" asp-action="Logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
 
         </div>
     </header>
@@ -297,7 +297,7 @@
             <ul>
                 <li><a asp-controller="KhachHang" asp-action="Index"><i class="fa fa-users"></i><span>Quản lý người dùng</span></a></li>
                 <li><a asp-controller="NhanVien" asp-action="Index"><i class="fa fa-users"></i><span>Quản lý nhân viên</span></a></li>
-                <li><a asp-controller="Shift" asp-action="ShiftView"><i class="fa fa-calendar"></i><span>Quản lý lịch làm việc</span></a></li>
+                @* <li><a asp-controller="Shift" asp-action="Index"><i class="fa fa-calendar"></i><span>Quản lý lịch làm việc</span></a></li> *@
             </ul>
         </div>
         <div class="sidebar-group">

@@ -98,7 +98,7 @@ namespace Service.VuVietAnhService.Repository.Canhanvien
         public async Task<IEnumerable<NhanvienDTO>> GetNhanVienByCa(int idCaLamViec)
         {
             var nhanViens = await _context.Canhanviens
-            .Where(cnv => cnv.IdCaLamViec == idCaLamViec)
+            .Where(cnv => cnv.IdCaLamViec == idCaLamViec)   
             .Select(cnv => cnv.NhanVien)
             .ToListAsync();
             var data = _mapper.Map<IEnumerable<NhanvienDTO>>(nhanViens);
