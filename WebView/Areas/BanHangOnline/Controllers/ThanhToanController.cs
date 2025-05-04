@@ -176,7 +176,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // Xác định số lượng trong giỏ hàng <= so lượng trong sản phẩm chi tiết
             var lstGioHang = await _context.GioHangs.Include(x => x.ChiTietSanPham).ThenInclude(a => a.SanPham)
                 .Where(x => x.ChiTietSanPham != null && x.ChiTietSanPham.SanPham != null)
-                .Where(x => x.ChiTietSanPham.SoLuong > 0)
+                .Where(x => x.ChiTietSanPham.SoLuong >= 0)
                 .Where(x => x.SoLuong > 0 && x.SoLuong <= x.ChiTietSanPham.SoLuong)
                 .Where(x => x.Id_KhachHang == tk.Id).ToListAsync();
 
@@ -458,9 +458,49 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 ViewData["message"] = "Thanh toán thất bại";
                 return View("ThanhToanThatBai");
             }
+
+
             // xác nhận thành công thanh toán
             if (response.VnPayResponseCode == "00")
             {
+                // kiểm tra số lượng sản phẩm trong chi tiết sản phẩm có đủ hàng để thực hiện thanh toán hay không?
+                var listSPCTTrongHoaDon = hoaDon.ChiTietHoaDons.Select(x => new
+                {
+                    id = x.Id_ChiTietSanPham,
+                    soluong = x.SoLuong
+                }).ToList();
+                foreach (var item in listSPCTTrongHoaDon)
+                {
+                    if (_context.ChiTietSanPhams.Any(x => item.id == x.Id && x.SoLuong < item.soluong))
+                    {
+                        hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.HuyDon;
+                        _context.SaveChanges();
+
+                        // refund số tiền khách hàng đã thanh toán
+                        string vnp_Url = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+                        var content = _vnPayService.RefundPayment(new RefundRequest()
+                        {
+                            Amount = (response.Amount),
+                            TransactionDate = response.VnpDate,
+                            TransactionNo = response.TransactionId,
+                            TransactionType = "02",
+                            TxnRef = response.VnpTxnRef
+                        }, HttpContext);
+
+                        using (var client = new HttpClient())
+                        {
+
+                            var responseRefund = client.PostAsync(vnp_Url, content).Result;
+                            var responseContent = responseRefund.Content.ReadAsStringAsync().Result;
+
+                            var vnpayRefundResponse = JsonConvert.DeserializeObject<VnpayRefundResponse>(responseContent);
+
+                            ViewData["message"] = "Thanh toán thất bại";
+                            return View("ThanhToanThatBai");
+                        }
+                    }
+                }
+
                 // thay đổi trạng thái của hóa đơn
                 hoaDon.TrangThai = Enum.EnumVVA.ETrangThaiHD.DaXacNhan;
                 _context.SaveChanges();

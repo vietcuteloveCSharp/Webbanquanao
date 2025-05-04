@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using WebView.Areas.BanHangOnline.HoangDTO;
@@ -64,12 +65,83 @@ namespace WebView.Services.Vnpay
             context.Session.SetString("SessionThanhToan", JsonConvert.SerializeObject(lstSessionThanhToan));
             return paymentUrl;
         }
+
+        public StringContent RefundPayment(RefundRequest request, HttpContext context)
+        {
+
+            var pay = new VnPayLibrary();
+
+            var vnp_Amount = request.Amount * 100; // VnPay tính amount theo cent
+            var vnp_CreateDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var vnp_TransactionDate = request.TransactionDate; // Thời gian giao dịch gốc
+            var vnp_TransactionNo = request.TransactionNo; // Mã giao dịch gốc
+            var vnp_TxnRef = request.TxnRef; // Mã tham chiếu giao dịch
+            var vnp_CreateBy = request.CreateBy; // Người yêu cầu refund
+            var vnp_TransactionType = "02"; // Loại giao dịch refund (02: Hoàn toàn, 03: Hoàn 1 phần)
+            var vnp_OrderInfo = $"Refund for transaction {vnp_TxnRef}";
+
+            // Tạo dictionary chứa các tham số
+            var vnp_Params = new Dictionary<string, string>
+                {
+                    { "vnp_RequestId", GenerateRandomCode() },
+                    { "vnp_Version",  _configuration["Vnpay:Version"] },
+                    { "vnp_Command", "refund" },
+                    { "vnp_TmnCode",  _configuration["Vnpay:TmnCode"] },
+                    { "vnp_TransactionType", vnp_TransactionType },
+                    { "vnp_TxnRef", vnp_TxnRef },
+                    { "vnp_Amount", vnp_Amount.ToString() },
+                    { "vnp_OrderInfo", vnp_OrderInfo },
+                    { "vnp_TransactionNo", vnp_TransactionNo },
+                    { "vnp_TransactionDate", vnp_TransactionDate },
+                    { "vnp_CreateBy", vnp_CreateBy },
+                    { "vnp_CreateDate", vnp_CreateDate },
+                    { "vnp_IpAddr", pay.GetIpAddress(context) },
+                };
+
+            // Tạo chữ ký
+            string signData = string.Join("|", new[]
+            {
+                    vnp_Params["vnp_RequestId"],
+                    vnp_Params["vnp_Version"],
+                    vnp_Params["vnp_Command"],
+                    vnp_Params["vnp_TmnCode"],
+                    vnp_Params["vnp_TransactionType"],
+                    vnp_Params["vnp_TxnRef"],
+                    vnp_Params["vnp_Amount"],
+                    vnp_Params["vnp_TransactionNo"],
+                    vnp_Params["vnp_TransactionDate"],
+                    vnp_Params["vnp_CreateBy"],
+                    vnp_Params["vnp_CreateDate"],
+                    vnp_Params["vnp_IpAddr"],
+                    vnp_Params["vnp_OrderInfo"],
+                });
+
+            string vnp_SecureHash = HmacSHA512(_configuration["Vnpay:HashSecret"], signData);
+            vnp_Params.Add("vnp_SecureHash", vnp_SecureHash);
+            var content = new StringContent(JsonConvert.SerializeObject(vnp_Params), Encoding.UTF8, "application/json");
+            return content;
+        }
         public PaymentResponseModel PaymentExecute(IQueryCollection collections)
         {
             var pay = new VnPayLibrary();
             var response = pay.GetFullResponseData(collections, _configuration["Vnpay:HashSecret"]);
 
             return response;
+        }
+        private string HmacSHA512(string key, string inputData)
+        {
+            var hash = new StringBuilder();
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputData);
+            using (var hmac = new HMACSHA512(keyBytes))
+            {
+                byte[] hashValue = hmac.ComputeHash(inputBytes);
+                foreach (var theByte in hashValue)
+                {
+                    hash.Append(theByte.ToString("x2"));
+                }
+            }
+            return hash.ToString();
         }
         static string RemoveVietnameseAccentsAndSpecialCharacters(string text)
         {
@@ -114,6 +186,15 @@ namespace WebView.Services.Vnpay
 
             // Kết hợp thành chuỗi định dạng yyyyMMddHHmmss
             return $"{yyyy}{MM}{dd}{HH}{mm}{ss}";
+        }
+
+        private static readonly Random _random = new Random();
+        private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        public static string GenerateRandomCode()
+        {
+            return new string(Enumerable.Repeat(Characters, 32)
+                .Select(s => s[_random.Next(s.Length)]).ToArray());
         }
 
     }

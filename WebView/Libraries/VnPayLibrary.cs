@@ -29,6 +29,8 @@ namespace WebView.Libraries
             decimal amount = decimal.Parse(vnPay.GetResponseData("vnp_Amount"));
             var vnpSecureHash = collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value; //hash của dữ liệu trả về
             var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
+            var vnpDate = vnPay.GetResponseData("vnp_PayDate");
+
             var checkSignature =
                 vnPay.ValidateSignature(vnpSecureHash, hashSecret); //check Signature
             if (!checkSignature)
@@ -46,7 +48,8 @@ namespace WebView.Libraries
                 TransactionId = vnPayTranId.ToString(),
                 Token = vnpSecureHash,
                 VnPayResponseCode = vnpResponseCode,
-                Amount = amount / 100
+                Amount = amount / 100,
+                VnpDate = vnpDate,
             };
         }
         public string GetIpAddress(HttpContext context)
