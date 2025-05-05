@@ -66,12 +66,20 @@ namespace WebView.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra thời gian kết thúc không được trong quá khứ
+                if (maGiamGiaDto.ThoiGianKetThuc < DateTime.Now)
+                {
+                    ModelState.AddModelError("ThoiGianKetThuc", "Thời gian kết thúc không được trong quá khứ.");
+                    return View(maGiamGiaDto);
+                }
+
                 // Kiểm tra điều kiện đối với coupon hoặc voucher
                 if (!maGiamGiaDto.ValidateCouponOrVoucher())
                 {
                     ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin cho loại giảm giá đã chọn.");
                     return View(maGiamGiaDto);
                 }
+
                 // Kiểm tra trùng tên mã giảm giá
                 var existingCoupon = await _context.MaGiamGias
                     .FirstOrDefaultAsync(m => m.Ten == maGiamGiaDto.Ten);
@@ -81,6 +89,7 @@ namespace WebView.Areas.Admin.Controllers
                     ModelState.AddModelError("Ten", "Tên mã giảm giá đã tồn tại.");
                     return View(maGiamGiaDto);
                 }
+
                 // Lưu thông tin mã giảm giá vào cơ sở dữ liệu
                 var entity = new MaGiamGia
                 {
@@ -93,7 +102,7 @@ namespace WebView.Areas.Admin.Controllers
                     ThoiGianTao = DateTime.Now,
                     ThoiGianKetThuc = maGiamGiaDto.ThoiGianKetThuc,
                     DieuKienGiamGia = maGiamGiaDto.DieuKienGiamGia ?? 0,
-                    SoLuong = maGiamGiaDto.SoLuong, // Lưu số lượng
+                    SoLuong = maGiamGiaDto.SoLuong,
                     SoLuongDaSuDung = 0
                 };
 
@@ -120,8 +129,6 @@ namespace WebView.Areas.Admin.Controllers
             TempData["error"] = "Có lỗi xảy ra, vui lòng kiểm tra lại!";
             return View(maGiamGiaDto);
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -170,15 +177,21 @@ namespace WebView.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra thời gian kết thúc không được trong quá khứ
+                if (maGiamGiaDto.ThoiGianKetThuc < DateTime.Now)
+                {
+                    ModelState.AddModelError("ThoiGianKetThuc", "Thời gian kết thúc không được trong quá khứ.");
+                    return View(maGiamGiaDto);
+                }
+
                 // Kiểm tra xem mã giảm giá có đang được áp dụng trong ChiTietMaGiamGias không
                 var hasApplied = await _context.ChiTietMaGiamGias
                                                .AnyAsync(ct => ct.Id_MaGiamGia == maGiamGiaDto.Id);
 
                 if (hasApplied)
                 {
-                    // Nếu mã giảm giá đã được áp dụng, không cho phép sửa và thông báo lỗi
                     TempData["error"] = "Không thể sửa mã giảm giá này vì nó đã được áp dụng.";
-                    return RedirectToAction(nameof(Index)); // Trở lại trang danh sách
+                    return RedirectToAction(nameof(Index));
                 }
 
                 // Kiểm tra xem tên mã giảm giá đã tồn tại chưa
@@ -196,7 +209,7 @@ namespace WebView.Areas.Admin.Controllers
 
                 if (entity == null)
                 {
-                    return NotFound(); // Nếu không tìm thấy mã giảm giá cần sửa
+                    return NotFound();
                 }
 
                 // Cập nhật các thông tin chung
@@ -205,19 +218,21 @@ namespace WebView.Areas.Admin.Controllers
                 entity.NoiDung = maGiamGiaDto.NoiDung;
                 entity.GiaTriToiDa = maGiamGiaDto.GiaTriToiDa ?? 0;
                 entity.TrangThai = maGiamGiaDto.TrangThai;
-                entity.ThoiGianKetThuc = maGiamGiaDto.ThoiGianKetThuc ?? DateTime.Now; // Nếu ThoiGianKetThuc là null thì mặc định là ngày hiện tại
+                entity.ThoiGianKetThuc = maGiamGiaDto.ThoiGianKetThuc;
                 entity.DieuKienGiamGia = maGiamGiaDto.DieuKienGiamGia ?? 0;
-                entity.SoLuong = maGiamGiaDto.SoLuong; // Cập nhật số lượng
+                entity.SoLuong = maGiamGiaDto.SoLuong;
                 entity.SoLuongDaSuDung = maGiamGiaDto.SoLuongDaSuDung;
 
                 // Cập nhật các trường tùy theo loại giảm giá
                 if (maGiamGiaDto.LoaiGiamGia == 0) // Coupon
                 {
                     entity.GiaTriGiam = maGiamGiaDto.GiaTriGiam ?? 0;
+                    entity.MenhGia = 0; // Đặt lại MenhGia nếu chuyển sang Coupon
                 }
                 else if (maGiamGiaDto.LoaiGiamGia == 1) // Voucher
                 {
                     entity.MenhGia = maGiamGiaDto.MenhGia ?? 0;
+                    entity.GiaTriGiam = 0; // Đặt lại GiaTriGiam nếu chuyển sang Voucher
                 }
 
                 _context.MaGiamGias.Update(entity);
@@ -227,6 +242,7 @@ namespace WebView.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            TempData["error"] = "Có lỗi xảy ra, vui lòng kiểm tra lại!";
             return View(maGiamGiaDto);
         }
 

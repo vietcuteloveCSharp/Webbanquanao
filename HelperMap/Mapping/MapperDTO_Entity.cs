@@ -202,7 +202,9 @@ namespace HelperMap.Mapping
             CreateMap<UpdateTrangThaiDTO, HoaDon>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.TrangThai, opt => opt.MapFrom(src => src.TrangThai))
+                .ForMember(dest => dest.DiaChiGiaoHang, opt => opt.MapFrom(src => src.diaChiGiaoHang))
                 .ForMember(dest => dest.Id_NhanVien, opt => opt.MapFrom(src => src.Id_NhanVien));
+
             CreateMap<HoaDonDTO, HoaDon>()
               .ForMember(dest => dest.TongTien, opt => opt.MapFrom(src => src.TongTien))
                 .ForMember(dest => dest.PhiVanChuyen, opt => opt.MapFrom(src => src.PhiVanChuyen))

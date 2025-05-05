@@ -12,6 +12,7 @@ namespace DTO.VuvietanhDTO.HoadonsDTO
     {
         public int Id { get; set; }
         public ETrangThaiHD TrangThai { get; set; }
+        public string diaChiGiaoHang { get; set; }
         public int Id_NhanVien { get; set; }
    
     }

@@ -35,10 +35,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // lấy list hình ảnh
             var lstIdSp = lstSpTheoDm.Select(x => x.Id)?.Distinct()?.ToList();
             var lstSp = await _context.SanPhams.Include(x => x.ChiTietSanPhams)
-                .Where(x => x.TrangThai)
+                .Where(x => x.TrangThai == true)
                 .Where(x => lstIdSp.Contains(x.Id))
                 .Where(x => x.SoLuong > 0)
                 .Where(x => x.ChiTietSanPhams != null && x.ChiTietSanPhams.Count != 0)
+
                 .OrderByDescending(x => x.Id).ThenBy(x => x.NgayCapNhat)
                 .ToListAsync();
             var lstHinhAnh = await _context.HinhAnhs.Where(x => lstIdSp.Contains((int)x.Id_SanPham)).ToListAsync();

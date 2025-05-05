@@ -80,13 +80,11 @@
         <input asp-for="ThoiGianTao" class="form-control" type="datetime-local" value="@Model.ThoiGianTao.ToString("yyyy-MM-ddTHH:mm")" readonly />
     </div>
 
-    @* Thời gian kết thúc *@
     <div class="form-group">
         <label asp-for="ThoiGianKetThuc"></label>
-        <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" />
+        <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" id="ThoiGianKetThuc" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
         <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
     </div>
-
     @* Số lượng mã giảm giá *@
     <div class="form-group">
         <label asp-for="SoLuong">Số lượng</label>
@@ -147,6 +145,18 @@
             soLuongInput.on('keydown', function (e) {
                 if (e.key === '0' && $(this).val().length === 0) {
                     e.preventDefault();
+                }
+            });
+            // Xác thực thời gian kết thúc
+            const thoiGianKetThucInput = document.getElementById("ThoiGianKetThuc");
+            thoiGianKetThucInput.addEventListener("change", function () {
+                const selectedDate = new Date(this.value);
+                const now = new Date();
+                if (selectedDate < now) {
+                    this.setCustomValidity("Thời gian kết thúc không được trong quá khứ.");
+                    this.reportValidity();
+                } else {
+                    this.setCustomValidity(""); // Xóa thông báo lỗi nếu hợp lệ
                 }
             });
         });

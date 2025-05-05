@@ -91,10 +91,21 @@
                     <label for="PhiVanChuyen">Phí vận chuyển:</label>
                     <input type="text" id="PhiVanChuyen" name="PhiVanChuyen" class="form-control" value="@Model.PhiVanChuyen" readonly>
                 </div>
-                <div class="col-md-6 form-group">
-                    <label for="DiaChiGiapHang">Địa chỉ giao hàng:</label>
-                    <input type="text" id="DiaChiGiaoHang" name="DiaChiGiaoHang" class="form-control" value="@Model.DiaChiGiaoHang" readonly>
-                </div>
+                @if (Model.TrangThai == ETrangThaiHD.DaXacNhan || Model.TrangThai == ETrangThaiHD.ChoXacNhan)
+                {
+                    <div class="col-md-6 form-group">
+                        <label for="DiaChiGiapHang">Địa chỉ giao hàng:</label>
+                        <input type="text" id="DiaChiGiaoHang" name="DiaChiGiaoHang" class="form-control" value="@Model.DiaChiGiaoHang" >
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6 form-group">
+                        <label for="DiaChiGiapHang">Địa chỉ giao hàng:</label>
+                        <input type="text" id="DiaChiGiaoHang" name="DiaChiGiaoHang" class="form-control" value="@Model.DiaChiGiaoHang" readonly>
+                    </div>
+                }
+
             </div>
 
             <div class="row">
@@ -144,41 +155,42 @@
                 @switch (@Enum.GetName(typeof(ETrangThaiHD), Model.TrangThai))
                 {
                     case "ChoXacNhan":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
-                        <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                            <option value="1" selected disabled>Chờ xác nhận</option>
+                        <label for="TrangThai">Trạng thái:</label>
+                        <select id="TrangThai" name="TrangThai" class="form-control">
+                            <option value="" selected disabled>Chọn trạng thái</option>
                             <option value="3">Đã xác nhận</option>
                             <option value="6">Hủy đơn</option>
                         </select>
                         break;
                     case "DaXacNhan":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
-                        <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                            <option value="3" selected disabled>Đã xác nhận</option>
+                        <label for="TrangThai">Trạng thái:</label>
+                        <select id="TrangThai" name="TrangThai" class="form-control">
+                            <option value="" selected disabled>Chọn trạng thái</option>
                             <option value="4">Đang vận chuyển</option>
                             <option value="6">Hủy đơn</option>
                         </select>
                         break;
                     case "ChoThanhToan":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
-                        <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                            <option value="2" selected disabled>Chờ thanh toán</option>
+                        <label for="TrangThai">Trạng thái:</label>
+                        <select id="TrangThai" name="TrangThai" class="form-control">
+                            <option value="" selected disabled>Chọn trạng thái</option>
                             <option value="3">Đã xác nhận</option>
+                            <option value="5">Hoàn thành đơn</option>
                         </select>
                         break;
                     case "DangVanChuyen":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
-                        <select id="@Model.TrangThai" name="TrangThai" class="form-control">
-                            <option value="4" selected disabled>Đang vận chuyển</option>
+                        <label for="TrangThai">Trạng thái:</label>
+                        <select id="TrangThai" name="TrangThai" class="form-control">
+                            <option value="" selected disabled>Chọn trạng thái</option>
                             <option value="5">Hoàn thành đơn</option>
                         </select>
                         break;
                     case "HoanThanhDon":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
+                        <label for="TrangThai">Trạng thái:</label>
                         <input type="text" id="TrangThai" name="TrangThai" class="form-control" value="@Model.TrangThai" readonly>
                         break;
                     case "HuyDon":
-                        <label for="@Model.TrangThai">Trạng thái:</label>
+                        <label for="TrangThai">Trạng thái:</label>
                         <input type="text" id="TrangThai" name="TrangThai" class="form-control" value="@Model.TrangThai" readonly>
                         break;
                 }

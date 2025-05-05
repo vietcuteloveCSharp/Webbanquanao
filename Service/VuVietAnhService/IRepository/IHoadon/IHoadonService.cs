@@ -11,7 +11,7 @@ namespace Service.VuVietAnhService.IRepository.IHoadon
     public interface IHoadonService
     { 
         Task<HoaDonDTO> GetHoaDonById(int id);
-        Task<UpdateTrangThaiDTO> UpdateTrangThai(int id, ETrangThaiHD eTrangThaiHD);
+        Task<UpdateTrangThaiDTO> UpdateTrangThai(int id, ETrangThaiHD eTrangThaiHD, string diaChiGiaoHang);
         Task<IEnumerable<FullHoaDonDTO>> GetAllHoaDon();
 
     }

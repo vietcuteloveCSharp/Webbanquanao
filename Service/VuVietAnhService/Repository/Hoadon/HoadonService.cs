@@ -34,7 +34,7 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             return _mapper.Map<HoaDonDTO>(hoaDon);
         }
 
-        public async Task<UpdateTrangThaiDTO> UpdateTrangThai(int id, ETrangThaiHD nextTrangThaiHD)
+        public async Task<UpdateTrangThaiDTO> UpdateTrangThai(int id, ETrangThaiHD nextTrangThaiHD,string diaChiGiaoHang)
         {
             var hoaDon = await _context.HoaDons.FindAsync(id);
             if (hoaDon == null)
@@ -71,6 +71,7 @@ namespace Service.VuVietAnhService.Repository.Hoadon
                     }
                 }   
             }
+            hoaDon.DiaChiGiaoHang=diaChiGiaoHang;
             // Lưu thay đổi vào cơ sở dữ liệu
             _context.HoaDons.Update(hoaDon);
             await _context.SaveChangesAsync();
@@ -85,8 +86,9 @@ namespace Service.VuVietAnhService.Repository.Hoadon
             if ((int)next <= (int)current)
             {
                 throw new InvalidOperationException(
-                $"Không thể chuyển trạng thái từ '{current}' sang '{next}'.");
+                    $"Không thể chuyển trạng thái từ '{current}' sang '{next}'.");
             }
+
             var isValid = current switch
             {
                 // Chờ xác nhận: Có thể chuyển sang "Đã xác nhận" hoặc "Hủy đơn"
@@ -99,19 +101,17 @@ namespace Service.VuVietAnhService.Repository.Hoadon
                 ETrangThaiHD.ChoThanhToan =>
                     next != ETrangThaiHD.HuyDon &&
                     (next == ETrangThaiHD.DaXacNhan || next == ETrangThaiHD.HoanThanhDon),
-                // Đang vận chuyển: Không thể chuyển sang "Hủy đơn"
+                // Đang vận chuyển: Chỉ có thể chuyển sang "Hoàn thành đơn"
                 ETrangThaiHD.DangVanChuyen =>
                     next == ETrangThaiHD.HoanThanhDon,
-
                 // Hoàn thành đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HoanThanhDon => false,
-
                 // Hủy đơn: Không thể chuyển tiếp
                 ETrangThaiHD.HuyDon => false,
-
                 // Mặc định: Không hợp lệ
                 _ => false
             };
+
             if (!isValid)
             {
                 throw new InvalidOperationException(

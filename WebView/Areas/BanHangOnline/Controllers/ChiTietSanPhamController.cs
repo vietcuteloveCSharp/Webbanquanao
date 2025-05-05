@@ -178,6 +178,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                 x = int.Parse(x)
             }).Distinct().Select(x => x.x).ToList();
             var lstSp = await _context.SanPhams.Where(x => lstIdSp.Contains(x.Id))
+                  .Where(x => x.TrangThai == true)
                 .Select(x => new
                 {
                     Id = x.Id,
@@ -188,6 +189,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     PhamTramGiamGia = 0,
                     Id_DanhMuc = x.Id_DanhMuc
                 }).ToListAsync();
+
             var lstIdDm = lstSp.Select(x => x.Id_DanhMuc).Distinct().ToList();
 
             // Kiểm tra các sản phẩm có khuyến mại hay ko

@@ -69,10 +69,10 @@
         <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>
 
-    @* Thời gian kết thúc *@
     <div class="form-group">
         <label asp-for="ThoiGianKetThuc"></label>
-        <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" />
+        <input asp-for="ThoiGianKetThuc" class="form-control" type="datetime-local" id="ThoiGianKetThuc" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+        <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
     </div>
 
     @* Thêm số lượng voucher *@
@@ -142,6 +142,18 @@
             soLuongInput.on('paste', function (e) {
                 e.preventDefault();
                 alert('Vui lòng nhập số lượng bằng tay, không được dán!');
+            });
+            // Validation cho thời gian kết thúc
+            const thoiGianKetThucInput = document.getElementById("ThoiGianKetThuc");
+            thoiGianKetThucInput.addEventListener("change", function () {
+                const selectedDate = new Date(this.value);
+                const now = new Date();
+                if (selectedDate < now) {
+                    this.setCustomValidity("Thời gian kết thúc không được trong quá khứ.");
+                    this.reportValidity();
+                } else {
+                    this.setCustomValidity(""); // Xóa thông báo lỗi nếu hợp lệ
+                }
             });
         });
     </script>

@@ -57,12 +57,12 @@ namespace WebAPI.Controllers
         /// <param name="nextTrangThai">Trạng thái mới</param>
         /// <returns>Kết quả cập nhật</returns>
         [HttpPut("{id}/update-trangthai-hoadon")]
-        public async Task<IActionResult> UpdateTrangThaiHoaDon(int id, ETrangThaiHD nextTrangThai)
+        public async Task<IActionResult> UpdateTrangThaiHoaDon(int id, ETrangThaiHD nextTrangThai,string diaChiGiaoHang)
         {
             try
             {
                 // Gọi service để cập nhật trạng thái
-                var result = await _hoaDonService.UpdateTrangThai(id, nextTrangThai);
+                var result = await _hoaDonService.UpdateTrangThai(id, nextTrangThai,diaChiGiaoHang);
 
                 // Trả về kết quả thành công
                 return Ok(new

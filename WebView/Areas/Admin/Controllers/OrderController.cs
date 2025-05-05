@@ -142,8 +142,8 @@ namespace WebView.Areas.Admin.Controllers
                         client.BaseAddress = new Uri(ApiUri);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        var response = await client.PutAsJsonAsync($"{ApiUri}/Hoadon/{hoadonView.Id}/update-trangthai-hoadon?nextTrangThai={hoadonView.TrangThai}", new { status = hoadonView.TrangThai });
+                    
+                        var response = await client.PutAsJsonAsync($"{ApiUri}/Hoadon/{hoadonView.Id}/update-trangthai-hoadon?nextTrangThai={hoadonView.TrangThai}&diaChiGiaoHang={hoadonView.DiaChiGiaoHang}", new { status = hoadonView.TrangThai , diachigiahang=hoadonView.DiaChiGiaoHang });
 
                         if (response.IsSuccessStatusCode)
                         {
