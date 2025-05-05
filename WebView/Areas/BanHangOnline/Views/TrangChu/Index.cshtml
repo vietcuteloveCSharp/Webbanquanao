@@ -202,7 +202,7 @@
 
 @* danh sach san pham *@
 <div class="container-fluid content mt-4">
-    @if (lstSanPham != null && lstSanPham.DictionarySanPham.Any())
+    @if (lstSanPham.DictionarySanPham != null && lstSanPham.DictionarySanPham.Any())
     {
        foreach (var item in lstSanPham.DictionarySanPham)
         {
@@ -230,11 +230,11 @@
                                 </a>
                                 <div class="d-flex flex-column justify-content-start">
                                         <h4><a href="/BanHangOnline/ChiTietSanPham/GetSanPhamChiTiet?id=@sp.Id" class="product-item-name">@sp.Ten</a></h4>
-                                    <p class="price">@sp.GiaBan vnd</p>
+                                    <p class="price">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", sp.GiaBan)</p>
                                     @if (sp.GiaBanDau != sp.GiaBan)
                                         {
                                             <div class="d-flex justify-content-start">
-                                                <p class="old-price">@sp.GiaBanDau vnd</p>
+                                                <p class="old-price">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", sp.GiaBanDau)</p>
                                                 <p class="discount">-@(TinhPhanTramGiamGia(sp.GiaBanDau, sp.GiaBan))%</p>
                                             </div>
                                         }

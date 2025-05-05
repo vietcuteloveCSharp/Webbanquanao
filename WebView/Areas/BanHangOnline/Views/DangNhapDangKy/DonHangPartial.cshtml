@@ -62,7 +62,7 @@
                                             <td>@count</td>
                                             <td>@item.SoLuongSp sản phẩm</td>
                                             <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
-                                            <td class="text-danger">@item.TongTien.ToString("C", CultureInfo.GetCultureInfo("vi-VN")) </td>
+                                            <td class="text-danger">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.TongTien) </td>
                                             @switch (item.TrangThai)
                                             {
                                                 case 1:
@@ -141,7 +141,7 @@
                                                 <td>@count</td>
                                                 <td>@item.SoLuongSp sản phẩm</td>
                                                 <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
-                                                <td class="text-danger">@item.TongTien.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                                <td class="text-danger">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.TongTien)</td>
                                                 <td class="text-danger">Đơn hàng đã hoàn thành</td>
                                                 <td>
                                                     <a href="/BanHangOnline/DangNhapdangky/DonHangChiTiet/@item.Id" class="btn btn-light">Xem chi tiết</a>
@@ -198,7 +198,7 @@
                                                 <td>@count</td>
                                                 <td>@item.SoLuongSp sản phẩm</td>
                                                 <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
-                                                <td class="text-danger">@item.TongTien..ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                                <td class="text-danger">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.TongTien)</td>
                                                 <td class="text-danger">Đơn hàng bị hủy</td>
                                                 <td>
                                                     <a href="/BanHangOnline/DangNhapdangky/DonHangChiTiet/@item.Id" class="btn btn-light">Xem chi tiết</a>

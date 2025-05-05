@@ -21,7 +21,7 @@ namespace WebView.Areas.BanHangOnline.Controllers
             DictionarySanPhamResp resp = new DictionarySanPhamResp();
             resp.DictionarySanPham = new Dictionary<DanhMucResp, List<SanPhamResp>>();
             //  lấy danh mục phải có ít nhất 3 sản phẩm trở lên
-            var lstDm = await _context.DanhMucs.Include(x => x.SanPhams).Where(x => x.SanPhams != null).Where(x => x.SanPhams.Count >= 3).ToListAsync();
+            var lstDm = await _context.DanhMucs.Include(x => x.SanPhams).Where(x => x.TrangThai && x.SanPhams != null).Where(x => x.SanPhams.Count >= 3).ToListAsync();
             //var lst5DM = Random5DM(lstDm);
             var lst5DM = lstDm?.TakeLast(5)?.ToList() ?? null;
             if (lst5DM == null)
@@ -35,9 +35,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
             // lấy list hình ảnh
             var lstIdSp = lstSpTheoDm.Select(x => x.Id)?.Distinct()?.ToList();
             var lstSp = await _context.SanPhams.Include(x => x.ChiTietSanPhams)
+                .Where(x => x.TrangThai)
                 .Where(x => lstIdSp.Contains(x.Id))
                 .Where(x => x.SoLuong > 0)
                 .Where(x => x.ChiTietSanPhams != null && x.ChiTietSanPhams.Count != 0)
+                .OrderByDescending(x => x.Id).ThenBy(x => x.NgayCapNhat)
                 .ToListAsync();
             var lstHinhAnh = await _context.HinhAnhs.Where(x => lstIdSp.Contains((int)x.Id_SanPham)).ToListAsync();
             // lấy list khuyến mại theo danh mục
@@ -89,7 +91,11 @@ namespace WebView.Areas.BanHangOnline.Controllers
                     TenDanhMuc = item?.TenDanhMuc,
                     TrangThai = item?.TrangThai,
                 };
-                resp.DictionarySanPham[DanhMucResp] = lstSpResp;
+                if (lstSpResp.Count > 0)
+                {
+
+                    resp.DictionarySanPham[DanhMucResp] = lstSpResp;
+                }
             }
             ViewData["lstSanPham"] = resp;
             return View();
