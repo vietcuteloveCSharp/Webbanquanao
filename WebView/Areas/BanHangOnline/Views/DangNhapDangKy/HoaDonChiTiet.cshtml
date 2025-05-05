@@ -45,10 +45,10 @@
                         @item.Ten
                     </td>
                     <td>
-                        <span class="text-danger">@item.Gia.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</span>
+                        <span class="text-danger">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.Gia)</span>
                     </td>
                     <td>@item.SoLuong</td>
-                    <td>@((item.SoLuong * item.Gia).ToString("C",CultureInfo.GetCultureInfo("vi-VN"))) </td>
+                    <td>@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.Gia * item.SoLuong) </td>
                 </tr>
             }
         </tbody>
@@ -58,12 +58,12 @@
             <tr>
                 <td>Tạm tính</td>
                 <td class="text-end">
-                        @((resp.TongTien - resp.PhiVanChuyen).ToString("C", CultureInfo.GetCultureInfo("vi-VN")))
+                    @String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", resp.TongTien - resp.PhiVanChuyen)
                 </td >
             </tr>
             <tr>
                 <td>Phí vận chuyển</td>
-                <td class="text-end">@resp.PhiVanChuyen.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
+                <td class="text-end"> @String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", resp.PhiVanChuyen)</td>
             </tr>
             @* <tr>
                 <td>Mã giảm giá</td>
@@ -71,7 +71,7 @@
             </tr> *@
             <tr class="fw-bold">
                 <td>Tổng cộng</td>
-                <td class="text-end text-danger">@resp.TongTien.ToString("C", CultureInfo.GetCultureInfo("vi-VN")) </td>
+                <td class="text-end text-danger">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", resp.TongTien)</td>
             </tr>
         </table>
     </div>
