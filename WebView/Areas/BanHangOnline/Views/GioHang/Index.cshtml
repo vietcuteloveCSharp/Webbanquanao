@@ -88,69 +88,62 @@
                         foreach (var item in resp)
                         {
                           
-                    <tr class="mt-2 mb-2">
-                        <td>
-                            <div class="d-flex align-items-center">
-                                        <img src="@item.SanPham.ListHinHAnh.FirstOrDefault().Url"
-                                             style="width: 100px;" alt="hình ảnh @item.SanPham.Ten" class="img-thumbnail me-3">
-                            </div>
-                        </td>
-                        <td>
-                            <div class=" align-items-center">
-                                <h6>@item.SanPham.Ten</h6>
-                                @* <p class="mb-1 text-muted">Mã SP: @item.IdChiTietSanPham</p> *@
-                                <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps?.FirstOrDefault(x=> x.Id == item.IdKichThuoc)?.Ten</span></p>
-                                <p class="mb-1">Màu sắc: <span>@item.MauSacResps?.FirstOrDefault(x=> x.Id == item.IdMauSac)?.Ten</span></p>
-                               @*  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" onclick="GetMauSac(@item.Id)"
-                                        data-bs-target="#modal-giohang-@item.Id">
-                                    Chọn phân loại
-                                </button> *@
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-start">
-                                @if(item.SanPham.GiaBanDau == item.SanPham.GiaBan){
-                                    <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>
-                                }else{
-                                     <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@item.SanPham.GiaBan đ</p>
-                                     <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau đ</p>
-                                }
+                        <tr class="mt-2 mb-2">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                            <img src="@item.SanPham.ListHinHAnh.FirstOrDefault().Url"
+                                                 style="width: 100px;" alt="hình ảnh @item.SanPham.Ten" class="img-thumbnail me-3">
+                                </div>
+                            </td>
+                            <td>
+                                <div class=" align-items-center">
+                                    <h6>@item.SanPham.Ten</h6>
+                                    @* <p class="mb-1 text-muted">Mã SP: @item.IdChiTietSanPham</p> *@
+                                    <p class="mb-1">Kích thước: <span>Size @item.KichThuocResps?.FirstOrDefault(x=> x.Id == item.IdKichThuoc)?.Ten</span></p>
+                                    <p class="mb-1">Màu sắc: <span>@item.MauSacResps?.FirstOrDefault(x=> x.Id == item.IdMauSac)?.Ten</span></p>
+                               
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-start">
+                                    @if(item.SanPham.GiaBanDau == item.SanPham.GiaBan){
+                                        <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SanPham.GiaBan)</p>
+                                    }else{
+                                        <p class="text-danger fw-bold mb-1" id="price@(item.Id)">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SanPham.GiaBan)</p>
+                                         <p class="text-decoration-line-through mb-1">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SanPham.GiaBanDau)</p>
+                                    }
                                 
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <button class="btn btn-sm btn-outline-danger me-2" id="btn-decrease-@item.Id"
-                                        onclick="updateQuantity(@item.Id,-1)">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" id="quantity@(item.Id)" class="form-control text-center" value="@item.SoLuong"
-                                       style="width: 80px;" readonly>
-                                <button class="btn btn-sm btn-outline-primary ms-2" id="btn-increase-@item.Id"
-                                        onclick="updateQuantity(@item.Id,1)">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="position-relative">
-                            <div class="d-flex flex-column align-items-end">
-                                <p class="fw-bold mb-0 text-end position-absolute top-0 end-0 total-price"
-                                   id="total-price-@item.Id">
-                                    @(item.SoLuong * item.SanPham.GiaBan)đ
-                                </p>
-                                <button class="btn btn-link text-danger position-absolute bottom-0 end-0"
-                                        onclick="confirmDelete(@item.Id)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-danger me-2" id="btn-decrease-@item.Id"
+                                            onclick="updateQuantity(@item.Id,-1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="quantity@(item.Id)" class="form-control text-center" value="@item.SoLuong"
+                                           style="width: 80px;" readonly>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" id="btn-increase-@item.Id"
+                                            onclick="updateQuantity(@item.Id,1)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="position-relative">
+                                <div class="d-flex flex-column align-items-end">
+                                    <p class="fw-bold mb-0 text-end position-absolute top-0 end-0 total-price"
+                                       id="total-price-@item.Id">
+                                       @String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SoLuong * item.SanPham.GiaBan)
+                                    </p>
+                                    <button class="btn btn-link text-danger position-absolute bottom-0 end-0"
+                                            onclick="confirmDelete(@item.Id)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
                         }
-                    }
-                    else
-                    {
-                        
                     }
                 </tbody>
             </table>
@@ -160,7 +153,7 @@
                 <h4 class="mb-3">ĐƠN HÀNG</h4>
                 <div class="mb-3 d-flex justify-content-between">
                     <span>Tổng giá trị đơn hàng</span>
-                    <div id="order-total">244.300đ</div>
+                    <div id="order-total">0 vnd</div>
                 </div>
                 @if(resp == null || resp.Count == 0)
                 {
@@ -186,7 +179,7 @@
 <!-- Modal -->
  @if (resp != null && resp.Count > 0)
 {
-foreach (var item in resp)
+    @foreach (var item in resp)
     {
         
 <div class="modal fade" id="modal-giohang-@item.Id"  tabindex="-1" aria-hidden="true">
@@ -202,20 +195,18 @@ foreach (var item in resp)
                                 {
                                     @foreach (var ms in item.MauSacResps)
                                     {
-                                        if (ms.Id == item.IdMauSac)
+                                        @if (ms.Id == item.IdMauSac)
                                         {
-                                        <div class="form-check d-flex align-items-center mb-2" >
-                                            <input class="form-check-input me-2" type="radio" name="mausac@(item.Id)" onclick="GetKichThuoc(@item.Id, @ms.Id)" id="mausac-input-@item.Id-@(ms.Id)"
-                                                   value="@ms.Id" checked>
-                                            <label class="form-check-label d-flex align-items-center" for="mausac-input-@item.Id-@(ms.Id)">
-                                                <div class="me-2 rounded-circle color-model" style="width: 50px;height: 50px;background-color:getHexColor('@ms.Ten')"></div>
-                                                <span>@ms.Ten</span>
-                                            </label>
-                                        </div>
-                                        continue;
-                                        }
-                                    else
-                                    {
+                                            <div class="form-check d-flex align-items-center mb-2" >
+                                                <input class="form-check-input me-2" type="radio" name="mausac@(item.Id)" onclick="GetKichThuoc(@item.Id, @ms.Id)" id="mausac-input-@item.Id-@(ms.Id)"
+                                                       value="@ms.Id" checked>
+                                                <label class="form-check-label d-flex align-items-center" for="mausac-input-@item.Id-@(ms.Id)">
+                                                    <div class="me-2 rounded-circle color-model" style="width: 50px;height: 50px;background-color:getHexColor('@ms.Ten')"></div>
+                                                    <span>@ms.Ten</span>
+                                                </label>
+                                            </div>
+                                            continue;
+                                        }else{
                                         <div class="form-check d-flex align-items-center mb-2">
                                             <input class="form-check-input me-2" type="radio" name="mausac@(item.Id)" onclick="GetKichThuoc(@item.Id, @ms.Id)" id="mausac-input-@item.Id-@(ms.Id)"
                                                    value="@ms.Id">
@@ -224,7 +215,7 @@ foreach (var item in resp)
                                                 <span>@ms.Ten</span>
                                             </label>
                                         </div>
-                                    }
+                                        }
                                     }
                                 }
                     </div>
@@ -274,10 +265,10 @@ foreach (var item in resp)
 
 <script defer>
     // const price = 244300;
-    const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    const formatCurrency = (num) => num.toLocaleString('vi-VN') + ' vnd';
 
     function updateQuantity(index, change) {
-        const price = parseInt(document.getElementById(`price${index}`).innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '.').trim());
+        const price = parseInt(document.getElementById(`price${index}`).innerHTML.replaceAll('vnd', '').replaceAll('.', '').replaceAll(',', '.').trim());
 
         const quantity = document.getElementById(`quantity${index}`);
         // Call API
@@ -317,16 +308,16 @@ foreach (var item in resp)
                 console.error('Error:', error);
             }
         });
-
     }
+
     function updateDonHang() {
         let allTotalPrice = document.querySelectorAll(".total-price");
         let totalPriceSubmit = 0;
         allTotalPrice.forEach(ele => {
-            let priceTotal = parseInt(ele.innerHTML.replaceAll('đ', '').replaceAll('.', '').replaceAll(',', '.').trim());
+            let priceTotal = parseInt(ele.innerHTML.replaceAll('vnd', '').replaceAll('.', '').replaceAll(',', '.').trim());
             totalPriceSubmit += priceTotal;
         });
-        totalPriceSubmit = totalPriceSubmit.toString().replaceAll('.', ',');
+        // totalPriceSubmit = totalPriceSubmit.toString().replaceAll('.', ',');
         $(`#order-total`).text(formatCurrency(totalPriceSubmit));
     }
     updateDonHang();

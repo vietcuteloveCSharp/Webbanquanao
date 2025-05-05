@@ -86,13 +86,13 @@
             <div>
                 <div class="d-flex align-items-center">
                     <input type="radio" class="me-3" name="payment_method" id="vnpay" value="vnpay" onclick="changePaymentMethod()" checked>
-                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="">
-                    <label for="vnpay">Thẻ ATM qua VNPAY</label>
+                   
+                    <label for="vnpay"><img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" style="height: 30px; margin-right:10px;" alt="Ảnh kiểu thanh toán vnpay">Thẻ ATM qua VNPAY</label>
                 </div>
                 <div class="d-flex align-items-center">
                     <input type="radio" class="me-3" name="payment_method" id="cod" value="cod" onclick="changePaymentMethod()">
-                    <img src="https://www.vietcargo.vn/wp-content/uploads/2024/05/hinh-thuc-thanh-toan-cod-la-gi-2-800x400.jpg" style="height: 30px; margin-right:10px;" alt="">
-                    <label for="cod">Thanh toán khi nhận hàng (COD)</label>
+                    
+                    <label for="cod"><img src="https://www.vietcargo.vn/wp-content/uploads/2024/05/hinh-thuc-thanh-toan-cod-la-gi-2-800x400.jpg" style="height: 30px; margin-right:10px;" alt="Ảnh kiểu thanh toán cod">Thanh toán khi nhận hàng (COD)</label>
                 </div>
             </div>
             <hr>
@@ -104,8 +104,8 @@
             <div>
                 <div class="d-flex align-items-center">
                     <input type="radio" class="me-3" name="ship_method" id="ptgh"  value="giaohangnhanh" checked>
-                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;" alt="">
-                    <label for="ptgh">Giao hàng nhanh GHN</label>
+                   
+                    <label for="ptgh"><img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style="height: 30px;margin-right:10px;" alt="Giao hàng nhanh GHN">Giao hàng nhanh GHN</label>
                 </div>
             </div>
         </div>
@@ -146,10 +146,10 @@
                         <input type="text" name="DiaChiGiaoHang" value="" id="diachigiaohang-order" hidden />
                     }
                     <input type="text" name="PhuongThucThanhToan" value="vnpay" id="phuongthucthanhtoan-order" hidden />
-                    <p><strong>Tạm tính:</strong> <span id="subtotal">0 vnđ</span></p>
-                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vnđ</span></p>
-                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vnđ</span></p>
-                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">0 vnđ</span></p>
+                    <p><strong>Tạm tính:</strong> <span id="subtotal">0 vnd</span></p>
+                    <p><strong>Phí vận chuyển:</strong> <span id="shipping-fee">0 vnd</span></p>
+                    <p><strong>Mã giảm giá:</strong> <span id="discount-amount">-0 vnd</span></p>
+                    <p><strong>Tổng thanh toán:</strong> <span id="total-amount">0 vnd</span></p>
                     <button class="btn btn-danger w-100">Đặt hàng</button>
                 </div>
             </form>
@@ -194,10 +194,10 @@
                             </td>
                             <td>
                                 <div class="text-start">
-                                    <p class="text-danger fw-bold mb-1">@item.SanPham.GiaBan vnđ</p>
-                                    @if (item.SanPham.GiaBanDau > 0)
+                                    <p class="text-danger fw-bold mb-1">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SanPham.GiaBan)</p>
+                                    @if (item.SanPham.GiaBanDau != item.SanPham.GiaBan)
                                     {
-                                        <p class="text-decoration-line-through mb-1">@item.SanPham.GiaBanDau vnđ</p>
+                                        <p class="text-danger fw-bold mb-1">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SanPham.GiaBanDau)</p>
                                     }
                                 </div>
                             </td>
@@ -211,7 +211,7 @@
                             <td>
                                 <div class="d-flex flex-column align-items-start">
                                     <p class="fw-bold mb-0 text-start total-price">
-                                        @(item.SoLuong * item.SanPham.GiaBan) vnđ
+                                        @String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:#,##0} vnd", item.SoLuong * item.SanPham.GiaBan)
                                     </p>
                                 </div>
                             </td>
@@ -427,7 +427,8 @@
         return total;
     }
     
-    const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    // const formatCurrency = (num) => num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }); 
+    const formatCurrency = (num) => num.toLocaleString('vi-VN') + ' vnd';
 
     //
     function totalThanhToan() {
@@ -485,11 +486,11 @@
                                 <th scope="row">${index + 1}</th>
                                 <td>${discount.ten}</td>
                                 <td>${discount.loaiGiamGia == 0 ? "Coupon" : "Voucher"}</td>
-                                <td>${menhgia} vnd</td>
+                                <td>${formatCurrency(menhgia)}</td>
                                 <td>${giatrigiam} %</td>
-                                <td>${discount.dieuKienGiamGia} vnd</td>
-                                <td>${giatritoida} vnd</td>
-                                    <td>${discount.thoiGianKetThuc == null ? "" : discount.thoiGianKetThuc}</td>
+                                <td>${formatCurrency(discount.dieuKienGiamGia)}</td>
+                                <td>${formatCurrency(giatritoida)}</td>
+                                <td>${discount.thoiGianKetThuc == null ? "" : discount.thoiGianKetThuc}</td>
                                 <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
                             `;
                 // console.log(newRow);
@@ -524,10 +525,10 @@
                                     <th scope="row">${index + 1}</th>
                                     <td>${discount.ten}</td>
                                     <td>${discount.loaiGiamGia == 0 ? "Coupon" : "Voucher"}</td>
-                                    <td>${menhgia} vnd</td>
+                                    <td>${formatCurrency(menhgia)}</td>
                                     <td>${giatrigiam} %</td>
-                                    <td>${discount.dieuKienGiamGia} vnd</td>
-                                    <td>${giatritoida} vnd</td>
+                                    <td>${formatCurrency(discount.dieuKienGiamGia)}</td>
+                                    <td>${formatCurrency(giatritoida)}</td>
                                     <td>${discount.thoiGianKetThuc == null ? "Sử dụng 1 lần duy nhất" : discount.thoiGianKetThuc}</td>
                                     <td><button class="btn btn-danger m-auto" onclick="ThemPhieuGiamGia(${discount.id})">Thêm</button></td>
                                     `;
@@ -569,7 +570,6 @@
     function ThemPhieuGiamGia(idPhieuGiamGia) {
         const getSessionGiamGia = JSON.parse(sessionStorage.getItem("ListGiamGia"));
         const result = getSessionGiamGia.filter(item => item.id == idPhieuGiamGia);
-        console.log(result);
         var total = changeVndToNumber(subtotal.innerText.trim());
         var maGiamGia = result[0];
         if(total < result[0].dieuKienGiamGia){
@@ -592,7 +592,7 @@
         if (discountAmountNumber > total) {
             discountAmountNumber = total;
         }
-        discountAmount.innerText = `- ${discountAmountNumber} vnd`;
+        discountAmount.innerText = `- ${formatCurrency(discountAmountNumber)}`;
 
         document.getElementById("idmagiamgia-order").value = maGiamGia.id;
         document.getElementById('delete-discount').style = "display: block !important;";
@@ -723,7 +723,7 @@
             });
             const data = await response.json();
         
-            @* let numberRan = Math.random() * 0.09; *@
+            // let numberRan = Math.random() * 0.09; 
             let totalFee = Math.round(data.data.total * 0.1);
             document.getElementById("phivanchuyen-order").value = totalFee;
             feeResult.textContent = `${formatCurrency(totalFee)}`;

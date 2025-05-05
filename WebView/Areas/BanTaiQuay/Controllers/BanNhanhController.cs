@@ -29,70 +29,70 @@ namespace WebView.Areas.BanTaiQuay.Controllers
             var resp = new List<SanPhamBanTaiQuayResp>();
             //var products = new List<SanPhamResp>();
 
-            if (!string.IsNullOrEmpty(searchQuery))
+
+            var lstSp = _dbContext.SanPhams.ToList().Where(x => x.TrangThai).Where(p => string.IsNullOrEmpty(searchQuery) || p.Ten.Trim().ToLower().Contains(searchQuery.Trim().ToLower(), StringComparison.OrdinalIgnoreCase))
+                                                    .Where(x => x.SoLuong > 0).ToList();
+            // tìm khuyến mại theo sản phẩm và hiển thị
+            var lstIdDm = lstSp.Select(x => x.Id_DanhMuc).ToList();
+            var timenow = DateTime.Now;
+            var lstKhuyenMai = await _dbContext.ChiTietKhuyenMais.Where(x => lstIdDm.Contains((int)x.Id_DanhMuc))
+                .Include(x => x.KhuyenMai)
+                .Where(x => x.KhuyenMai.TrangThai == 1)
+                .Where(x => x.KhuyenMai.NgayBatDau <= timenow && timenow <= x.KhuyenMai.NgayKetThuc)
+                .ToListAsync();
+            if (lstSp.Count > 0)
             {
-                var lstSp = _dbContext.SanPhams.ToList().Where(p => p.Ten.Trim().ToLower().Contains(searchQuery.Trim().ToLower(), StringComparison.OrdinalIgnoreCase)).ToList();
-                // tìm khuyến mại theo sản phẩm và hiển thị
-                var lstIdDm = lstSp.Select(x => x.Id_DanhMuc).ToList();
-                var timenow = DateTime.Now;
-                var lstKhuyenMai = await _dbContext.ChiTietKhuyenMais.Where(x => lstIdDm.Contains((int)x.Id_DanhMuc))
-                    .Include(x => x.KhuyenMai)
-                    .Where(x => x.KhuyenMai.TrangThai == 1)
-                    .Where(x => x.KhuyenMai.NgayBatDau <= timenow && timenow <= x.KhuyenMai.NgayKetThuc)
-                    .ToListAsync();
-                if (lstSp.Count > 0)
+                foreach (var item in lstSp)
                 {
-                    foreach (var item in lstSp)
+                    var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.Id_DanhMuc);
+                    decimal giaBan = 0;
+
+                    giaBan = khuyenMai != null && item.Gia >= khuyenMai?.KhuyenMai?.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
+
+                    // lấy màu sắc + kích thước + số lượng trong Sản phẩm chi tiết
+                    var lstSpCt = _dbContext.ChiTietSanPhams.Where(x => x.Id_SanPham == item.Id)
+                        .Include(x => x.MauSac).Include(x => x.KichThuoc)
+                        .Where(x => x.SoLuong > 0)
+                        .ToList();
+                    if (lstSpCt != null && lstSpCt.Count > 0)
                     {
-                        var khuyenMai = lstKhuyenMai.FirstOrDefault(x => x.Id_DanhMuc == item.Id_DanhMuc);
-                        decimal giaBan = 0;
-
-                        giaBan = khuyenMai != null && item.Gia >= khuyenMai?.KhuyenMai?.DieuKienGiamGia ? Math.Round(item.Gia - (item.Gia * khuyenMai.KhuyenMai.GiaTriGiam / 100)) : Math.Round(item.Gia);
-
-                        // lấy màu sắc + kích thước + số lượng trong Sản phẩm chi tiết
-                        var lstSpCt = _dbContext.ChiTietSanPhams.Where(x => x.Id_SanPham == item.Id)
-                            .Include(x => x.MauSac).Include(x => x.KichThuoc)
-                            .Where(x => x.SoLuong > 0)
-                            .ToList();
-                        if (lstSpCt != null && lstSpCt.Count > 0)
+                        foreach (var spct in lstSpCt)
                         {
-                            foreach (var spct in lstSpCt)
+                            resp.Add(new SanPhamBanTaiQuayResp
                             {
-                                resp.Add(new SanPhamBanTaiQuayResp
+                                Id = spct.Id,
+                                GiaBan = giaBan,
+                                GiaBanDau = Math.Round(item.Gia),
+                                Id_DanhMuc = item.Id_DanhMuc,
+                                MoTa = item.MoTa,
+                                SoLuong = spct.SoLuong,
+                                Ten = item.Ten,
+                                MauSac = new MauSacResp
                                 {
-                                    Id = spct.Id,
-                                    GiaBan = giaBan,
-                                    GiaBanDau = Math.Round(item.Gia),
-                                    Id_DanhMuc = item.Id_DanhMuc,
-                                    MoTa = item.MoTa,
-                                    SoLuong = spct.SoLuong,
-                                    Ten = item.Ten,
-                                    MauSac = new MauSacResp
-                                    {
-                                        Id = spct?.MauSac?.Id,
-                                        MaHex = spct?.MauSac?.MaHex,
-                                        Ten = spct?.MauSac?.Ten
-                                    },
-                                    KichThuoc = new KichThuocResp
-                                    {
-                                        Id = spct?.KichThuoc?.Id,
-                                        Ten = spct?.KichThuoc?.Ten
-                                    },
-                                    ListHinHAnh = _dbContext.HinhAnhs.Where(x => x.Id_SanPham == item.Id)
-                                    .Take(1)?.Select(x => new HinhAnhResp
-                                    {
-                                        Id = x.Id,
-                                        Id_SanPham = x.Id_SanPham,
-                                        //ImageData = x.ImageData,
-                                        ImageSourceType = x.ImageSourceType,
-                                        Url = x.Url
-                                    })?.ToList() ?? null,
-                                });
-                            }
+                                    Id = spct?.MauSac?.Id,
+                                    MaHex = spct?.MauSac?.MaHex,
+                                    Ten = spct?.MauSac?.Ten
+                                },
+                                KichThuoc = new KichThuocResp
+                                {
+                                    Id = spct?.KichThuoc?.Id,
+                                    Ten = spct?.KichThuoc?.Ten
+                                },
+                                ListHinHAnh = _dbContext.HinhAnhs.Where(x => x.Id_SanPham == item.Id)
+                                .Take(1)?.Select(x => new HinhAnhResp
+                                {
+                                    Id = x.Id,
+                                    Id_SanPham = x.Id_SanPham,
+                                    //ImageData = x.ImageData,
+                                    ImageSourceType = x.ImageSourceType,
+                                    Url = x.Url
+                                })?.ToList() ?? null,
+                            });
                         }
                     }
                 }
             }
+
             int totalProducts = resp.Count();
             int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
 
