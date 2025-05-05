@@ -1,5 +1,6 @@
 ﻿using DAL.Context;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,10 @@ using WebView.NghiaDTO;
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class SanPhamController : Controller
     {
+        
         private readonly WebBanQuanAoDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
         public SanPhamController(WebBanQuanAoDbContext dbcontext, IWebHostEnvironment webHostEnvironment)
@@ -19,6 +22,10 @@ namespace WebView.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            var token = HttpContext.Session.GetString("JWTToken");
+            Console.WriteLine("Token từ session: " + token);
+
+
             var chiTietSanPhams = await _context.ChiTietSanPhams
                 .Include(ct => ct.SanPham)  // Bao gồm bảng SanPham để lấy tên sản phẩm, HinhAnh, DanhMuc, và ThuongHieu
                 .ThenInclude(sp => sp.DanhMuc) // Bao gồm DanhMuc qua SanPham
@@ -158,7 +165,7 @@ namespace WebView.Areas.Admin.Controllers
                                     Id_MauSac = chiTiet.Id_MauSac,
                                     Id_KichThuoc = chiTiet.Id_KichThuoc,
                                     SoLuong = chiTiet.SoLuong,
-                                    TrangThai = chiTiet.TrangThai ?? true,
+                                    TrangThai = chiTiet.TrangThai,
                                     NgayTao = DateTime.Now
                                 });
                                 totalQuantity += chiTiet.SoLuong;
@@ -430,7 +437,7 @@ namespace WebView.Areas.Admin.Controllers
                 {
                     // Cập nhật chi tiết sản phẩm
                     existingDetail.SoLuong = dto.SoLuong;
-                    existingDetail.TrangThai = dto.TrangThai ?? true;
+                    existingDetail.TrangThai = dto.TrangThai;
                 }
                 else
                 {
@@ -441,13 +448,12 @@ namespace WebView.Areas.Admin.Controllers
                         Id_MauSac = dto.Id_MauSac,
                         Id_KichThuoc = dto.Id_KichThuoc,
                         SoLuong = dto.SoLuong,
-                        TrangThai = dto.TrangThai ?? true,
+                        TrangThai = dto.TrangThai,
                         NgayTao = DateTime.Now
                     });
                 }
             }
         }
-        // Phương thức DELETE để thực hiện xóa ngay mà không cần xác nhận
         public async Task<IActionResult> Delete(int id)
         {
             // Kiểm tra nếu id là null
@@ -459,6 +465,7 @@ namespace WebView.Areas.Admin.Controllers
             // Lấy sản phẩm và các chi tiết liên quan
             var sanPham = await _context.SanPhams
                 .Include(sp => sp.ChiTietSanPhams) // Bao gồm ChiTietSanPhams liên quan đến sản phẩm
+                .Include(sp => sp.HinhAnhs) // Bao gồm HinhAnhs liên quan đến sản phẩm
                 .FirstOrDefaultAsync(sp => sp.Id == id);
 
             // Kiểm tra nếu sản phẩm không tồn tại
@@ -466,6 +473,9 @@ namespace WebView.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            // Xóa tất cả HinhAnhs liên quan đến sản phẩm
+            _context.HinhAnhs.RemoveRange(sanPham.HinhAnhs);
 
             // Xóa tất cả ChiTietSanPhams liên quan đến sản phẩm
             _context.ChiTietSanPhams.RemoveRange(sanPham.ChiTietSanPhams);
@@ -477,7 +487,7 @@ namespace WebView.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
 
             // Thêm thông báo thành công
-            TempData["success"] = "Xóa sản phẩm và thuộc tính thành công!";
+            TempData["success"] = "Xóa sản phẩm, thuộc tính và hình ảnh thành công!";
 
             // Chuyển hướng về trang danh sách sản phẩm
             return RedirectToAction("Index");

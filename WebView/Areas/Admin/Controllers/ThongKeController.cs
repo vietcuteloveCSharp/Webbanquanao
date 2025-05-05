@@ -3,10 +3,12 @@ using Enum.EnumVVA;
 using Microsoft.AspNetCore.Mvc;
 using WebView.NghiaDTO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class ThongKeController : Controller
     {
         private readonly WebBanQuanAoDbContext _context;

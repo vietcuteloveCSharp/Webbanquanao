@@ -1,9 +1,9 @@
-﻿
-@using DTO.VuvietanhDTO.KhachHangs
+﻿@using DTO.VuvietanhDTO.KhachHangs
 @using DTO.VuvietanhDTO.HoadonsDTO
 @using Enum.EnumVVA
 @using static WebView.Areas.Admin.ViewModels.ViewHoaDon
 @model List<HoaDonView>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +19,7 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,7 +101,7 @@
         .dataTables_filter, .dataTables_length {
             margin-bottom: 20px;
         }
-        /* Table Style */
+
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -118,7 +119,6 @@
                 font-weight: bold;
             }
 
-        /* Flexbox Layout */
         .product-list {
             display: flex;
             flex-direction: column;
@@ -141,13 +141,18 @@
             color: #555;
         }
 
+        #noDataMessage {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
-
     <h2>Lọc trạng thái</h2>
     <div class="form-container">
-        <form asp-action="FilterStatus" method="post">
+        <form asp-controller="Order" asp-action="FilterStatus" method="post" asp-antiforgery="true">
             <label for="filterorder">Trạng thái:</label>
             <select id="filterorder" name="filterorder" class="form-control">
                 <option value="0">Tất cả</option>
@@ -161,7 +166,9 @@
             <button type="submit" class="btn btn-primary">Lọc</button>
         </form>
     </div>
+
     <h1>Thông Tin Đơn Hàng</h1>
+
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert">
@@ -171,7 +178,9 @@
             }
         </div>
     }
-    <table id="hoaDonTable">
+
+
+    <table id="hoaDonTable" class="display table-bordered table-hover">
         <thead>
             <tr>
                 <th>Mã đơn hàng</th>
@@ -204,7 +213,7 @@
                                         {
                                             <tr>
                                                 <td>@sp.Ten</td>
-                                                <td>@sp.SoLuong</td>
+                                                <td>Số Lượng @sp.SoLuong</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -215,17 +224,13 @@
                                 <p>Không có sản phẩm</p>
                             }
                         </td>
-
                         <td data-order="@hoaDon.NgayTao.ToString("yyyy-MM-dd HH:mm:ss")">
                             Ngày @hoaDon.NgayTao.ToString("d/M/yyyy HH:mm")
                         </td>
-
                         <td>@hoaDon.DiaChiGiaoHang</td>
                         <td>@string.Format("{0:N0} VND", Convert.ToDecimal(hoaDon.TongTien))</td>
-
                         <td>
                             @{
-                                // Lấy trạng thái từ enum và xác định tên hiển thị
                                 string trangThaiHienThi = hoaDon.TrangThai switch
                                 {
                                     ETrangThaiHD.ChoXacNhan => "Chờ xác nhận",
@@ -236,96 +241,64 @@
                                     ETrangThaiHD.HuyDon => "Hủy đơn",
                                     _ => "Trạng thái không xác định"
                                 };
-
-                                // Lấy class CSS của badge từ trạng thái
                                 string classCss = hoaDon.TrangThai switch
                                 {
-                                    ETrangThaiHD.ChoXacNhan => "badge bg-warning text-dark", // Vàng
-                                    ETrangThaiHD.ChoThanhToan => "badge bg-info text-white", // Xanh dương nhạt
-                                    ETrangThaiHD.DaXacNhan => "badge bg-primary text-white", // Xanh dương
-                                    ETrangThaiHD.DangVanChuyen => "badge bg-secondary text-white", // Xám
-                                    ETrangThaiHD.HoanThanhDon => "badge bg-success text-white", // Xanh lá cây
-                                    ETrangThaiHD.HuyDon => "badge bg-danger text-white", // Đỏ
-                                    _ => "badge bg-light text-dark" // Trạng thái không xác định (màu sáng)
+                                    ETrangThaiHD.ChoXacNhan => "badge bg-warning text-dark",
+                                    ETrangThaiHD.ChoThanhToan => "badge bg-info text-white",
+                                    ETrangThaiHD.DaXacNhan => "badge bg-primary text-white",
+                                    ETrangThaiHD.DangVanChuyen => "badge bg-secondary text-white",
+                                    ETrangThaiHD.HoanThanhDon => "badge bg-success text-white",
+                                    ETrangThaiHD.HuyDon => "badge bg-danger text-white",
+                                    _ => "badge bg-light text-dark"
                                 };
                             }
-
-                            <!-- Hiển thị trạng thái với màu sắc -->
                             <span class="@classCss">@trangThaiHienThi</span>
                         </td>
-
-
                         <td>
                             <a asp-action="OrderDetail" asp-controller="Order" asp-route-Id="@hoaDon.Id" class="btn btn-sm btn-info">Chi tiết</a>
                         </td>
                     </tr>
                 }
             }
-            else
-            {
-                <tr>
-                    <td colspan="8">Không có hóa đơn nào</td>
-                </tr>
-            }
         </tbody>
     </table>
-
 </body>
-
 </html>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Kiểm tra xem bảng có dữ liệu hợp lệ không
+            var hasData = $('#hoaDonTable tbody tr').length > 0 && $('#hoaDonTable tbody tr td').length > 0;
+
+            // Khởi tạo DataTables
             var table = $('#hoaDonTable').DataTable({
-                "order": [[3, "desc"]],
-                dom: 'Bfrtip', // Thêm `B` để hiển thị các nút
+                "order": [[3, "desc"]], // Sắp xếp theo cột Thời gian
+                dom: 'Bfrtip',
                 buttons: [
                     {
-                        extend: 'pdfHtml5', // Xuất PDF
+                        extend: 'pdfHtml5',
                         title: 'Danh sách đơn hàng',
                         exportOptions: {
                             columns: ':visible'
                         }
                     }
                 ],
-                columns: [
-                    { data: 'thongtinkhachhang' },
-                    { data: 'madonhang' },
-                    { data: 'sanpham' },
-                    { data: 'thoigian' },
-                    { data: 'diachiagiaohang' },
-                    { data: 'tongtien' },
-                    { data: 'trangthai' },
-                    { data: 'hanhdong' }
-                ],
-                initComplete: function () {
-                    // Kiểm tra dữ liệu khi bảng được khởi tạo
-                    checkTableData(this.api());
-                },
                 responsive: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json' // Hỗ trợ tiếng Việt
-                }
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json',
+                    emptyTable: "Không có hóa đơn nào để hiển thị."
+                },
+                // Tắt cảnh báo lỗi
+                errorMode: 'none'
             });
 
-            // Lọc dữ liệu và kiểm tra sau khi thay đổi
-            $('#FilterStatus').on('change', function () {
-                var filterValue = $(this).val();
-                table.ajax.url(`/api/orders?status=${filterValue}`).load(function () {
-                    checkTableData(table);
-                });
-            });
-
-            // Hàm kiểm tra và hiển thị thông báo
-            function checkTableData(api) {
-                if (api.rows().data().length === 0) {
-                    $('#noDataMessage').show(); // Hiển thị thông báo
-                } else {
-                    $('#noDataMessage').hide(); // Ẩn thông báo
-                }
+            // Hiển thị/ẩn thông báo khi không có dữ liệu
+            if (!hasData) {
+                $('#noDataMessage').show();
+            } else {
+                $('#noDataMessage').hide();
             }
         });
     </script>
-
-
 }

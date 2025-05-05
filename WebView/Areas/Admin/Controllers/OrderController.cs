@@ -13,10 +13,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using static WebView.Areas.Admin.ViewModels.ViewHoaDon;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebView.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles ="admin")]
     public class OrderController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -268,28 +270,30 @@ namespace WebView.Areas.Admin.Controllers
             {
                 return View(listHoaDonView);
             }
-        }
+        }   
         [HttpPost("FilterStatus")]
         public async Task<IActionResult> FilterStatus(int filterorder)
         {
             // Tải danh sách hóa đơn
             listHoaDonView = await LoadData();
 
-            // Kiểm tra nếu trạng thái là "Tất cả"
-            if (filterorder == ETrangThaiHD.None.GetHashCode()) // Giả sử `None` là trạng thái tương ứng với "Tất cả"
+            // Kiểm tra danh sách rỗng
+            if (listHoaDonView == null || !listHoaDonView.Any())
             {
-                ModelState.AddModelError(string.Empty, "Không có bất kỳ đơn hàng nào.");
-                return View("Index");
+                ModelState.AddModelError(string.Empty, "Không có hóa đơn nào.");
+                return View("Index", new List<HoaDonView>());
             }
-            if (filterorder != 0)
+            // Kiểm tra giá trị filterorder hợp lệ
+            if (filterorder < 0 || filterorder > 6) // Giả sử ETrangThaiHD có giá trị từ 0 đến 6
             {
-                //ModelState.AddModelError(string.Empty, $"Không tìm thấy hóa đơn với trạng thái khac 0 {(ETrangThaiHD)FilterStatus}.");
-                listHoaDonView = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == filterorder).ToList();
+                ModelState.AddModelError(string.Empty, "Trạng thái không hợp lệ.");
                 return View("Index", listHoaDonView);
             }
-
             // Lọc danh sách theo trạng thái
-            var filteredList = listHoaDonView.Where(x => x.TrangThai.GetHashCode() == filterorder).ToList();
+            var filteredList = filterorder == (int)ETrangThaiHD.None
+                ? listHoaDonView // Nếu là "Tất cả", trả về toàn bộ danh sách
+                : listHoaDonView.Where(x => (int)x.TrangThai == filterorder).ToList();
+         
             // Trả về View với danh sách được lọc
             return View("Index", filteredList);
         }

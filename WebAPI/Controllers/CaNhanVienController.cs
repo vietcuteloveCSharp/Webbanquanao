@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
             var result = await _canhanvienService.CreatCanhanvien(idNhanVien, idCaLamViec);
             return result ? Ok("Thêm thành công") : BadRequest("Nhân viên đã có trong ca này!");
         }
-        [HttpGet("get-nhanviens-by-ca")]
+        [HttpGet("get-nhanviens-by-ca/{idCaLamViec}")]
         public async Task<IActionResult> GetNhanViensByCa(int idCaLamViec)
         {
             var result = await _canhanvienService.GetNhanVienByCa(idCaLamViec);

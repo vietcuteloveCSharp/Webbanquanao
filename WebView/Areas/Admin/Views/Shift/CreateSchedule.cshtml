@@ -1,0 +1,215 @@
+﻿@{
+    ViewData["Title"] = "Tạo lịch làm việc";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<h2>@ViewData["Title"]</h2>
+<!-- Hiển thị thông báo lỗi -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<form asp-action="CreateSchedule" method="post" onsubmit="return validateForm()">
+    <!-- Thêm validate cho trường ngày -->
+    <div class="form-group mb-4">
+        <label>Ngày làm việc</label>
+        <input type="date" name="workDate"
+               class="form-control @(ViewData.ModelState["workDate"]?.Errors.Any() == true ? "is-invalid" : "")"
+               required />
+        @if (ViewData.ModelState["workDate"]?.Errors.Any() == true)
+        {
+            <div class="invalid-feedback">
+                @ViewData.ModelState["workDate"].Errors.First().ErrorMessage
+            </div>
+        }
+    </div>
+
+    <!-- Ca Sáng -->
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Ca Sáng (08:00 - 12:00)</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label>Thu ngân:</label>
+                <select name="morningShift[0]" class="form-select cashier-select" required>
+                    <option value="">-- Chọn thu ngân --</option>
+                    @foreach (var emp in ViewBag.Cashiers)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nhân viên 1:</label>
+                <select name="morningShift[1]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nhân viên 2:</label>
+                <select name="morningShift[2]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ca Chiều (Copy và sửa tên cho các ca khác) -->
+    <div class="card mb-4 border-success">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Ca Chiều (13:00 - 18:00)</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label>Thu ngân:</label>
+                <select name="afternoonShift[0]" class="form-select cashier-select" required>
+                    <option value="">-- Chọn thu ngân --</option>
+                    @foreach (var emp in ViewBag.Cashiers)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nhân viên 1:</label>
+                <select name="afternoonShift[1]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Nhân viên 2:</label>
+                <select name="afternoonShift[2]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Ca Tối (Copy và sửa tên cho các ca khác) -->
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Ca Tối (18:00 - 22:00)</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label>Thu ngân:</label>
+                <select name="nightShift[0]" class="form-select cashier-select" required>
+                    <option value="">-- Chọn thu ngân --</option>
+                    @foreach (var emp in ViewBag.Cashiers)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nhân viên 1:</label>
+                <select name="nightShift[1]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nhân viên 2:</label>
+                <select name="nightShift[2]" class="form-select sales-select" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    @foreach (var emp in ViewBag.SalesStaff)
+                    {
+                        <option value="@emp.Id">@emp.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-lg btn-primary">Lưu lịch</button>
+</form>
+</body>
+</html>
+@section Scripts {
+    <script>
+        function validateForm() {
+            let isValid = true;
+
+            // Kiểm tra từng ca
+            document.querySelectorAll('.card').forEach(card => {
+                const selects = card.querySelectorAll('select');
+                const selectedValues = [];
+
+                selects.forEach((select, index) => {
+                    // Reset trạng thái lỗi
+                    select.classList.remove('is-invalid');
+
+                    // Check empty
+                    if (select.value === "") {
+                        select.classList.add('is-invalid');
+                        isValid = false;
+                    }
+
+                    // Check trùng lặp
+                    if (selectedValues.includes(select.value)) {
+                        alert('Không được chọn trùng nhân viên trong cùng ca!');
+                        select.value = "";
+                        select.classList.add('is-invalid');
+                        isValid = false;
+                    }
+
+                    selectedValues.push(select.value);
+                });
+            });
+
+            return isValid;
+        }
+
+        // Chặn chọn nhầm vị trí
+       
+    </script>
+
+    <style>
+        .is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg...");
+        }
+
+        .card-header {
+            font-weight: 600;
+        }
+    </style>
+}

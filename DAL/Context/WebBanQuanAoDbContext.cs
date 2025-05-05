@@ -10,8 +10,8 @@ namespace DAL.Context
         public virtual DbSet<ChiTietKhuyenMai> ChiTietKhuyenMais { get; set; }
         public virtual DbSet<ChiTietMaGiamGia> ChiTietMaGiamGias { get; set; }
         public virtual DbSet<ChiTietSanPham> ChiTietSanPhams { get; set; }
-        public virtual DbSet<CaLamViec_NgayLamViec_NhanVien> CaLamViec_NgayLamViec_NhanViens { get; set; }
-        public virtual DbSet<CaNhanVien> CaNhanViens { get; set; }
+        public virtual DbSet<DiaChiKhachHang> DiaChiKhachHangs { get; set; }
+        public virtual DbSet<CaNhanVien> Canhanviens { get; set; }
         public virtual DbSet<DanhGia> DanhGias { get; set; }
         public virtual DbSet<ChucVu> ChucVus { get; set; }
         public virtual DbSet<CuaHang> CuaHangs { get; set; }    
@@ -31,8 +31,10 @@ namespace DAL.Context
         public virtual DbSet<ThuongHieu> ThuongHieus { get; set; }
         public virtual DbSet<HinhAnh> HinhAnhs { get; set; }
         public virtual DbSet<CaLamViec> CaLamViecs { get; set; }
-        public virtual DbSet<CaNhanVien> Canhanviens { get; set; }
-        public virtual DbSet<DiaChiKhachHang> DiaChiKhachHangs { get; set; }
+       
+
+       
+
         public WebBanQuanAoDbContext()
         {
 
@@ -77,7 +79,7 @@ namespace DAL.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=NGHIAFIN\\MSSQLSERVER1;Initial Catalog=QuanAoCanMan;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=TUYEN_DEV\\SQLEXPRESS;Initial Catalog=QuanAoCanMan1;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
         }
